@@ -1,4 +1,4 @@
-// 知识库的数据格式（schema 1）。FrameScribe 的「提交到知识库」按钮生成的也是这个格式，改格式时两边一起改。
+// 知识库的数据格式（schema 1）。import-framescribe.mjs 按这个格式从 FrameScribe 的数据导入。
 //
 // data/videos/<id>.json   一个视频一份：公开信息 + AI 大纲（不含字幕全文、截图、本机路径）
 // data/courses/<slug>.md  一门课一张卡：介绍、标签（任何人都能补）

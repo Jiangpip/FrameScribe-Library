@@ -1,49 +1,48 @@
-# 一起维护
+# 关于这个库
 
-这是几个朋友的小仓库：你被加为协作者（Collaborator）后，直接改、直接提交就行，不用走审核。仓库很小，克隆下来约 1 MB。
+## 为什么做
 
-## 收什么
+想让学东西更方便一点。在数字时代，不该因为信息差学不到自己想学的东西，也不该把大量时间花在「找到底哪个视频讲了这个」上。
 
-- **技术美术相关**的公开课程：Shader / 材质、PCG / 程序化、UE / Unity / Houdini、TA 工具链等。
-- 你自己看过、或者正在看、觉得值得记的。不求全，烂课也可以收，评价里写清楚哪里烂，帮别人避坑。
-- 不收：字幕全文 / 逐字稿、视频截图、付费课程的内容。大纲里点时间就能回原视频看画面。
+## 设想
 
-## 加一门课
+如果很多人都把自己看过的视频用 AI 整理成这样的大纲，再汇到一起，找知识就不再只能靠标题和关键词，而是能按视频**里讲了什么**来找：搜一个概念，直接得到「哪个视频的第几分钟讲了它」。
 
-1. 在 [FrameScribe](https://github.com/Jiangpip/FrameScribe) 里打开这门课的 YouTube 播放列表，点右下「📒 批量大纲」→「开始批量」，等大纲全部生成。
-2. 克隆本仓库，在仓库目录里运行：
-   ```
-   node tools/import-framescribe.mjs --group "频道 - 播放列表名"
-   ```
-   组名就是 FrameScribe 导出文件夹的名字。脚本只取大纲和公开信息（标题、链接、时长、频道），不带字幕全文、截图和本机路径。
-3. 打开新生成的 `data/courses/<课程>.md`，写两三句介绍、补上标签。
-4. 本地预览（可选）：`node tools/build.mjs --serve`，打开 http://127.0.0.1:8090 。
-5. 提交并推送。网站会在一两分钟后自动更新。
+## 大纲是怎么来的
 
-懒得自己敲命令？在仓库目录里对 Claude Code / Codex 说：「把 FrameScribe 里『频道 - 播放列表名』这门课导入知识库，写好课程卡，提交并推送」。仓库里的 `AGENTS.md` 告诉了它怎么做。
+1. 用 [FrameScribe](https://github.com/Jiangpip/FrameScribe) 打开一个 YouTube 播放列表，「批量大纲」：取字幕（没有字幕就在本机听写），交给 AI 按内容分章节、列知识点，每条带时间。
+2. 维护者在本机运行 `node tools/import-framescribe.mjs --group "频道 - 播放列表名"`，只取大纲和公开信息（标题、链接、时长、频道），不带字幕全文、截图和本机路径。
+3. 补一张课程卡（介绍、标签），推送后网站自动更新。
 
-## 写一份评价
+大纲是 AI 生成的，可能有识别错误或概括不准，以原视频为准。
 
-一门课一人一个文件：`data/reviews/<课程>/<你的 GitHub 用户名>.md`。课程文件夹名就是课程页地址里 `c/` 后面那一段。
+## 难点：为什么现在不开放投稿
 
-```
----
-rating: 4            # 1–5
-level: 有 UE 基础      # 适合谁
-watch: 第 2–9 集      # 值得看
-skip: 第 1 集         # 可以跳过
----
-一两段话：学到了什么、哪里讲得好、哪里过时了或有坑。
-```
+- **数据被弄脏**：有人上传错的、乱写的、恶意的大纲。需要审核、记录每条内容的来源、能随时回退。
+- **维护量爆炸**：同一个视频被重复整理、质量参差不齐、量大到没人看得过来。需要去重、质量信号（比如看过的人打分）、分工维护。
+- **钱**：内容多了以后，网站流量、存储、国内访问速度都要花钱。
 
-不想克隆也行：在 GitHub 网页上打开仓库 → 进到 `data/reviews/` → Add file → Create new file，文件名写 `<课程>/<你的用户名>.md`，粘贴上面的内容，直接提交到 main。
+在有办法解决这些之前，这里只由维护者整理收录。
 
-## 改错
+## 想参与
 
-- 课程介绍和标签：`data/courses/<课程>.md`。
-- 大纲有识别错误：`data/videos/<视频 id>.json` 里改对应的文字（`t` 是秒数，别动）。
+欢迎有能力、也愿意一起做这件事的人。可以开 issue 聊，比如：
+
+- 审核和防污染：怎么确认一份大纲是对的、出了问题怎么追溯和回退
+- 检索：内容多了以后怎么搜得又快又准
+- 托管和国内访问：网站、存储、带宽
+- 维护某个领域的课程
+
+## 发现错误
+
+大纲里有明显的识别错误，或者原作者不希望视频被收录，开一个 issue 告诉我们。
+
+## 原则
+
+不许商用。只接受捐助，捐助全部用于知识库的网络和存储（现在还没有开放捐助）。
 
 ## 格式（给写工具的人）
 
-- `data/videos/<id>.json`：`schema`、`id`、`site`、`url`、`title`、`date`、`channel`、`course`、`index`、`duration`、`source`、`summary`、`chapters[{t,title,points[{t,text}]}]`、`generator`。生成规则在 `tools/schema.mjs`。
-- 网站由 `node tools/build.mjs` 生成，推送到 main 后 GitHub Actions 自动发布。
+- `data/videos/<id>.json`：`schema`、`id`、`site`、`url`、`title`、`date`、`channel`、`course`、`index`、`duration`、`source`、`summary`、`chapters[{t,title,points[{t,text}]}]`、`generator`，生成规则在 `tools/schema.mjs`。
+- `data/courses/<课程>.md`：课程卡；`data/reviews/<课程>/<名字>.md`：评价（rating / level / watch / skip + 正文）。
+- 网站由 `node tools/build.mjs` 生成，推送到 main 后 GitHub Actions 自动发布；本地预览 `node tools/build.mjs --serve`。
