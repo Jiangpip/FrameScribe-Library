@@ -10,7 +10,7 @@
  "index": 16,
  "duration": 1542,
  "source": "YouTube 自动字幕 · 英语",
- "summary": "本课分别在 Unity HDRP 和 Unreal Engine 中制作玻璃材质，演示透明、折射、反射及磨砂效果。Unity 部分使用 Shader Graph 调整透射颜色、表面法线和折射模型，并比较平面玻璃与实心球体的表现。Unreal 部分使用半透明材质，通过 Fresnel 与 Lerp 调节不同观察角度下的折射，再用 Spiral Blur Scene Texture 实现背景模糊。课程最后比较模糊质量与性能成本，并说明本次 Unreal 材质在厚玻璃透镜效果上的局限。",
+ "summary": "本课分别在 Unity HDRP 和 Unreal Engine 中制作玻璃材质，演示透明、折射、反射及磨砂效果。Unity 部分使用 Shader Graph 调整透射颜色、表面法线和折射模型，并比较平面玻璃与实心球体的表现。Unreal 部分使用半透明材质，通过 Fresnel 与 Lerp 调节不同观察角度下的折射，再用 Spiral Blur Scene Texture 实现背景模糊。课程最后比较模糊质量与性能成本，并说明本次 Unreal 材质在厚玻璃透镜效果上的局限。（测试提交，请勿合并）",
  "chapters": [
   {
    "t": 0,
