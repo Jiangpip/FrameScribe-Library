@@ -97,11 +97,11 @@ const vCourse = new Map(); for (const c of courses) for (const v of c.videos) vC
 const stars = (r, n) => n ? `<span class="stars" title="${r.toFixed(1)} / 5，${n} 人评">${'★'.repeat(Math.round(r))}${'☆'.repeat(5 - Math.round(r))}<em>${r.toFixed(1)} · ${n} 人</em></span>` : '<span class="stars none">还没人评分</span>';
 function page({ title, R, body, desc = '' }) {
   return `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>${esc(title)}</title><meta name="description" content="${esc(desc || '用 FrameScribe 生成的视频课程大纲库：每个知识点带时间戳，点一下跳到视频那一秒。')}">
+<title>${esc(title)}</title><meta name="description" content="${esc(desc || '技术美术课程地图：几个朋友一起攒的课程大纲，每个知识点带时间戳，点一下跳到视频那一秒。')}">
 <link rel="stylesheet" href="${R}style.css"></head><body>
 <header class="top"><a class="brand" href="${R}index.html"><span class="dot"></span>FrameScribe <b>Library</b></a>
 <div class="sbox"><input id="q" type="search" placeholder="搜知识点：Fresnel、视差、PCG 样条…" autocomplete="off" spellcheck="false"><div id="hits" class="hits" hidden></div></div>
-<nav><a href="${R}contribute.html">投稿</a><a href="${SITE.repo}" target="_blank" rel="noopener">GitHub</a></nav></header>
+<nav><a href="${R}contribute.html">一起维护</a><a href="${SITE.repo}" target="_blank" rel="noopener">GitHub</a></nav></header>
 <main>${body}</main>
 <footer>大纲由 AI 根据视频字幕生成，可能有错，以原视频为准 · 视频版权归原作者 · 大纲文字 <a href="${SITE.repo}/blob/main/LICENSE" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a> · 用 <a href="${SITE.tool}" target="_blank" rel="noopener">FrameScribe</a> 生成</footer>
 <script>window.ROOT=${JSON.stringify(R)}</script><script src="${R}search.js" defer></script></body></html>`;
@@ -111,8 +111,8 @@ function page({ title, R, body, desc = '' }) {
 const totalPts = videos.reduce((s, v) => s + v.chapters.reduce((a, c) => a + c.points.length, 0), 0);
 write('index.html', page({
   title: SITE.name, R: '', body: `
-<section class="hero"><h1>看教程之前，先看大纲</h1>
-<p>每个视频都拆成章节和知识点，带时间戳，点一下跳到原视频那一秒。上面的搜索框能搜所有课程里的知识点。</p>
+<section class="hero"><h1>技术美术课程地图</h1>
+<p>几个朋友一起攒的：我们看过的技术美术课程，每个视频拆成章节和知识点，带时间戳，点一下跳到原视频那一秒。上面的搜索框能搜所有课程里的知识点；看过的人会写一句值不值得看。</p>
 <div class="stat"><span><b>${courses.length}</b> 门课</span><span><b>${videos.length}</b> 个视频</span><span><b>${totalPts}</b> 个知识点</span><span><b>${hours(videos.reduce((s, v) => s + v.duration, 0))}</b> 视频时长</span></div></section>
 <section class="grid">${courses.map(c => `
 <a class="card" href="c/${c.slug}.html"><div class="ch">${esc(c.channel || '')}</div><h2>${esc(c.title)}</h2>
@@ -159,7 +159,7 @@ ${nav}`
 });
 
 // —— 投稿说明页（内容来自 CONTRIBUTING.md）——
-write('contribute.html', page({ title: '投稿 · ' + SITE.name, R: '', body: `<section class="doc">${md(fs.readFileSync(path.join(root, 'CONTRIBUTING.md'), 'utf8'))}</section>` }));
+write('contribute.html', page({ title: '一起维护 · ' + SITE.name, R: '', body: `<section class="doc">${md(fs.readFileSync(path.join(root, 'CONTRIBUTING.md'), 'utf8'))}</section>` }));
 // GitHub Pages 的 404 可能出现在任何路径下：用脚本算出站点根目录再链回首页
 write('404.html', '<!doctype html><meta charset="utf-8"><title>没找到</title><body style="background:#0d0f13;color:#e8ecf2;font:16px system-ui;padding:40px"><p>没找到这一页。</p><p><a id="h" style="color:#ff7a2f" href="/">回到首页</a></p><script>var p=location.pathname.split("/");if(location.hostname.endsWith("github.io"))document.getElementById("h").href="/"+p[1]+"/";</script>');
 
@@ -180,7 +180,7 @@ write('api/catalog.json', JSON.stringify({
 for (const v of videos) write(`api/videos/${v.id}.json`, JSON.stringify(v, null, 1));
 write('llms.txt', `# ${SITE.name}
 
-> 视频课程的章节大纲库（中文），每个知识点带视频时间戳。由 FrameScribe 根据字幕自动生成。
+> 技术美术课程的章节大纲库（中文），每个知识点带视频时间戳。由 FrameScribe 根据字幕自动生成，几个朋友一起维护。
 
 给 AI 的用法：
 1. 先读 api/catalog.json：所有课程 → 视频 → 章节标题和起始秒数（体积小）。

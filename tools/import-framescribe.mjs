@@ -1,4 +1,4 @@
-// 从本机 FrameScribe 的数据里导入大纲到知识库（维护者用；朋友投稿走 FrameScribe 里的「提交到知识库」按钮）
+// 从本机 FrameScribe 的数据里导入大纲到知识库（每个维护者在自己电脑上跑）
 //   node tools/import-framescribe.mjs                       导入所有带播放列表分组、已有大纲的视频
 //   node tools/import-framescribe.mjs --group "频道 - 列表名"  只导入这一组
 //   node tools/import-framescribe.mjs --data D:\某处\data     指定 FrameScribe 数据目录
