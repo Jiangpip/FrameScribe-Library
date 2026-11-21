@@ -1,0 +1,131 @@
+{
+ "schema": 1,
+ "id": "yt_hil3qfliTFo",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=hil3qfliTFo",
+ "title": "Procedural Brick Normals - Advanced Materials - Episode 30",
+ "date": "2023-11-16",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Advanced Materials",
+ "index": 31,
+ "duration": 1214,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本节课在 Unity 和 Unreal Engine 中，为程序化砖墙生成法线，让平面的砖块呈现凹凸感。课程先构建 Rectangle SDF，用渐变替换原有的硬边矩形，再通过 Inverse Lerp 和 Saturate 分别生成颜色遮罩与高度图。Unity 使用 Normal From Height 转换法线，并展示该方法的边缘锯齿问题。Unreal Engine 使用 PreparePerturbNormalHQ 与 PerturbNormalHQ 生成世界空间法线，随后说明法线空间转换和材质设置的两种接入方式。",
+ "chapters": [
+  {
+   "t": 0,
+   "title": "Unity：构建 Rectangle SDF 渐变子图",
+   "points": [
+    {
+     "t": 0,
+     "text": "回顾程序化砖块图案与颜色：本节通过高度渐变生成法线，为平面砖墙增加凹凸感。"
+    },
+    {
+     "t": 65,
+     "text": "用 Rectangle SDF 替换硬边 Rectangle：让砖块中心为白色、向灰缝边缘逐渐变黑，便于控制砖块形状。"
+    },
+    {
+     "t": 113,
+     "text": "创建 Rectangle SDF Sub Graph，添加 UV 输入，使用 Branch On Input Connection 在外部输入与默认 UV 之间切换。"
+    },
+    {
+     "t": 158,
+     "text": "在 Graph Inspector 为 UV 输入勾选 Use Custom Binding，标签设为 UV；连接 Input、Connected 与默认 UV 分支。"
+    },
+    {
+     "t": 199,
+     "text": "UV 先 Multiply 2，再 Subtract 1：将坐标范围从 0～1 转为 -1～1，把原点移至图案中心。"
+    },
+    {
+     "t": 244,
+     "text": "使用 Absolute 将负坐标变为正值，使四个象限形成从中心向外递增的镜像坐标。"
+    },
+    {
+     "t": 273,
+     "text": "加入 Width 与 Height 参数，通过 Split 分离 X、Y 分量，再取较大值，形成中心暗、外围亮的矩形渐变。"
+    },
+    {
+     "t": 324,
+     "text": "使用 One Minus 反转渐变，再 Multiply 2、Saturate，输出中心亮、边缘暗的矩形高度遮罩。"
+    }
+   ]
+  },
+  {
+   "t": 397,
+   "title": "Unity：分离颜色遮罩与高度图并生成法线",
+   "points": [
+    {
+     "t": 397,
+     "text": "将 Rectangle SDF 子图拖入程序化砖墙图表，预览设为 Preview 2D，并替换原有 Rectangle 节点。"
+    },
+    {
+     "t": 424,
+     "text": "连接砖块 UV，将 Width、Height 输入分别设为 0.07 和 0.14，获得柔和的砖块边缘渐变。"
+    },
+    {
+     "t": 470,
+     "text": "为颜色混合添加 Inverse Lerp：最小值设为 0、最大值设为 0.01，将渐变压缩为硬边砖块遮罩。"
+    },
+    {
+     "t": 546,
+     "text": "修复颜色混合异常：在 Inverse Lerp 后添加 Saturate，将输出限制在 0～1。"
+    },
+    {
+     "t": 574,
+     "text": "复制 Inverse Lerp 与 Saturate，保留最小值 0、将最大值改为 0.3，生成边缘更柔和的高度图。"
+    },
+    {
+     "t": 595,
+     "text": "添加 Normal From Height，将高度图转换为法线并接入材质 Normal；切换 Cube 预览观察砖块凹凸效果。"
+    },
+    {
+     "t": 660,
+     "text": "说明 Normal From Height 的局限：基于导数计算的结果存在边缘锯齿，斜视时尤其明显。"
+    },
+    {
+     "t": 710,
+     "text": "总结颜色与法线使用独立遮罩的优势；预告后续通过扰动打破砖块过于整齐、干净的排列。"
+    }
+   ]
+  },
+  {
+   "t": 759,
+   "title": "Unreal Engine：复现高度转法线并处理法线空间",
+   "points": [
+    {
+     "t": 759,
+     "text": "在 Unreal Engine 中使用 Rectangle SDF Material Function 替换原矩形节点，生成砖块中心亮、边缘暗的渐变。"
+    },
+    {
+     "t": 807,
+     "text": "设置函数输入：UV 类型为 Vector2，以 Texture Coordinate 作为默认输入并勾选 Use Preview Value as Default；Width、Height 使用 Vector2，默认值为 0.5、0.5。"
+    },
+    {
+     "t": 852,
+     "text": "复现矩形渐变运算：UV Multiply 2 → Subtract 1 → Absolute → 加入 Width、Height → Max → One Minus → Multiply 2 → Saturate。"
+    },
+    {
+     "t": 932,
+     "text": "用 Inverse Lerp 的 0～0.01 区间并接 Saturate 生成颜色硬边遮罩；右键选择 Start Previewing Node 检查结果。"
+    },
+    {
+     "t": 974,
+     "text": "将高度分支的 Inverse Lerp 区间设为 0～0.3，保留砖块边缘渐变，作为后续法线转换的高度输入。"
+    },
+    {
+     "t": 1000,
+     "text": "组合 PreparePerturbNormalHQ 与 PerturbNormalHQ：前者准备高度数据，后者将对应输出转换为世界空间法线。"
+    },
+    {
+     "t": 1049,
+     "text": "处理法线空间的两种方式：用 Transform Vector 将 World 转为 Tangent 后接入 Normal；或在材质根节点取消勾选 Tangent Space Normal，直接接入世界空间法线。"
+    },
+    {
+     "t": 1143,
+     "text": "检查砖块的立体光照效果；结尾预告通过扭曲与形状变化增加砖块的不规则感。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}

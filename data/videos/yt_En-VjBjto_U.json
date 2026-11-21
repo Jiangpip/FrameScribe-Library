@@ -1,0 +1,251 @@
+{
+ "schema": 1,
+ "id": "yt_En-VjBjto_U",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=En-VjBjto_U",
+ "title": "Local Volumetric Fog - Advanced Materials - Episode 23",
+ "date": "2023-04-27",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Advanced Materials",
+ "index": 23,
+ "duration": 2550,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本课分别在 Unity HDRP 和 Unreal Engine 中制作局部体积雾，让雾气集中在指定的三维空间内。先介绍雾体参数、三维坐标与密度控制，再通过高度遮罩和滚动噪声构建贴地烟雾。叠加反向移动的细节噪声，并加入随高度变化的颜色渐变，使雾气呈现更丰富的动态。最后说明 Unreal 中的体积雾启用条件、局部坐标归一化及材质移植方法。",
+ "chapters": [
+  {
+   "t": 0,
+   "title": "体积着色原理与 Unity HDRP 示例",
+   "points": [
+    {
+     "t": 0,
+     "text": "体积 Shader 定义三维空间内部的特征，局部体积雾适合地下室薄雾、墓地烟雾等场景。"
+    },
+    {
+     "t": 58,
+     "text": "导入示例：Window → Package Manager → High Definition RP → Samples → Volumetric Samples → Import。"
+    },
+    {
+     "t": 87,
+     "text": "通过示例集合的下拉菜单切换 3D 纹理遮罩、Ground Smoke、云团、烟雾球、程序化噪声及混合模式。"
+    },
+    {
+     "t": 170,
+     "text": "切换到练习场景，确定本课目标：从零重建示例中的动态贴地雾。"
+    }
+   ]
+  },
+  {
+   "t": 198,
+   "title": "Unity 局部体积雾的基础参数",
+   "points": [
+    {
+     "t": 198,
+     "text": "在 Hierarchy 右键菜单中选择 Rendering → Local Volumetric Fog，创建局部雾体。"
+    },
+    {
+     "t": 220,
+     "text": "Single Scattering Albedo 控制雾的颜色；降低 Fog Distance 可以提高雾的浓度与可见度。"
+    },
+    {
+     "t": 268,
+     "text": "Mask Mode 选择 Texture，使用示例包中的 3D Texture Checker 为雾体添加三维棋盘格密度遮罩。"
+    },
+    {
+     "t": 310,
+     "text": "Blend Distance 控制边界向内部的衰减范围：设为 0 时边界较硬，设为 0.1 时出现柔和过渡。"
+    },
+    {
+     "t": 376,
+     "text": "Distance Fade Start / End 控制远距离淡出；用 2 米和 4 米演示雾体随观察距离消失。"
+    },
+    {
+     "t": 423,
+     "text": "Texture 模式可以更换 Simplex Noise、调整平铺与滚动，但更复杂的内部效果需要改用材质。"
+    }
+   ]
+  },
+  {
+   "t": 468,
+   "title": "Unity Fog Volume Shader Graph 与 UVW 坐标",
+   "points": [
+    {
+     "t": 468,
+     "text": "将 Mask Mode 切换为 Material，启用 Fog Material 插槽。"
+    },
+    {
+     "t": 488,
+     "text": "创建 Shader Graph → HDRP → Fog Volume Shader Graph；Master Stack 只有 Base Color 和 Alpha，没有 Vertex 输入。"
+    },
+    {
+     "t": 539,
+     "text": "通过 UV、Split 和 Preview 检查坐标：体积 Shader 的 UV 节点提供 U、V、W 三个分量，二维预览不能完整显示深度。"
+    },
+    {
+     "t": 591,
+     "text": "将 UV 坐标接入 Base Color，并把对应材质赋给局部雾体，以颜色观察三维坐标分布。"
+    },
+    {
+     "t": 613,
+     "text": "Material 模式下使用 Alpha 控制雾的浓度；将 Alpha 提高到 20、Blend Distance 设为 0，增强坐标可视化效果。"
+    },
+    {
+     "t": 687,
+     "text": "确认 U、V、W 分别描述雾体内部的横向、纵向与深度位置，为后续高度遮罩提供基础。"
+    }
+   ]
+  },
+  {
+   "t": 732,
+   "title": "Unity 基础贴地雾：噪声投影、滚动与高度遮罩",
+   "points": [
+    {
+     "t": 732,
+     "text": "设置雾体 Blend Distance 为 0.1、Size 为 4、4、2，开始搭建贴地雾效果。"
+    },
+    {
+     "t": 761,
+     "text": "添加 Sample Texture 2D，选择示例包的 Noise 纹理；直接使用 UV 会让噪声沿深度方向拉伸。"
+    },
+    {
+     "t": 828,
+     "text": "用 Swizzle 提取 XZ，实现从顶部投影；随后改用 Object Space 的 Position 作为采样坐标。"
+    },
+    {
+     "t": 882,
+     "text": "Position.XZ 乘以 Tiling 控制平铺，初始值设为 0.5。"
+    },
+    {
+     "t": 903,
+     "text": "构建滚动偏移：Speed × Direction × Time，再与平铺后的坐标相加；初始速度为 0.1，方向为 Vector2(1, 0)。"
+    },
+    {
+     "t": 997,
+     "text": "噪声红通道接入 Inverse Lerp 的 B，A 保持 0；UV 经 Split 提取 G，即高度 V，乘以 2 后接入 T，控制雾层厚度。"
+    },
+    {
+     "t": 1054,
+     "text": "Inverse Lerp 结果经过 Saturate 和 One Minus，形成底部有雾、顶部逐渐消失的 Alpha 遮罩。"
+    },
+    {
+     "t": 1098,
+     "text": "将遮罩乘以 10 提高浓度，并把 Base Color 改为白色，检查基础滚动贴地雾。"
+    }
+   ]
+  },
+  {
+   "t": 1145,
+   "title": "Unity 细节噪声叠加与高度颜色渐变",
+   "points": [
+    {
+     "t": 1145,
+     "text": "分析基础效果的不足：单层噪声整体同速移动，需要第二层噪声打破均匀滚动感。"
+    },
+    {
+     "t": 1194,
+     "text": "复制 Sample Texture 2D 和滚动坐标节点，使用同一张纹理建立细节噪声分支。"
+    },
+    {
+     "t": 1219,
+     "text": "共享风向并用 Negate 反转；细节速度设为 0.25，随后基础速度也调为 0.25，细节平铺设为 0.85。"
+    },
+    {
+     "t": 1294,
+     "text": "增加第二个 Inverse Lerp：细节噪声红通道接 B，基础雾的 One Minus 结果接 T，再将输出接到浓度乘法节点。"
+    },
+    {
+     "t": 1340,
+     "text": "检查两层不同平铺尺度、反向滚动噪声形成的动态干涉纹理，增加烟雾内部变化。"
+    },
+    {
+     "t": 1369,
+     "text": "创建顶部与底部两个 Color 节点，从示例材质取色，并使用 Lerp 混合。"
+    },
+    {
+     "t": 1421,
+     "text": "构建颜色遮罩：Inverse Lerp 结果减去 0.1，再用 Maximum 将下限限制为 0.01；该值及其减 1 的结果作为 Smoothstep 的两条边界。"
+    },
+    {
+     "t": 1487,
+     "text": "用 UV 的 V 分量驱动 Smoothstep，将结果接入颜色 Lerp，再输出到 Base Color；整理基础烟雾、细节烟雾与颜色三个节点区域。"
+    }
+   ]
+  },
+  {
+   "t": 1586,
+   "title": "Unreal 体积材质配置、UVW 生成与边缘衰减",
+   "points": [
+    {
+     "t": 1586,
+     "text": "在 Unreal 示例场景中检查应用于 Cube 的 Volume Fog 材质。"
+    },
+    {
+     "t": 1607,
+     "text": "设置 Material Domain 为 Volume、Blend Mode 为 Additive；Albedo 控制颜色，Extinction 控制体积雾的消光与浓度。"
+    },
+    {
+     "t": 1638,
+     "text": "场景添加 Exponential Height Fog，启用 Volumetric Fog，并将 Scattering Distribution 设为约 0.6，使体积材质显示出来。"
+    },
+    {
+     "t": 1680,
+     "text": "该示例需要在材质中自行构建边缘衰减，以控制雾体从中心到外侧的形状。"
+    },
+    {
+     "t": 1704,
+     "text": "生成归一化 UVW：(Local Position − Local Bounds Minimum) ÷ Local Bounds Size，对应 Unity 体积 Shader 中的 UV 坐标。"
+    },
+    {
+     "t": 1757,
+     "text": "将归一化坐标接入 Albedo，以 RGB 颜色检查雾体内部的 X、Y、Z 分布。"
+    },
+    {
+     "t": 1806,
+     "text": "Distance 计算当前位置到中心 (0.5, 0.5, 0.5) 的距离，经缩放与反相构建中心浓、边缘淡的球形衰减。"
+    },
+    {
+     "t": 1891,
+     "text": "调整距离缩放系数：接近 2 时形状更圆，降低到 1.4 时向 Cube 边缘扩展；最终乘数用于控制雾的浓度。"
+    }
+   ]
+  },
+  {
+   "t": 1944,
+   "title": "Unreal 重建动态贴地雾与最终应用",
+   "points": [
+    {
+     "t": 1944,
+     "text": "移植 Unity 的贴地雾结构：Unreal 使用 Local Position 的 XY 作为俯视采样坐标，并除以 100 将厘米换算为米。"
+    },
+    {
+     "t": 1988,
+     "text": "坐标乘以 Tiling，再叠加 Wind Direction × Wind Speed × Time，驱动 Noise Distortion 纹理滚动。"
+    },
+    {
+     "t": 2039,
+     "text": "噪声红通道接 Inverse Lerp 的 B，A 保持 0；归一化 UVW 提取 B/Z 作为高度，乘以 1.5 控制雾层扁平程度。"
+    },
+    {
+     "t": 2114,
+     "text": "高度计算结果经过 Saturate、One Minus 和浓度乘数 5，接入 Extinction，检查单层滚动雾。"
+    },
+    {
+     "t": 2169,
+     "text": "建立第二层噪声：风向乘以 −1，使用独立速度与细节平铺参数；示例将细节坐标乘以 3，得到更密集的纹理。"
+    },
+    {
+     "t": 2243,
+     "text": "细节噪声红通道接第二个 Inverse Lerp 的 B，基础雾遮罩接混合输入；结果经浓度乘法输出到 Extinction。"
+    },
+    {
+     "t": 2286,
+     "text": "使用细节计算结果、Subtract、Maximum(0.01) 和 Smoothstep 构建高度渐变；以乘过 1.5 的高度驱动底色与顶色 Lerp，输出到 Albedo。"
+    },
+    {
+     "t": 2414,
+     "text": "整理两层滚动噪声与颜色节点；将材质应用到普通 Cube，通过移动和缩放控制局部雾的位置与范围，最后回顾效果并结束课程。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}

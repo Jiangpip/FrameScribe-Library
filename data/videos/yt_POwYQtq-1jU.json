@@ -1,0 +1,119 @@
+{
+ "schema": 1,
+ "id": "yt_POwYQtq-1jU",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=POwYQtq-1jU",
+ "title": "Brushed Metal Shader - Advanced Materials - Episode 11",
+ "date": "2022-12-15",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Advanced Materials",
+ "index": 11,
+ "duration": 1026,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本课演示如何在 Unity 和 Unreal Engine 中制作拉丝金属材质，并通过实物照片说明细密沟槽与各向异性高光的关系。在 Unity Shader Graph 中启用 Anisotropy，结合拉丝纹理控制 Smoothness，并用 Tangent Map 指定拉丝方向。在 Unreal Engine 中使用 Anisotropy、Roughness 和 Tangent 输入复现相同效果。课程重点比较各向异性参数的正负方向，并说明可见纹理应与切线方向保持一致。",
+ "chapters": [
+  {
+   "t": 0,
+   "title": "效果预览与各向异性高光原理",
+   "points": [
+    {
+     "t": 0,
+     "text": "预览拉丝金属效果：先在 Unity 中制作，再在 Unreal Engine 中复现。"
+    },
+    {
+     "t": 21,
+     "text": "观察金属表面的定向细密沟槽：微小结构改变光线反射，使高光呈现拉伸形态。"
+    },
+    {
+     "t": 73,
+     "text": "用圣诞树装饰球说明方向性：从一极延伸到另一极的细线形成类似拉丝的各向异性高光。"
+    },
+    {
+     "t": 120,
+     "text": "观察锅底与圆形拉丝金属：沟槽围绕中心排列，高光随局部拉丝方向变化。"
+    },
+    {
+     "t": 170,
+     "text": "以海面日落作类比：波浪使太阳的反射呈长条形，帮助理解方向性表面对高光形状的影响。"
+    }
+   ]
+  },
+  {
+   "t": 196,
+   "title": "Unity：启用 Anisotropy 并控制拉丝纹理与切线方向",
+   "points": [
+    {
+     "t": 196,
+     "text": "对比两种目标效果：统一方向的直线拉丝，以及围绕中心排列的圆形拉丝。"
+    },
+    {
+     "t": 224,
+     "text": "在 Shader Graph 的 Graph Inspector → Graph Settings 中，将 Material Type 从 Standard 改为 Anisotropy，显示 Anisotropy 与 Tangent 输入。"
+    },
+    {
+     "t": 247,
+     "text": "给 Anisotropy 接入 Slider：值为 0 时高光保持各向同性；向 1 调整时，高光逐渐拉伸。"
+    },
+    {
+     "t": 319,
+     "text": "将 Anisotropy 调向 -1：高光拉伸方向发生切换；正负号控制两种方向，绝对值控制效果强度。"
+    },
+    {
+     "t": 364,
+     "text": "展示用 Substance Designer 的 Anisotropic Noise 制作拉丝纹理，并将 UV 两个方向分别乘以 5 和 10，提高纹理密度。"
+    },
+    {
+     "t": 411,
+     "text": "把拉丝纹理接入 Smoothness；发现可见条纹与高光方向不匹配后，调整 Anisotropy 的正负方向。"
+    },
+    {
+     "t": 480,
+     "text": "将方向纹理接入 Tangent，自定义圆形拉丝流向；采样类型设为 Normal，以便将纹理数据从 0～1 解码到 -1～1。"
+    },
+    {
+     "t": 563,
+     "text": "切换为 Cube 预览并旋转观察：Tangent Map 控制局部流向，Anisotropy 控制强度及相对于切线的方向。"
+    }
+   ]
+  },
+  {
+   "t": 648,
+   "title": "Unreal Engine：复现拉丝金属并校正纹理方向",
+   "points": [
+    {
+     "t": 648,
+     "text": "检查材质主节点已有的 Anisotropy 输入；断开连接或输入 0 时，不产生各向异性高光。"
+    },
+    {
+     "t": 698,
+     "text": "暂时断开拉丝纹理，将 Roughness 设为约 0.2，以圆形高光作为参数对比基准。"
+    },
+    {
+     "t": 724,
+     "text": "将 Anisotropy 从 0.5 提高到 0.8，增强高光拉伸；再改为 -0.8 观察方向切换，最后使用 -0.5。"
+    },
+    {
+     "t": 789,
+     "text": "将拉丝纹理接入 Roughness，在球体上观察条纹与拉伸高光，以及靠近球顶的环形效果。"
+    },
+    {
+     "t": 811,
+     "text": "区分 Normal 与 Tangent：Normal 表示表面朝向，Tangent 表示沿表面的切线方向；使用 Tangent Map 精确控制拉丝流向。"
+    },
+    {
+     "t": 857,
+     "text": "将 Tangent Map 接入 Tangent，并切换到 Cube 预览，观察类似唱片或锅底的圆形拉丝高光。"
+    },
+    {
+     "t": 900,
+     "text": "发现直线 Roughness 纹理与圆形 Tangent Map 不一致，断开拉丝纹理；若要保留可见沟槽，应制作沿同一切线方向排列的纹理。"
+    },
+    {
+     "t": 927,
+     "text": "总结材质设置：Base Color 略低于 1、Metallic 设为 1，Roughness 表现沟槽，Anisotropy 控制强度与方向，Tangent Map 控制局部流向；随后结束课程并预告眼睛或头发材质教程。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}

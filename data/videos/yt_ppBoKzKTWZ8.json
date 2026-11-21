@@ -1,0 +1,127 @@
+{
+ "schema": 1,
+ "id": "yt_ppBoKzKTWZ8",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=ppBoKzKTWZ8",
+ "title": "Ice Shader Part 1 - Advanced Materials - Episode 5",
+ "date": "2022-10-27",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Advanced Materials",
+ "index": 5,
+ "duration": 1196,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本课分别在 Unity HDRP 和 Unreal Engine 中制作冰材质，重点是利用屏幕空间场景颜色采样模拟折射。通过视空间法线偏移采样坐标，并叠加 Normal Map，为冰块增加折射变化和表面细节。Unity 部分还利用 HD Scene Color 的 LOD 模拟背景模糊，配合光滑表面表现湿冰质感。冰内部的体积细节留待下一期制作。",
+ "chapters": [
+  {
+   "t": 0,
+   "title": "Unity：透明材质与场景颜色采样",
+   "points": [
+    {
+     "t": 0,
+     "text": "展示冰块折射效果，说明本期先在 Unity 制作，再到 Unreal Engine 实现相同效果。"
+    },
+    {
+     "t": 28,
+     "text": "新建 HDRP Lit Shader Graph，命名为 Ice，并打开 Shader Graph。"
+    },
+    {
+     "t": 56,
+     "text": "将 Surface Type 从 Opaque 改为 Transparent，让冰块在场景渲染之后绘制，以便读取背景场景数据。"
+    },
+    {
+     "t": 106,
+     "text": "将 Alpha 设为 0.5，并把材质赋给岩石；观察普通半透明效果，说明它不会使背景光线发生折射。"
+    },
+    {
+     "t": 152,
+     "text": "添加 HD Scene Color，以屏幕空间 UV 采样背景；连接 Base Color，并勾选 Exposure。"
+    },
+    {
+     "t": 229,
+     "text": "调整 HD Scene Color 的 LOD：0 使用全分辨率，增大数值改用低分辨率场景颜色。"
+    },
+    {
+     "t": 257,
+     "text": "将 LOD 设为 5，观察背景模糊与磨砂冰效果；近看可见低分辨率采样造成的像素感。"
+    }
+   ]
+  },
+  {
+   "t": 301,
+   "title": "Unity：法线驱动折射与冰表面细节",
+   "points": [
+    {
+     "t": 301,
+     "text": "将 LOD 恢复为 0；添加 Screen Position，说明折射通过偏移 HD Scene Color 的采样坐标实现。"
+    },
+    {
+     "t": 351,
+     "text": "用 Add 给屏幕坐标加 0.1，观察背景整体偏移；超出屏幕范围的采样出现边缘拉伸。"
+    },
+    {
+     "t": 440,
+     "text": "添加 Normal Vector，将空间设为 View，再与 Screen Position 相加，使折射偏移随表面朝向变化。"
+    },
+    {
+     "t": 486,
+     "text": "用 Multiply 将法线偏移乘以 0.05，减弱过强的折射，观察岩石轮廓内的背景扭曲。"
+    },
+    {
+     "t": 540,
+     "text": "添加 Sample Texture 2D，载入岩石 Normal Map 并设置为 Normal 类型；与视空间法线相加后送入折射强度乘法节点。"
+    },
+    {
+     "t": 613,
+     "text": "将 Normal Map 同时接入 Master Stack 的 Normal 输入，并将 Smoothness 设为 1，制作光滑湿润的冰表面。"
+    },
+    {
+     "t": 636,
+     "text": "将 HD Scene Color 的 LOD 设为 3，适度模糊背景，检查折射细节、表面法线和散射感的综合效果。"
+    },
+    {
+     "t": 664,
+     "text": "说明当前效果仍缺少冰内部细节，预告下一期制作体积内部效果，并准备切换到 Unreal Engine。"
+    }
+   ]
+  },
+  {
+   "t": 695,
+   "title": "Unreal Engine：复现冰材质折射并加入 Normal Map",
+   "points": [
+    {
+     "t": 722,
+     "text": "在 Content Drawer 新建 Ice 材质；将 Blend Mode 设为 Translucent，Lighting Mode 设为 Surface Translucency Volume。"
+    },
+    {
+     "t": 774,
+     "text": "添加 Scene Color 并连接 Base Color，用背景颜色着色模型；给 Roughness 连接值为 0 的 Constant，使表面光滑。"
+    },
+    {
+     "t": 840,
+     "text": "添加 Screen Position 作为 Scene Color 的采样坐标，再用 Add 加上 0.1，演示背景偏移与默认屏幕坐标采样。"
+    },
+    {
+     "t": 893,
+     "text": "添加 VertexNormalWS，通过 Transform 将法线从 World 转到 View；用 Component Mask 仅保留 R、G，解决 float2 与 float3 相加的类型错误。"
+    },
+    {
+     "t": 977,
+     "text": "解释法线分量范围为 -1 到 1，直接偏移会导致过强折射；使用 Multiply 乘以 0.05，并尝试 0.1 比较强度。"
+    },
+    {
+     "t": 1022,
+     "text": "把 Ice 材质拖到场景中的岩石模型上，检查背景折射，发现仅靠顶点法线仍缺少细节。"
+    },
+    {
+     "t": 1050,
+     "text": "添加岩石 Normal Map 的 Texture Sample，连接材质 Normal 输入，并与视空间顶点法线相加以影响折射；说明生产使用时应将贴图等设置暴露为参数。"
+    },
+    {
+     "t": 1136,
+     "text": "检查加入法线贴图后的最终效果；预告下一期在简单网格壳体内模拟冰的内部细节与体积效果，随后结束课程。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}

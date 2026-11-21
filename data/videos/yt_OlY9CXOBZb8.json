@@ -1,0 +1,183 @@
+{
+ "schema": 1,
+ "id": "yt_OlY9CXOBZb8",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=OlY9CXOBZb8",
+ "title": "Particle System Opacity - Advanced Materials - Episode 52",
+ "date": "2024-05-09",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Advanced Materials",
+ "index": 52,
+ "duration": 1686,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本课为自制 Shader 粒子系统添加整体透明度、出生淡入和死亡淡出控制，改善粒子突然出现或消失的问题。先在 Unity Shader Graph 中用生命周期、Power、One Minus、Multiply 和 Saturate 构建透明度曲线，再通过 Custom Interpolator 将顶点阶段的计算结果传入像素阶段。随后在 Unreal Engine 材质编辑器中实现相同逻辑，并整理材质实例参数的分组与排序。最后分别调整瀑布、烟雾、喷泉和薄雾的参数，比较不同透明度与淡入淡出曲线的视觉效果。",
+ "chapters": [
+  {
+   "t": 0,
+   "title": "课程目标与已有粒子系统回顾",
+   "points": [
+    {
+     "t": 0,
+     "text": "回顾使用 Unity Shader Graph 和 Unreal 材质编辑器从零构建粒子系统的系列课程。"
+    },
+    {
+     "t": 43,
+     "text": "上节加入 Flipbook 动画纹理后，水与烟雾更真实，但粒子出生和死亡时仍会突然跳变；本节添加整体透明度及淡入淡出控制。"
+    },
+    {
+     "t": 94,
+     "text": "查看 Unity 现有 Shader：包含旋转、生命周期、面向相机、运动方向与速度、风力、重力、位置偏移、随机值和 Flipbook 纹理。"
+    }
+   ]
+  },
+  {
+   "t": 138,
+   "title": "Unity：构建透明度曲线并接入 Custom Interpolator",
+   "points": [
+    {
+     "t": 138,
+     "text": "在 Blackboard 新建三个 Float 属性：Opacity、Fade In Power、Fade Out Power，默认值分别设为 4、0.5、2。"
+    },
+    {
+     "t": 192,
+     "text": "取粒子从 0 到 1 循环变化的生命周期值，接入 Power，以 Fade In Power 为指数构建淡入曲线。"
+    },
+    {
+     "t": 237,
+     "text": "将生命周期先接 One Minus，再接 Power，以 Fade Out Power 为指数构建淡出曲线。"
+    },
+    {
+     "t": 281,
+     "text": "用 Multiply 将淡入曲线、淡出曲线和 Opacity 相乘，得到整体透明度曲线。"
+    },
+    {
+     "t": 326,
+     "text": "在曲线末尾添加 Saturate，将透明度限制在 0–1 范围内。"
+    },
+    {
+     "t": 348,
+     "text": "复用 Particle Data Custom Interpolator：Flipbook UV 已占用前两个分量，将透明度写入 Combine 的 A 分量，使曲线在 Vertex Shader 中计算后传入像素阶段。"
+    },
+    {
+     "t": 413,
+     "text": "将透明度计算节点整理为 Opacity 分组；在像素阶段通过 Split 的 A 输出读取插值后的透明度。"
+    },
+    {
+     "t": 461,
+     "text": "将纹理采样的 Alpha 与计算出的透明度相乘，连接到 Fragment 的 Alpha；把节点预览改为 2D 并保存 Shader。"
+    }
+   ]
+  },
+  {
+   "t": 505,
+   "title": "Unity：调整瀑布、烟雾、喷泉与薄雾",
+   "points": [
+    {
+     "t": 505,
+     "text": "调整瀑布 Opacity：设为 0 时完全透明，降低数值可减弱水流存在感；示例选择约 0.2。"
+    },
+    {
+     "t": 566,
+     "text": "比较瀑布 Fade In Power：设为 0 会突然出现，设为 2 会在更长的生命周期范围内淡入，示例倾向保留 0.5。"
+    },
+    {
+     "t": 611,
+     "text": "比较烟雾 Fade Out Power：从 0 改为 2，使烟雾在寿命末期逐渐消散；Fade In Power 调至 0.5，减轻底部出生时的突变。"
+    },
+    {
+     "t": 662,
+     "text": "喷泉使用 Fade Out Power 2，让水粒子到达顶点并回落时平滑消失，改善寿命结束时突然消失的效果。"
+    },
+    {
+     "t": 692,
+     "text": "观察薄雾：淡入淡出隐藏单个粒子的出生与死亡，使整体看起来持续漂移。"
+    },
+    {
+     "t": 737,
+     "text": "调整薄雾整体浓度：Opacity 设为 4 更浓厚，示例保留 1，以获得较轻薄的雾感。"
+    },
+    {
+     "t": 784,
+     "text": "预告后续颜色控制：为水效果添加色调，并让烟雾颜色随生命周期变化；随后转入 Unreal 实现。"
+    }
+   ]
+  },
+  {
+   "t": 804,
+   "title": "Unreal：复现透明度逻辑与材质参数整理",
+   "points": [
+    {
+     "t": 804,
+     "text": "检查 Unreal 中相同的粒子效果：烟囱烟雾死亡时突然消失，薄雾过于不透明，需要加入透明度与淡入淡出控制。"
+    },
+    {
+     "t": 899,
+     "text": "回顾已有材质图中的粒子旋转、Billboard 朝向、运动、位置偏移、风力、重力、随机值及 Flipbook 动画纹理。"
+    },
+    {
+     "t": 942,
+     "text": "创建三个 Scalar Parameter：Opacity 默认 4、Fade In Power 默认 0.5、Fade Out Power 默认 2；较大的指数会扩大渐变影响的生命周期范围。"
+    },
+    {
+     "t": 1017,
+     "text": "找到生命周期区域的 Frac 输出，其数值在 0–1 之间循环；将其接入 Power，以 Fade In Power 为指数。"
+    },
+    {
+     "t": 1067,
+     "text": "构建淡出分支：生命周期先经过 One Minus，再用 Fade Out Power 作为 Power 指数。"
+    },
+    {
+     "t": 1121,
+     "text": "用 Multiply 合并淡入、淡出和 Opacity，再接 Saturate，确保结果处于 0–1 范围。"
+    },
+    {
+     "t": 1153,
+     "text": "添加 Vertex Interpolator，将透明度曲线计算放到顶点阶段；输出与纹理 Alpha 相乘，再连接材质根节点的 Opacity。"
+    },
+    {
+     "t": 1250,
+     "text": "把节点整理为 Opacity 注释组，并将三个参数的 Group 设为 Opacity；Sort Priority 按 Opacity、Fade In Power、Fade Out Power 分别设置为 0、1、2，保存材质。"
+    }
+   ]
+  },
+  {
+   "t": 1332,
+   "title": "Unreal：材质实例调参与课程收尾",
+   "points": [
+    {
+     "t": 1332,
+     "text": "在瀑布材质实例启用 Opacity 覆盖：设为 0 时粒子仍存在但完全透明；示例将 Opacity 设为 2。"
+    },
+    {
+     "t": 1360,
+     "text": "瀑布 Fade In Power 保留 0.5；Fade Out Power 从 2 改为 0.8，让水流寿命末端的边缘更明确。"
+    },
+    {
+     "t": 1405,
+     "text": "烟雾 Fade Out Power 保留 2，使烟雾随高度增加逐渐消散；设为 0 可对比原先突然消失的问题。"
+    },
+    {
+     "t": 1451,
+     "text": "比较烟雾 Opacity：12 产生更浓的烟，0.2 使烟雾非常轻淡，根据需要调整整体浓度。"
+    },
+    {
+     "t": 1474,
+     "text": "喷泉 Opacity 设为 12，Fade In Power 保留 0.5，Fade Out Power 保留 2，使主体较不透明而寿命末端平滑淡出。"
+    },
+    {
+     "t": 1518,
+     "text": "薄雾 Opacity 设为 1，降低过厚的视觉效果；随后将 Fade In Power 和 Fade Out Power 都设为 1，弱化粒子出生与死亡的痕迹。"
+    },
+    {
+     "t": 1593,
+     "text": "保存并关闭材质实例，查看四种粒子效果的整体表现，确认透明度过渡让水与烟雾更自然。"
+    },
+    {
+     "t": 1638,
+     "text": "预告下一课添加 Begin Color 和 End Color，控制粒子出生与死亡时的颜色；随后结束课程。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}

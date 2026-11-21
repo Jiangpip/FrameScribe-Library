@@ -1,0 +1,169 @@
+{
+ "schema": 1,
+ "id": "yt_8hThP-Yni_o",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=8hThP-Yni_o",
+ "title": "Parallax Occlusion Optimization - Advanced Materials - Episode 15",
+ "date": "2023-02-16",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Advanced Materials",
+ "index": 15,
+ "duration": 1407,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本课介绍如何在 Unity 和 Unreal Engine 中优化 Parallax Occlusion Mapping（视差遮蔽映射），让平面通过高度贴图呈现凹凸深度。核心方法是根据观察角度和相机距离动态调整采样步数，把计算集中在近距离、掠射角等效果明显的位置。Unity 部分搭建角度与距离遮罩，Unreal Engine 部分检查材质函数已有的角度优化，再补充距离优化。视频展示了视觉效果与节点连接，但没有提供实际性能测试数据。",
+ "chapters": [
+  {
+   "t": 0,
+   "title": "POM 原理、贴图准备与采样步数的质量代价",
+   "points": [
+    {
+     "t": 0,
+     "text": "介绍本课目标：在 Unity 和 Unreal Engine 中搭建并优化 Parallax Occlusion Mapping。"
+    },
+    {
+     "t": 21,
+     "text": "切换 Wireframe 验证鹅卵石表面实际是平面；POM 通过纹理采样呈现深度，没有增加对应几何体。"
+    },
+    {
+     "t": 66,
+     "text": "对比普通 Normal Mapping 与 POM：POM 在倾斜观察时能呈现更明显的石块形状和表面深度。"
+    },
+    {
+     "t": 132,
+     "text": "查看 Unity Shader Graph：使用 Albedo、Normal、Mask 贴图，并由 Parallax Occlusion Mapping 节点生成采样用的 UV。"
+    },
+    {
+     "t": 191,
+     "text": "准备 Height Map：示例将高度贴图降至 256×256，并适度模糊陡峭边缘；Normal Map 保持 2K。"
+    },
+    {
+     "t": 236,
+     "text": "将高度贴图接入 Height Map 输入；Steps 控制采样次数，是本课优化的主要参数。"
+    },
+    {
+     "t": 269,
+     "text": "Steps 设为 128 时，近距离掠射观察的石块侧面较平滑，但计算成本较高。"
+    },
+    {
+     "t": 302,
+     "text": "将 Steps 降至 5，观察石块侧面的叠层、裂隙和中距离破碎伪影，说明固定低步数的质量问题。"
+    }
+   ]
+  },
+  {
+   "t": 373,
+   "title": "Unity：根据观察角度动态控制 Steps",
+   "points": [
+    {
+     "t": 373,
+     "text": "确定角度优化策略：正对表面观察时减少步数，视线接近平行于表面时增加步数。"
+    },
+    {
+     "t": 415,
+     "text": "使用 View Direction 与 Normal Vector 做 Dot Product，再接 Saturate，得到观察方向与表面法线的关系遮罩。"
+    },
+    {
+     "t": 436,
+     "text": "将遮罩临时接入 Base Color，并断开其他材质输入，检查遮罩分布。"
+    },
+    {
+     "t": 466,
+     "text": "观察原始点积遮罩：正对表面时为白色，接近掠射角时逐渐变黑。"
+    },
+    {
+     "t": 489,
+     "text": "通过 One Minus 反相，再将结果与自身相乘，相当于平方，使遮罩正面为黑、掠射角为白。"
+    },
+    {
+     "t": 514,
+     "text": "打开 Rendering Debugger，仅显示 Albedo／Base Color，检查场景中的角度遮罩。"
+    },
+    {
+     "t": 558,
+     "text": "将角度遮罩乘以最大步数 32，再经过 Ceiling 接入 Steps；注意 Ceiling 仅向上取整，输入恰为 0 时仍为 0，不能单独保证最少 1 步。"
+    },
+    {
+     "t": 651,
+     "text": "恢复贴图连接并检查效果：动态增加掠射角步数可改善叠层伪影，但极端掠射角下仍有少量瑕疵。"
+    }
+   ]
+  },
+  {
+   "t": 717,
+   "title": "Unity：加入距离遮罩并合并两种优化",
+   "points": [
+    {
+     "t": 717,
+     "text": "提出距离优化：远离表面后，POM 的细节难以辨认，因此可以减少远处的采样步数。"
+    },
+    {
+     "t": 738,
+     "text": "构造相机到当前表面着色点的向量，并测量其长度，获得相机与表面之间的距离。"
+    },
+    {
+     "t": 760,
+     "text": "将距离乘以 0.09，再经过 Saturate 和 Power，指数设为 0.04，用于调整距离衰减曲线。"
+    },
+    {
+     "t": 782,
+     "text": "添加 One Minus，使距离遮罩近处为白、远处为黑；临时接入 Base Color 检查结果。"
+    },
+    {
+     "t": 829,
+     "text": "移动相机验证距离遮罩：靠近表面时数值增大，远离时逐渐降至黑色。"
+    },
+    {
+     "t": 851,
+     "text": "将距离遮罩与角度遮罩相乘，再乘最大步数，并经过 Ceiling 接入 POM 的 Steps。"
+    },
+    {
+     "t": 876,
+     "text": "说明组合条件：近距离且视线接近平行于表面时增加采样；正对表面或距离较远时减少采样，随后恢复材质贴图连接。"
+    },
+    {
+     "t": 907,
+     "text": "检查组合优化效果，并提出与固定 Steps=32 对比性能的方法；视频未展示具体耗时或帧率测量结果。"
+    }
+   ]
+  },
+  {
+   "t": 1010,
+   "title": "Unreal Engine：检查内置角度优化并补充距离衰减",
+   "points": [
+    {
+     "t": 1010,
+     "text": "查看 Unreal Engine 中的鹅卵石 POM 场景：最大步数为 32，极低观察角度仍出现叠层，可限制观察角度或提高步数。"
+    },
+    {
+     "t": 1055,
+     "text": "打开材质图与 Parallax Occlusion Mapping 函数，检查 Min Steps、Max Steps 两个输入，与 Unity 的单个 Steps 输入对比。"
+    },
+    {
+     "t": 1097,
+     "text": "检查函数内部：Camera Vector 与法线做 Dot Product，用于在最小和最大步数间混合，已包含角度优化；示例范围为 2 到 32。"
+    },
+    {
+     "t": 1147,
+     "text": "指出当前函数仍需补充距离优化，计划用相机距离遮罩动态控制 Max Steps。"
+    },
+    {
+     "t": 1169,
+     "text": "计算当前表面位置与相机位置之间的距离，乘以 0.0009，再经过 Saturate、Power（指数 0.05）和 One Minus；系数更小是因为 Unreal 使用厘米单位。"
+    },
+    {
+     "t": 1212,
+     "text": "将距离遮罩乘以最大步数 32，经 Ceiling 后连接 Max Steps；临时把遮罩接入 Base Color，确认远处黑、近处白。"
+    },
+    {
+     "t": 1277,
+     "text": "恢复 Base Color 并保存，移动相机检查近处增加、远处减少步数的效果；强调 Landscape 远处不必保留高采样步数。"
+    },
+    {
+     "t": 1351,
+     "text": "总结按角度和距离分配 POM 采样的思路；片尾邀请提问，并预告下一期可能制作玻璃材质。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}

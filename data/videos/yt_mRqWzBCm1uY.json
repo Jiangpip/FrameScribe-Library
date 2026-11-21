@@ -1,0 +1,161 @@
+{
+ "schema": 1,
+ "id": "yt_mRqWzBCm1uY",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=mRqWzBCm1uY",
+ "title": "Tempered Steel Shader - Advanced Materials - Episode 20",
+ "date": "2023-03-30",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Advanced Materials",
+ "index": 20,
+ "duration": 1551,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本课结合第 11 集的拉丝金属与第 19 集的薄膜干涉效果，在 Unreal Engine 和 Unity 中制作回火钢材质。首先通过参考图说明受热形成的氧化铁薄膜如何产生颜色，再用干涉渐变的前四分之一近似表现这种效果。课程演示了用 UV、世界空间噪声、局部位置和纹理遮罩控制颜色分布，并通过 Heat 参数动态调节效果。最后在 Unity Shader Graph 中完成同类材质，创建材质实例并演示 Heat 滑块的使用。",
+ "chapters": [
+  {
+   "t": 0,
+   "title": "参考分析：钢材受热颜色与薄膜干涉",
+   "points": [
+    {
+     "t": 0,
+     "text": "介绍目标：在 Unreal Engine 和 Unity 中制作 Tempered Steel Shader，先分析参考图。"
+    },
+    {
+     "t": 21,
+     "text": "观察排气管和装饰金属的受热变色，对比自然形成与人为加热产生的颜色。"
+    },
+    {
+     "t": 87,
+     "text": "参考不同温度下的钢材颜色，建立温度、氧化层厚度与颜色变化之间的联系。"
+    },
+    {
+     "t": 109,
+     "text": "薄膜干涉原理：光分别在氧化铁薄膜表面与金属表面反射，反射光相互干涉，薄膜厚度影响最终颜色。"
+    },
+    {
+     "t": 200,
+     "text": "复用肥皂泡的薄膜干涉渐变，但金属效果只取左侧至浅蓝色的一段。"
+    },
+    {
+     "t": 243,
+     "text": "制作思路：组合第 11 集的 Brushed Metal 与第 19 集的 Thin Film Interference。"
+    }
+   ]
+  },
+  {
+   "t": 287,
+   "title": "Unreal Engine：拉丝钢基础与干涉渐变混合",
+   "points": [
+    {
+     "t": 287,
+     "text": "复制已有 Brushed Metal 材质并重命名为 Tempered Steel，检查接近 RGB 0.5 的钢材底色。"
+    },
+    {
+     "t": 316,
+     "text": "将 Metallic 设为 1，使用横向拉长的细线纹理表现拉丝细节。"
+    },
+    {
+     "t": 344,
+     "text": "Texture Coordinate 乘以缩放值控制纹理密度；纹理接入 Lerp 的 Alpha，在 0.25 与 0.35 之间生成 Roughness。"
+    },
+    {
+     "t": 374,
+     "text": "将 Anisotropy 设为 -0.5，并通过断开连接对比圆形高光与拉长的各向异性高光。"
+    },
+    {
+     "t": 449,
+     "text": "从 Bubble Shader 复制干涉渐变节点，在采样输入前添加 Multiply × 0.25，只使用渐变前四分之一。"
+    },
+    {
+     "t": 517,
+     "text": "Texture Coordinate 接 Component Mask，仅保留 G 通道取得 UV 的 V 坐标，再乘以 0.25 控制渐变采样。"
+    },
+    {
+     "t": 564,
+     "text": "用 Lerp 混合钢材底色与干涉渐变颜色，试调 Alpha 至约 0.5，接入材质观察受热色带。"
+    },
+    {
+     "t": 615,
+     "text": "提出热量分布的其他控制方式：可以使用 Vertex Color 标记物体受热区域。"
+    }
+   ]
+  },
+  {
+   "t": 637,
+   "title": "Unreal Engine：热量分布、动态参数与场景验证",
+   "points": [
+    {
+     "t": 637,
+     "text": "World Position 乘以 0.005 后接入 Noise，选择 Computational Gradient，再用 Saturate 将结果限制在 0–1，生成斑块状受热区域。"
+    },
+    {
+     "t": 702,
+     "text": "Local Position 经 Component Mask 提取 B 通道，即局部 Z 坐标；乘以约 0.0038 并 Saturate，形成沿高度变化的热量渐变。"
+    },
+    {
+     "t": 746,
+     "text": "调整局部位置乘数改变色带覆盖范围；也可绘制专用纹理遮罩，用白色表示最热区域。"
+    },
+    {
+     "t": 792,
+     "text": "添加初始值为 1 的标量，与分布控制值及 0.25 的渐变截取系数相乘，作为可进一步暴露的 Heat 控制量。"
+    },
+    {
+     "t": 840,
+     "text": "将热量值从 0 逐步提高，演示颜色出现与色带扩展；提出由游戏逻辑驱动排气管或喷气发动机的热量效果。"
+    },
+    {
+     "t": 929,
+     "text": "回顾节点结构：保留拉丝金属基础，用 UV、世界位置噪声、局部位置或纹理遮罩控制干涉渐变。"
+    },
+    {
+     "t": 978,
+     "text": "在测试场景应用 Tempered Steel，调整热量至 1，并将位置缩放恢复至约 0.0038；说明数值需要匹配模型尺寸。"
+    },
+    {
+     "t": 1029,
+     "text": "介绍录制时 Unreal Engine 5.2 的实验性 Substrate：通过薄层厚度参数实现薄膜干涉，并讨论其与当前修改 Base Color 方法的区别。"
+    }
+   ]
+  },
+  {
+   "t": 1108,
+   "title": "Unity：Shader Graph 材质搭建与 Heat 动态控制",
+   "points": [
+    {
+     "t": 1108,
+     "text": "展示 Unity 中的回火钢效果；在 Shader Graph 中将 UV 按 5、10 缩放后采样拉丝纹理。"
+    },
+    {
+     "t": 1159,
+     "text": "纹理驱动 Lerp，在 0.8 与 0.7 之间生成 Smoothness；Anisotropy 输入设为 -0.5。"
+    },
+    {
+     "t": 1182,
+     "text": "在 Graph Inspector → Graph Settings 中将 Material Type 设为 Anisotropy，启用各向异性输入。"
+    },
+    {
+     "t": 1204,
+     "text": "使用约 RGB（0.61、0.546、0.509）的钢材底色，通过 Alpha 为 0.5 的 Lerp 与干涉渐变混合。"
+    },
+    {
+     "t": 1247,
+     "text": "比较 Gradient Noise 与 UV 分量驱动的颜色分布；切换到 V 坐标形成上下色带，采样前乘以 0.25 截取渐变，并说明可用绘制的遮罩指定冷热区域。"
+    },
+    {
+     "t": 1359,
+     "text": "新增 Multiply；在 Blackboard 创建 Heat 属性，将模式设为 Slider，默认值为 0，范围为 0–1，再接入渐变采样控制链。"
+    },
+    {
+     "t": 1437,
+     "text": "通过 Create Material 创建 Tempered Steel 材质并应用到场景，选中材质后拖动 Heat 滑块，验证颜色随参数变化。"
+    },
+    {
+     "t": 1479,
+     "text": "说明可通过脚本驱动 Heat，使游戏物体随热量变化显示颜色；结尾回顾拉丝钢与氧化铁薄膜效果的组合。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}

@@ -1,0 +1,203 @@
+{
+ "schema": 1,
+ "id": "yt_dXlzMScf584",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=dXlzMScf584",
+ "title": "Vertex Animated Water - Advanced Materials - Episode 36",
+ "date": "2024-01-11",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Advanced Materials",
+ "index": 36,
+ "duration": 1861,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本课分别在 Unity Shader Graph 和 Unreal Engine 材质编辑器中，使用 Gerstner Wave 公式制作顶点位移水面。先构建单个波浪的方向、波长、波高与时间控制，再加入波峰尖锐度和法线计算，让水面形状与反射同步变化。随后将波浪封装为 Sub Graph 或 Material Function，叠加三个不同参数的波浪以减少重复感。最后说明两款引擎在坐标轴、单位、位移输出和法线合成方式上的实现差异，并预告深度、细小涟漪、泡沫与折射等后续内容。",
+ "chapters": [
+  {
+   "t": 0,
+   "title": "Unity：准备细分网格并构建基础波浪位移",
+   "points": [
+    {
+     "t": 0,
+     "text": "介绍使用 Gerstner Wave 制作顶点动画水面的目标，并将 Water Animation 材质应用到平面。"
+    },
+    {
+     "t": 43,
+     "text": "准备具有足够细分的平面网格：顶点数量决定水面位移能够呈现的形状细节，默认低细分平面不适合此效果。"
+    },
+    {
+     "t": 69,
+     "text": "新建 Lit Shader Graph，添加 Wave Direction、Wavelength、Wave Height 参数，默认值分别为 (1,0,0)、4.5 和 0.2。"
+    },
+    {
+     "t": 149,
+     "text": "构建时间项：用 Tau（2π）除以 Wavelength 得到波数，乘以重力加速度 9.8 m/s²，再经过 Square Root 并乘以 Time。"
+    },
+    {
+     "t": 249,
+     "text": "读取 Object Space 的 Position，将 Wave Direction 经过 Normalize 后乘以波数，再与顶点位置做 Dot Product。"
+    },
+    {
+     "t": 296,
+     "text": "从空间相位中减去时间项，经过 Cosine 后乘以 (0,1,0)，仅保留 Y 轴上下位移，再乘以 Wave Height。"
+    },
+    {
+     "t": 361,
+     "text": "将位移加到原始 Object Space Position，连接 Master Stack 的 Position；把时间计算节点整理为 Speed 分组并预览动画。"
+    }
+   ]
+  },
+  {
+   "t": 452,
+   "title": "Unity：调整波峰尖锐度并重算法线",
+   "points": [
+    {
+     "t": 452,
+     "text": "观察单个余弦波的圆滑波峰，准备通过增加水平方向位移，让波峰更尖、波谷更宽。"
+    },
+    {
+     "t": 502,
+     "text": "添加 Peak Sharpness 参数：先计算 Wave Height × 波数，再用 Peak Sharpness 除以该结果，随后乘回 Wave Height。"
+    },
+    {
+     "t": 555,
+     "text": "对同一相位使用 Sine，乘以尖锐度计算结果及归一化波浪方向；从原有位移中减去该水平位移。"
+    },
+    {
+     "t": 597,
+     "text": "将尖锐度节点整理为 Sharpness 分组；预览 Peak Sharpness 为 1 的尖峰效果，再将默认值降低到 0.3。"
+    },
+    {
+     "t": 675,
+     "text": "解释重算法线的必要性：仅修改顶点位置时，原始平面法线仍朝上，导致反射不能正确表现波浪起伏。"
+    },
+    {
+     "t": 717,
+     "text": "构建法线的 X、Z 分量：将 Sine、波高及前面计算的波浪方向项相乘，通过 Split 和 Combine 组装分量。"
+    },
+    {
+     "t": 766,
+     "text": "构建法线的 Y 分量：使用 Cosine、波高相关项与 Peak Sharpness 计算，再经过 One Minus 接入 Combine 的 G/Y 分量。"
+    },
+    {
+     "t": 816,
+     "text": "将组合后的法线接入 Object Space Normal 输出并整理为 Normal 分组，检查水面反射随波浪倾斜而变形的效果。"
+    }
+   ]
+  },
+  {
+   "t": 885,
+   "title": "Unity：封装 Gerstner Wave 并叠加三个波浪",
+   "points": [
+    {
+     "t": 885,
+     "text": "通过叠加不同方向、波长和波高的 Gerstner Wave，打破单个波浪过于规律的重复图案。"
+    },
+    {
+     "t": 912,
+     "text": "将单波计算复制到 Gerstner Wave Sub Graph，保留可调输入，并建立 Vector3 类型的 Offset 和 Normal 输出。"
+    },
+    {
+     "t": 961,
+     "text": "在主 Shader Graph 中放入 Gerstner Wave 子图，用子图替代原有节点网络。"
+    },
+    {
+     "t": 1004,
+     "text": "区分相对位移与绝对位置：子图 Offset 必须加上 Object Space Position，才能连接顶点 Position；验证替换前后效果一致。"
+    },
+    {
+     "t": 1047,
+     "text": "复制子图得到三个波浪，分别修改方向，将波长设为 2.5、3、1.8，并调整波高及 0.3、0.3、0.4 的尖锐度。"
+    },
+    {
+     "t": 1129,
+     "text": "将三个 Offset 相加后加到原始顶点位置；演示将三个 Normal 输出相加并接入 Master Stack 的 Normal。"
+    },
+    {
+     "t": 1174,
+     "text": "预览三波叠加产生的复杂水面运动，并降低平面位置，让水面落在中央平台周围的水槽区域。"
+    },
+    {
+     "t": 1196,
+     "text": "说明当前完成的是水面顶点动画；折射、反射的进一步处理、深度、细小涟漪和泡沫将留待后续课程。"
+    }
+   ]
+  },
+  {
+   "t": 1264,
+   "title": "Unreal Engine：用 Material Function 实现波浪位移",
+   "points": [
+    {
+     "t": 1264,
+     "text": "切换到 Unreal Engine 展示相同水面效果，通过 Lit → Wireframe 检查平面的细分密度。"
+    },
+    {
+     "t": 1314,
+     "text": "从三波叠加材质中拆解单个 Gerstner Wave，使用 Material Function 封装计算，便于在主材质中重复调用。"
+    },
+    {
+     "t": 1336,
+     "text": "将 Pi 的乘数设置为 2 得到 2π，再除以 Wavelength 输入，构建波数。"
+    },
+    {
+     "t": 1390,
+     "text": "适配 Unreal 的厘米单位：使用 980 cm/s² 的重力加速度，计算波数与重力的乘积，再取平方根并乘以 Time。"
+    },
+    {
+     "t": 1433,
+     "text": "使用 Absolute World Position，并选择 Excluding Material Shader Offsets，读取尚未叠加材质位移的世界坐标。"
+    },
+    {
+     "t": 1454,
+     "text": "将 Direction 输入归一化并乘以波数，与世界坐标做 Dot Product，再减去时间项，得到波浪相位。"
+    },
+    {
+     "t": 1476,
+     "text": "相位经过 Cosine 后乘以 (0,0,1) 和 Wave Height：Unreal 使用 Z 轴作为水面上下位移方向。"
+    },
+    {
+     "t": 1523,
+     "text": "使用 Wave Steepness、Wave Height 与波数计算尖锐度项，乘以 Sine 和归一化方向，再从垂直位移中减去，输出最终 Offset。"
+    }
+   ]
+  },
+  {
+   "t": 1575,
+   "title": "Unreal Engine：计算法线、合成波浪与课程收尾",
+   "points": [
+    {
+     "t": 1575,
+     "text": "重算位移后的水面法线，避免顶点已起伏而法线仍保持竖直。"
+    },
+    {
+     "t": 1596,
+     "text": "计算法线的 X、Y 分量：使用 Sine、前面尖锐度分支中的计算结果及归一化方向，再提取 R、G 通道。"
+    },
+    {
+     "t": 1617,
+     "text": "计算法线的 Z 分量：将 Cosine 与相关波浪参数相乘，再经过 One Minus；用 Append 合并各分量，Normalize 后输出 Normal。"
+    },
+    {
+     "t": 1660,
+     "text": "在最终材质中放入三个 Water Gerstner Wave Material Function，分别设置 Wavelength、Wave Steepness、Wave Height 和 Direction。"
+    },
+    {
+     "t": 1691,
+     "text": "为三组波浪设置不同波长、波高和传播方向，并使用 0.3、0.3、0.4 的 Steepness，形成交错起伏。"
+    },
+    {
+     "t": 1740,
+     "text": "依次相加三个函数的顶点 Offset，并直接连接材质的 World Position Offset。"
+    },
+    {
+     "t": 1760,
+     "text": "使用两次 BlendAngleCorrectedNormals，先合成第一、第二组法线，再混合第三组法线，接入材质 Normal 输出。"
+    },
+    {
+     "t": 1781,
+     "text": "展示最终水面并回顾课程；预告后续将同时在 Unity 与 Unreal 中补充水深、表面涟漪、泡沫及折射。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}

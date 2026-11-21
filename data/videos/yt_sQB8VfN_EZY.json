@@ -1,0 +1,165 @@
+{
+ "schema": 1,
+ "id": "yt_sQB8VfN_EZY",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=sQB8VfN_EZY",
+ "title": "Procedural Brick Color Shader - Advanced Materials - Episode 29",
+ "date": "2023-11-09",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Advanced Materials",
+ "index": 29,
+ "duration": 1607,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本课在上一节的程序化砖块遮罩基础上，分别用 Unity Shader Graph 和 Unreal Engine 材质编辑器为砖墙着色。课程演示三种方法：固定砖块与砖缝颜色混合、逐砖随机混合两种颜色，以及独立随机偏移 HSV。重点介绍 Floor 生成逐砖坐标、Random Range 与 Hash23 生成随机值，以及随机偏移范围的控制。最后调整砖色并演示密集平铺效果，下一节将继续制作程序化法线。",
+ "chapters": [
+  {
+   "t": 0,
+   "title": "Unity：基础着色与逐砖随机双色混合",
+   "points": [
+    {
+     "t": 0,
+     "text": "介绍课程目标：沿用上一节的程序化砖块图案，在 Unity 和 Unreal Engine 中演示三种着色方法。"
+    },
+    {
+     "t": 49,
+     "text": "方法一：用砖块为白、砖缝为黑的遮罩，在砖缝色与砖块色之间进行 Lerp 混合。"
+    },
+    {
+     "t": 93,
+     "text": "连接 Lerp：A 接砖缝色，B 接砖块色，T 接程序化砖块遮罩；输出接 Base Color 和 Emission。"
+    },
+    {
+     "t": 136,
+     "text": "方法二：添加 Random Range，使用 Vector2 Seed，并通过 Min、Max 控制随机值的输出范围。"
+    },
+    {
+     "t": 185,
+     "text": "将 Combine 输出的砖块坐标接入 Floor，向下取整，使每块砖内部使用相同的整数坐标。"
+    },
+    {
+     "t": 233,
+     "text": "临时乘以 0.1 查看超出预览范围的坐标：红色表示 U，绿色表示 V；随后删除该调试 Multiply。"
+    },
+    {
+     "t": 277,
+     "text": "Floor 接入 Random Range 的 Seed，再将随机值接入第二个 Lerp，在两种砖色之间逐砖混合，并替换原来的固定砖色。"
+    },
+    {
+     "t": 363,
+     "text": "调整砖块尺寸参数，从 0.2、0.1 改为 0.1、0.05，演示增加砖块数量后的随机配色与平铺效果。"
+    }
+   ]
+  },
+  {
+   "t": 455,
+   "title": "Unity：使用 Hash23 独立随机偏移 HSV",
+   "points": [
+    {
+     "t": 455,
+     "text": "方法三：从双色插值改为分别随机调整 Hue、Saturation、Value，扩大砖块颜色的变化范围。"
+    },
+    {
+     "t": 524,
+     "text": "调用此前制作的 Hash23 Sub Graph，并在 Graph Inspector 中将预览设为 2D；本节不展开 Hash23 的内部实现。"
+    },
+    {
+     "t": 570,
+     "text": "Floor 坐标接入 Hash23：输入两个坐标分量，输出三个随机分量，分别用于控制 HSV 偏移。"
+    },
+    {
+     "t": 613,
+     "text": "添加 Colorspace Conversion，将转换方向设为 HSV → RGB；用 Vector3 表示基础 Hue、Saturation、Value。"
+    },
+    {
+     "t": 689,
+     "text": "设置基础砖色 HSV 为约（0.03、0.6、0.3），转换为可供 Base Color 使用的 RGB。"
+    },
+    {
+     "t": 736,
+     "text": "Hash23 输出先乘以 2 再减去 1，将随机值从 [0,1] 映射到 [-1,1]，允许颜色参数向正负两个方向偏移。"
+    },
+    {
+     "t": 780,
+     "text": "再乘 Vector3 限制偏移幅度：Hue 为 0.01，Value 为 0.1；Saturation 字幕为 2(?)，具体数值需核对画面。将偏移加到基础 HSV 后转换为 RGB。"
+    },
+    {
+     "t": 882,
+     "text": "用 HSV 随机配色替换原来的双色混合结果，比较三种着色方法；预告下一节添加程序化法线，为砖块增加表面起伏。"
+    }
+   ]
+  },
+  {
+   "t": 998,
+   "title": "Unreal Engine：遮罩着色与 Hash23 随机双色混合",
+   "points": [
+    {
+     "t": 998,
+     "text": "切换至 Unreal Engine，沿用上一节的程序化砖块材质，开始复现三种着色方法。"
+    },
+    {
+     "t": 1026,
+     "text": "方法一：用砖块遮罩作为 Lerp 的 Alpha，混合砖缝色与砖块色，结果连接 Base Color 和 Emissive Color。"
+    },
+    {
+     "t": 1056,
+     "text": "方法二：将 Append 输出的砖块坐标接入 Floor，为每块砖生成固定的整数坐标。"
+    },
+    {
+     "t": 1086,
+     "text": "临时将 Floor 输出乘以 0.1 并预览，观察各块砖的坐标差异；整数值超过 1 时无法直接在预览中清晰区分。"
+    },
+    {
+     "t": 1117,
+     "text": "调用此前制作的 Hash23 Material Function，将 Floor 的 Vector2 坐标转换为三个随机分量。"
+    },
+    {
+     "t": 1183,
+     "text": "添加 Component Mask，仅提取 Hash23 的 R 通道，得到逐砖随机灰度值。"
+    },
+    {
+     "t": 1205,
+     "text": "用随机灰度驱动第二个 Lerp，在两种砖色之间插值；将结果接回砖缝混合用的 Lerp，形成逐砖不同的颜色。"
+    }
+   ]
+  },
+  {
+   "t": 1259,
+   "title": "Unreal Engine：HSV 随机偏移、调色与平铺演示",
+   "points": [
+    {
+     "t": 1259,
+     "text": "方法三：使用 Hash23 的全部三个随机分量，分别控制 Hue、Saturation、Value，增加双色插值之外的颜色变化。"
+    },
+    {
+     "t": 1280,
+     "text": "添加 HSV to RGB，将基础 HSV 设为约（0.01、0.6、0.3），预览基础红砖色。"
+    },
+    {
+     "t": 1330,
+     "text": "处理 Hash23 随机输出：乘以 2，再减去 1，将范围从 [0,1] 转成 [-1,1]；预览中的黑色区域可能代表负值。"
+    },
+    {
+     "t": 1397,
+     "text": "乘以 Vector3 控制最大偏移，初始设置为 Hue 0.01、Saturation 0.2、Value 0.2。"
+    },
+    {
+     "t": 1427,
+     "text": "将随机偏移加到基础 HSV，再接入 HSV to RGB；转换结果接回砖块与砖缝混合用的 Lerp。"
+    },
+    {
+     "t": 1476,
+     "text": "微调颜色：增大 Hue 偏移、减小 Saturation 与 Value 偏移，并降低基础亮度、提高基础饱和度，使配色更接近传统砖块。"
+    },
+    {
+     "t": 1517,
+     "text": "回顾 Floor → Hash23 → HSV 偏移的节点流程，并增加砖块平铺数量，展示逐砖随机颜色如何减少明显的重复观感。"
+    },
+    {
+     "t": 1562,
+     "text": "课程收尾：预告下一节通过程序化法线塑造砖块形状；片尾进入音乐。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}

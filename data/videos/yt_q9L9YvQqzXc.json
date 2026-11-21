@@ -1,0 +1,157 @@
+{
+ "schema": 1,
+ "id": "yt_q9L9YvQqzXc",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=q9L9YvQqzXc",
+ "title": "Particle System Wind and Gravity - Advanced Materials - Episode 49",
+ "date": "2024-04-18",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Advanced Materials",
+ "index": 49,
+ "duration": 1673,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本课为基于 Unreal Engine Material Editor 与 Unity Shader Graph 的粒子系统加入 Wind 和 Gravity 参数。通过合并风力与重力、转换坐标空间，并乘以粒子生命周期进度，让粒子的运动随年龄变化。Unreal 部分还演示了误用 Transform Vector 导致偏移异常，以及改用 Transform Position 的修正过程。最后分别调整瀑布、烟雾、喷泉和薄雾的材质参数，对比不同运动效果，并预告下一课的粒子旋转功能。",
+ "chapters": [
+  {
+   "t": 0,
+   "title": "Unreal：搭建风力与重力节点",
+   "points": [
+    {
+     "t": 0,
+     "text": "介绍系列第七课：在已有 Direction 与 Speed 控制基础上加入 Wind 和 Gravity，并展示瀑布、烟雾、喷泉、薄雾四个测试效果。"
+    },
+    {
+     "t": 105,
+     "text": "整理 Material Editor 布局：移动随机值、位置与偏移节点，为风力和重力计算腾出空间。"
+    },
+    {
+     "t": 125,
+     "text": "按住 4 点击创建向量常量，Convert to Parameter 命名为 Wind；默认各分量为 0，Group 设为 Forces，排序优先级设为 13。"
+    },
+    {
+     "t": 150,
+     "text": "创建 Gravity 向量参数：Z 设为 -500，表示沿负 Z 方向的效果强度；Group 设为 Forces，排序优先级设为 12。"
+    },
+    {
+     "t": 221,
+     "text": "用 Add 合并 Wind 与 Gravity，再加上 Object Position；向量分量共同控制作用方向与强度。"
+    },
+    {
+     "t": 268,
+     "text": "尝试将世界空间结果转换到 Local 空间以接入原有计算；此处先用了 Transform Vector，后续会修正节点类型。"
+    },
+    {
+     "t": 338,
+     "text": "将合并结果乘以 Frac 输出的粒子生命周期进度，再用 Add 接入已有 Direction 与 Speed 计算，使影响随粒子年龄增大。"
+    },
+    {
+     "t": 426,
+     "text": "观察重力下落效果并保存 Shader；选中新节点，使用 Create Comment from Selection 创建 Wind and Gravity 注释框。"
+    }
+   ]
+  },
+  {
+   "t": 493,
+   "title": "Unreal：修正空间转换并调整四类粒子效果",
+   "points": [
+    {
+     "t": 493,
+     "text": "排查所有粒子斜向偏移的问题：当前节点链加入了 Object Position，因此将 Transform Vector 替换为 Transform Position，设置 Absolute World → Local。"
+    },
+    {
+     "t": 555,
+     "text": "打开瀑布 Material Instance，在 Forces 中覆盖 Gravity：对比 0、正 800 与负 700，观察静止重力影响、上升和向下倾泻的差异。"
+    },
+    {
+     "t": 629,
+     "text": "调整烟雾 Gravity，消除默认向下拉动的效果，让粒子轻微上升；此处以上升运动为目标，字幕中的“负重力”表述需结合坐标方向理解。"
+    },
+    {
+     "t": 688,
+     "text": "启用烟雾 Wind，增加侧向作用并试用 300 的强度，让烟雾离开发射位置后逐渐被吹向一侧。"
+    },
+    {
+     "t": 756,
+     "text": "调整喷泉 Gravity：对比默认 -500 与 0，观察粒子从持续向上运动变为先上升再回落，并继续调整回落强度。"
+    },
+    {
+     "t": 832,
+     "text": "关闭薄雾的 Gravity 影响，保留原有随机漂浮；对比四种效果，确认不同参数组合对应不同运动特征。"
+    },
+    {
+     "t": 914,
+     "text": "预告粒子旋转控制：加入顺时针、逆时针、旋转速度，以及静态旋转与动态旋转参数。"
+    }
+   ]
+  },
+  {
+   "t": 942,
+   "title": "Unity：在 Shader Graph 中实现 Wind 与 Gravity",
+   "points": [
+    {
+     "t": 942,
+     "text": "切换到 Unity，检查瀑布、烟雾、喷泉和薄雾样例，明确风力与重力分别需要改善的运动效果。"
+    },
+    {
+     "t": 1022,
+     "text": "整理 Shader Graph 节点布局，新建两个 Vector3 属性 Wind 与 Gravity；Wind 默认值为 (0, 0, 0)，Gravity 的 Y 设为 -1。"
+    },
+    {
+     "t": 1066,
+     "text": "说明 Unity 使用 Y 作为向上轴，负 Y 产生向下运动；本课通过调节参数追求粒子视觉效果。"
+    },
+    {
+     "t": 1088,
+     "text": "把 Wind 与 Gravity 拖入图中，用 Add 合并两个向量，累计它们的方向与强度。"
+    },
+    {
+     "t": 1142,
+     "text": "创建 Object 节点，将 Position 输出加到风力与重力结果上；添加 Transform，设置 World → Object，类型使用 Position。"
+    },
+    {
+     "t": 1207,
+     "text": "添加 Multiply，将变换结果乘以 Fraction 输出的粒子生命周期进度，并添加 Sticky Note 标注该值的用途。"
+    },
+    {
+     "t": 1284,
+     "text": "使用 Add，将风力与重力计算接入上一课的 Direction 与 Speed 结果，完成运动计算的组合。"
+    },
+    {
+     "t": 1331,
+     "text": "在 Blackboard 创建 Forces 分类，放到 Movement 下方；选中新节点执行 Group Selection，命名为 Wind and Gravity。"
+    }
+   ]
+  },
+  {
+   "t": 1396,
+   "title": "Unity：材质调参与效果对比、下节预告",
+   "points": [
+    {
+     "t": 1396,
+     "text": "打开四种效果的材质属性；先对比瀑布在 Wind 与 Gravity 均为 0 时的运动，再沿负 Y 方向加入强度约 9.8 的重力效果。"
+    },
+    {
+     "t": 1450,
+     "text": "调整烟雾 Wind：对比无风时垂直上升与有风时侧向漂移，将风力数值从 1 调到 2，观察烟雾被吹走的变化。"
+    },
+    {
+     "t": 1500,
+     "text": "调整喷泉向下的 Gravity，试用 -6 等数值，使向上发射的粒子随后回落，形成喷泉轨迹。"
+    },
+    {
+     "t": 1558,
+     "text": "将薄雾 Gravity 的 Y 设为正 0.4，产生轻微上浮，同时保留随机漂移。"
+    },
+    {
+     "t": 1580,
+     "text": "回顾四种参数组合：瀑布使用向下重力、烟雾使用风力、喷泉使用回落重力、薄雾使用轻微向上作用。"
+    },
+    {
+     "t": 1604,
+     "text": "预告绕相机轴旋转粒子，增加朝向变化，并提供旋转方向、角度与速度控制；随后结束课程。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}

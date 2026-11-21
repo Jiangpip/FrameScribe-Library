@@ -1,0 +1,221 @@
+{
+ "schema": 1,
+ "id": "yt_IvMA_2DMDFo",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=IvMA_2DMDFo",
+ "title": "Particle System Animated Textures - Advanced Materials - Episode 51",
+ "date": "2024-05-02",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Advanced Materials",
+ "index": 51,
+ "duration": 2101,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本课为 Unity Shader Graph 和 Unreal Engine 材质编辑器中的自制粒子系统加入 Flipbook 序列帧动画，将彩色方片替换为水花、烟雾等动态纹理。课程实现了随粒子生命周期播放和按指定速度循环播放两种模式，并将 UV 计算放在顶点阶段，再传递到像素阶段采样纹理。随后配置透明度与纹理参数，在瀑布、烟囱烟雾、喷泉和薄雾实例中调整效果。最后指出粒子出生与消失时突变、薄雾过于不透明的问题，留待下一课通过透明度和淡入淡出控制解决。",
+ "chapters": [
+  {
+   "t": 0,
+   "title": "Flipbook 原理与 Unity 顶点阶段 UV 设置",
+   "points": [
+    {
+     "t": 0,
+     "text": "介绍本系列第九节目标：在已有移动、旋转和缩放控制的粒子系统中加入动画纹理。"
+    },
+    {
+     "t": 52,
+     "text": "Flipbook 原理：将多帧动画排列在同一张纹理中，通过改变 UV 依次显示各帧。"
+    },
+    {
+     "t": 83,
+     "text": "在 Unity Shader Graph 添加 Flipbook 节点；将主要 UV 计算安排在顶点阶段，像素阶段负责纹理采样。"
+    },
+    {
+     "t": 169,
+     "text": "在 Vertex 上下文添加 Custom Interpolator，命名为 Particle Data，用于向 Fragment 阶段传递数据。"
+    },
+    {
+     "t": 199,
+     "text": "通过 Split 和 Combine 将 Flipbook 的 U、V 写入 Particle Data 的 R、G 通道，预留 B、A 通道供后续功能使用。"
+    },
+    {
+     "t": 250,
+     "text": "创建 Vector2 参数 Flipbook Dimensions，默认值设为 (8, 4)，对应纹理的八列四行；Split 后分别接入 Width 和 Height。"
+    }
+   ]
+  },
+  {
+   "t": 326,
+   "title": "Unity：生命周期同步、循环速度与随机动画相位",
+   "points": [
+    {
+     "t": 326,
+     "text": "说明 Flipbook 的 Tile 输入决定当前显示帧；规划生命周期同步播放与独立速度循环播放两种模式。"
+    },
+    {
+     "t": 399,
+     "text": "添加 Branch 节点并连接 Tile，创建 Boolean 参数 Match Particle Phase 控制分支选择。"
+    },
+    {
+     "t": 444,
+     "text": "同步模式：将已有粒子生命周期相位乘以“列数 × 行数 − 1”，接入 True 分支；此数值对应从零开始的最大帧索引。"
+    },
+    {
+     "t": 488,
+     "text": "创建 Flipbook Speed 参数，与 Time 相乘，构建独立于粒子生命周期的播放进度。"
+    },
+    {
+     "t": 533,
+     "text": "将独立播放进度乘以最大帧索引，并接入 Branch 的 False 分支。"
+    },
+    {
+     "t": 556,
+     "text": "在 Time × Flipbook Speed 后添加 Fraction，让进度在 0–1 范围内循环，并准备为每个粒子加入不同的动画相位。"
+    },
+    {
+     "t": 600,
+     "text": "复用 Hash33 随机数据，从已有 Multiply × 2、Subtract 1 后的结果中提取 G 通道，加到循环进度上，再转换为帧索引。"
+    },
+    {
+     "t": 646,
+     "text": "汇总两种播放路径：生命周期同步适合爆炸等非循环动画，独立速度适合循环水花；结果经 Flipbook 和 Particle Data 传入 Fragment 阶段。"
+    }
+   ]
+  },
+  {
+   "t": 692,
+   "title": "Unity：纹理采样、透明设置与参数整理",
+   "points": [
+    {
+     "t": 692,
+     "text": "添加 Sample Texture 2D，选择 Water Churn 8x4 纹理，将颜色接入 Base Color、Alpha 接入 Alpha，并断开原有 Emission 连接。"
+    },
+    {
+     "t": 736,
+     "text": "暂时将粒子旋转设为零，便于观察序列帧动画是否正确播放。"
+    },
+    {
+     "t": 767,
+     "text": "在 Fragment 阶段读取 Particle Data，用 Split 和 Combine 提取 R、G 通道，接入 Sample Texture 2D 的 UV。"
+    },
+    {
+     "t": 796,
+     "text": "排查纹理不动：Flipbook Speed 默认值为零；改为 1 后动画开始播放，并切换为 2D 预览。"
+    },
+    {
+     "t": 840,
+     "text": "在 Graph Settings → Surface Options 中将 Surface Type 设为 Transparent，使纹理 Alpha 生效。"
+    },
+    {
+     "t": 861,
+     "text": "开启 Alpha Clipping；演示阈值 0.5 会裁掉较多区域，随后将 Alpha Clip Threshold 调为 0.4。"
+    },
+    {
+     "t": 904,
+     "text": "将 Flipbook Speed 调为 0.2、0.1 观察慢速播放，并将相关节点分组命名为 Flipbook。"
+    },
+    {
+     "t": 994,
+     "text": "补充 Texture2D 参数 Flipbook Texture，以 Water Churn 为默认纹理并接入采样节点，让不同材质实例能够替换贴图。"
+    }
+   ]
+  },
+  {
+   "t": 1053,
+   "title": "Unity 场景实例：瀑布、烟雾、喷泉与单帧薄雾",
+   "points": [
+    {
+     "t": 1053,
+     "text": "瀑布使用 Water Churn、8×4 布局和速度 1；对比 Match Particle Phase 开关，并将速度提高到 5 观察水花翻动。"
+    },
+    {
+     "t": 1116,
+     "text": "烟囱烟雾使用 8×8 序列帧和速度 0.5；开启 Match Particle Phase 后，观察随生命周期变化的烟雾翻卷效果。"
+    },
+    {
+     "t": 1146,
+     "text": "喷泉沿用 Water Churn，设置 8×4、速度 1，并关闭 Match Particle Phase。"
+    },
+    {
+     "t": 1169,
+     "text": "检查薄雾当前问题：内部过于不透明，粒子出生和死亡时出现明显跳变。"
+    },
+    {
+     "t": 1219,
+     "text": "单帧薄雾纹理将 Flipbook Dimensions 设为 1×1；此时播放速度与生命周期同步开关不影响帧选择。"
+    },
+    {
+     "t": 1240,
+     "text": "预告下一课加入透明度控制，改善粒子生成和消失时的突变。"
+    }
+   ]
+  },
+  {
+   "t": 1268,
+   "title": "Unreal：Flipbook 材质、顶点插值与透明纹理",
+   "points": [
+    {
+     "t": 1268,
+     "text": "切换到 Unreal Engine，查看已有粒子材质和场景，准备将彩色方片替换为 Flipbook 动画纹理。"
+    },
+    {
+     "t": 1319,
+     "text": "添加 Flipbook 节点，以及 Flipbook Speed、Flipbook Columns、Flipbook Rows 标量参数，将行列参数连接到对应输入。"
+    },
+    {
+     "t": 1371,
+     "text": "创建 Match Particle Phase 布尔参数；用 Time × Flipbook Speed 再接 Fraction，生成循环的 0–1 动画相位。"
+    },
+    {
+     "t": 1434,
+     "text": "添加 Static Switch：False 接循环时间，True 接已有粒子生命周期相位；由 Match Particle Phase 控制，输出连接 Flipbook 的 Animation Phase。"
+    },
+    {
+     "t": 1544,
+     "text": "在 Flipbook 与 Texture Sample 之间添加 Vertex Interpolator，将 UV 计算放到顶点阶段，再将结果传到像素阶段采样。"
+    },
+    {
+     "t": 1610,
+     "text": "创建 Texture Object Parameter，命名 Flipbook Texture，默认选择 Water Churn 8x4；连接 Texture Sample，并用采样颜色替换原有随机颜色。"
+    },
+    {
+     "t": 1656,
+     "text": "修正默认参数：Columns 设为 8、Rows 设为 4；关闭生命周期同步后若动画停止，将 Flipbook Speed 从 0 改为 1。"
+    },
+    {
+     "t": 1728,
+     "text": "选中材质主节点，将 Blend Mode 从 Opaque 改为 Translucent，并将纹理 Alpha 接入 Opacity；随后回顾两种动画播放模式的适用场景。"
+    }
+   ]
+  },
+  {
+   "t": 1856,
+   "title": "Unreal 场景调参与后续透明度改进",
+   "points": [
+    {
+     "t": 1856,
+     "text": "打开各效果的材质实例；瀑布使用 Water Churn、八列四行，对比速度 0 的静止纹理后，将速度保留为 1。"
+    },
+    {
+     "t": 1906,
+     "text": "烟囱烟雾替换为 Cloud 04 8x8，将错误的四行改为八行，并开启 Match Particle Phase。"
+    },
+    {
+     "t": 1935,
+     "text": "喷泉继续使用 Water Churn、八列四行，将 Flipbook Speed 提高到 5，使水花动画更活跃。"
+    },
+    {
+     "t": 1986,
+     "text": "薄雾改用单帧 Cloud 纹理，并将 Rows、Columns 都设为 1，修正按多帧布局采样造成的错误。"
+    },
+    {
+     "t": 2007,
+     "text": "检查剩余问题：薄雾遮挡过强，烟雾等粒子在生命周期起止时突然出现或消失；下一课将加入整体透明度、Fade In 和 Fade Out。"
+    },
+    {
+     "t": 2061,
+     "text": "课程收尾：回顾从彩色方片到动态水花、烟雾纹理的视觉改善，随后播放片尾音乐。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}

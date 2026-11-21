@@ -1,0 +1,169 @@
+{
+ "schema": 1,
+ "id": "yt_G-5bhff4f-M",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=G-5bhff4f-M",
+ "title": "Ice Shader Part 2 - Advanced Materials - Episode 6",
+ "date": "2022-11-03",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Advanced Materials",
+ "index": 6,
+ "duration": 1761,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本课在上一节的冰折射 Shader 上，为 Unity 和 Unreal Engine 添加看似位于冰内部的细节。通过切线空间中的视线向量、反射向量和 UV 偏移，制造随观察角度变化的视差效果，而非真实体积。将同一张灰度冰纹理以不同深度和重复次数采样两次，叠加出深浅两层细节。最后接入法线贴图，并用遮罩混合深蓝色场景折射与浅蓝色内部纹理，在场景中调整最终效果。",
+ "chapters": [
+  {
+   "t": 0,
+   "title": "Unity：冰内部细节原理与单层视差 UV",
+   "points": [
+    {
+     "t": 0,
+     "text": "回顾上一节的冰折射 Shader：本节增加随视角变化的内部细节，先在 Unity 实现，再转到 Unreal Engine。"
+    },
+    {
+     "t": 73,
+     "text": "准备可平铺的灰度冰纹理作为遮罩；原有 Shader 使用扭曲后的 UV 采样 Scene Color，形成折射。"
+    },
+    {
+     "t": 131,
+     "text": "读取冰纹理的 R 通道并直接连接 Base Color，观察纹理贴在模型表面的初始效果；单通道预览呈红色不代表数据本身是红色。"
+    },
+    {
+     "t": 158,
+     "text": "添加 View Direction 并设为 Tangent 空间，经过 Negate 后输入 Reflection；暂用 (0, 0, 1) 作为平坦切线空间法线。"
+    },
+    {
+     "t": 236,
+     "text": "将反射向量的 XY 分量加到原始 UV，旋转球体和立方体观察视差：即使当前模型不透明，纹理也看起来位于表面后方。"
+    },
+    {
+     "t": 340,
+     "text": "用两个 Swizzle 分别提取反射向量的 XY 与 Z，对 Z 使用 Absolute，并加入初始值为 100 的偏移控制量。"
+    },
+    {
+     "t": 395,
+     "text": "用 Multiply 组合偏移分量，再乘以纹理分辨率 1024 的 Reciprocal，将结果加回 UV；此处关于 Divide 输入顺序的口述不一致。"
+    },
+    {
+     "t": 480,
+     "text": "比较偏移控制值 1000、10 和 50 的视觉差异：较大值使细节看起来更深，最终暂设为 50。"
+    }
+   ]
+  },
+  {
+   "t": 543,
+   "title": "Unity：双层冰纹理、法线扰动与颜色合成",
+   "points": [
+    {
+     "t": 543,
+     "text": "整理共享节点并复制采样分支，对同一张冰纹理进行两次采样：深层偏移设为 50，浅层设为 10。"
+    },
+    {
+     "t": 595,
+     "text": "将浅层原始 UV 乘以 4，再叠加视差偏移，使靠近表面的冰纹理更细密。"
+    },
+    {
+     "t": 619,
+     "text": "用 Add 叠加深层大纹理与浅层小纹理，连接 Base Color，在预览球体中检查两层细节的深度差。"
+    },
+    {
+     "t": 700,
+     "text": "用现有法线贴图替换 Reflection 的平坦法线，让表面凹凸影响内部纹理的 UV 偏移。"
+    },
+    {
+     "t": 722,
+     "text": "在法线贴图后加入 Normal Strength，先设为 0.5，减轻内部细节的扭曲。"
+    },
+    {
+     "t": 763,
+     "text": "将原有折射 Scene Color 乘以低饱和深蓝色，为透过冰看到的背景染色。"
+    },
+    {
+     "t": 793,
+     "text": "用双层纹理相加得到的遮罩驱动 Lerp 的 T，在深蓝色折射背景与浅蓝色内部细节之间混合，输出到 Base Color。"
+    },
+    {
+     "t": 846,
+     "text": "保存并返回场景检查效果；将 Normal Strength 从 0.5 降至 0.1，使内部冰纹理更清晰。"
+    }
+   ]
+  },
+  {
+   "t": 921,
+   "title": "Unreal Engine：切线空间反射向量与视差强度控制",
+   "points": [
+    {
+     "t": 921,
+     "text": "切换到 Unreal Engine，回顾已有的冰折射材质与可平铺灰度冰纹理。"
+    },
+    {
+     "t": 974,
+     "text": "新增 Texture Sample 采样内部冰纹理，直接接入 Base Color，检查尚未添加视差时的表面贴图效果。"
+    },
+    {
+     "t": 1024,
+     "text": "添加 Camera Vector，并使用 Transform 将其从 World 空间转换到 Tangent 空间。"
+    },
+    {
+     "t": 1044,
+     "text": "添加 Custom Reflection Vector，连接转换后的 Camera Vector；按住 3 单击创建 (0, 0, 1) 常量，作为平坦法线输入。"
+    },
+    {
+     "t": 1095,
+     "text": "用 Component Mask 提取反射向量的 RG，即 XY 分量，再与纹理 UV 相加，实现随视角变化的内部纹理偏移。"
+    },
+    {
+     "t": 1122,
+     "text": "切换立方体预览，将视口 Field of View 从 90 调为 50，检查纹理看起来位于模型后方的效果。"
+    },
+    {
+     "t": 1187,
+     "text": "用另一组 Component Mask 提取 B，即 Z 分量，并取 Absolute；通过 Divide 计算 100 / abs(Z)，再与 RG 分量相乘。"
+    },
+    {
+     "t": 1262,
+     "text": "将偏移继续乘以纹理像素分辨率的倒数，再加回 UV，使深度效果可控；旋转立方体观察内部细节的视差。"
+    }
+   ]
+  },
+  {
+   "t": 1325,
+   "title": "Unreal Engine：双层遮罩、颜色混合与场景调优",
+   "points": [
+    {
+     "t": 1325,
+     "text": "保留共享计算节点，复制纹理采样和偏移分支，为靠近表面的细节建立第二层。"
+    },
+    {
+     "t": 1377,
+     "text": "将深层偏移从 100 调至 50，浅层设为 10；浅层 Texture Coordinate 乘以 4，增加纹理重复次数。"
+    },
+    {
+     "t": 1419,
+     "text": "用 Add 合并两层纹理并接入 Base Color；切换球体检查深浅层次，再将深层偏移临时增至 200，展示更强的深度感。"
+    },
+    {
+     "t": 1469,
+     "text": "将已有法线贴图接入 Custom Reflection Vector，替换平坦法线，让冰表面凹凸扰动内部纹理。"
+    },
+    {
+     "t": 1499,
+     "text": "添加 FlattenNormal 减弱法线扰动，并按演示将 Flatness 设为 1，再连接 Custom Reflection Vector 的法线输入。"
+    },
+    {
+     "t": 1545,
+     "text": "将 Scene Color 乘以低饱和深蓝色后连接 Linear Interpolate 的 A，浅蓝色常量连接 B，双层冰纹理遮罩控制混合，结果输出到 Base Color。"
+    },
+    {
+     "t": 1669,
+     "text": "保存材质并在场景中检查；发现深层偏移实际仍为 200，将其降至 50，得到更适度的内部视差效果。"
+    },
+    {
+     "t": 1728,
+     "text": "课程收尾：回顾冰 Shader 最终效果，预告后续高级材质教程；随后播放片尾音乐。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}

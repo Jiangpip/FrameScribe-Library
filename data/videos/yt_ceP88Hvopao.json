@@ -1,0 +1,149 @@
+{
+ "schema": 1,
+ "id": "yt_ceP88Hvopao",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=ceP88Hvopao",
+ "title": "Adding Multiple Detail Meshes to Landscapes - Procedural Content Generation (PCG) - Episode 4",
+ "date": "2026-05-07",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Procedural Content Generation (PCG)",
+ "index": 4,
+ "duration": 1504,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本课在 Unreal Engine 中将原有 PCG 草地系统扩展为茂盛草、干草和碎石三套细节网格，让模型分布与 Landscape 材质纹理相互配合。通过坡度、积雪、水洼、海拔及石块纹理遮罩，在地形材质中划分各类网格的生成区域。随后复制并修改 PCG Graph，调整 Landscape Grass Type、点数量、HLSL 和 Static Mesh Spawner，配置运行时分区生成。最后通过碎石高度偏移和缩放，让模型更自然地融入地表。",
+ "chapters": [
+  {
+   "t": 0,
+   "title": "课程目标与地形细节模型选型",
+   "points": [
+    {
+     "t": 0,
+     "text": "将已有 PCG 草地系统扩展为多套细节网格，通过 Landscape 材质与模型共同塑造地形外观。"
+    },
+    {
+     "t": 47,
+     "text": "按地表材质选择模型：低海拔使用湿润、茂盛的草，高海拔使用干燥、多石的草地细节。"
+    },
+    {
+     "t": 130,
+     "text": "展示三类素材：已有的茂盛草模型、碎石模型，以及用于干燥区域的 Thatching Grass。"
+    }
+   ]
+  },
+  {
+   "t": 177,
+   "title": "在 Landscape 材质中制作草与碎石遮罩",
+   "points": [
+    {
+     "t": 177,
+     "text": "检查已有材质结构：茂盛草与干草按海拔混合，草地与斜坡材质通过 Terrain Angle Mask 混合。"
+    },
+    {
+     "t": 256,
+     "text": "构建基础草地遮罩：Terrain Angle Mask 排除斜坡，再依次乘以 OneMinus 雪遮罩与 OneMinus 水洼遮罩，排除积雪和水面。"
+    },
+    {
+     "t": 303,
+     "text": "将干草海拔遮罩接入 Base Color 检查：高海拔为白色，低海拔茂盛草区域为黑色。"
+    },
+    {
+     "t": 352,
+     "text": "制作茂盛草遮罩：基础草地遮罩乘以 OneMinus 干草遮罩，并接入 Base Color 验证分布。"
+    },
+    {
+     "t": 402,
+     "text": "制作干草区域遮罩：对干草海拔遮罩使用 Round，再与基础草地遮罩相乘。"
+    },
+    {
+     "t": 422,
+     "text": "对干草纹理应用 ThreePointLevels，提取石块为白、其他区域为黑的遮罩；通过 Base Color 预览提取效果。"
+    },
+    {
+     "t": 500,
+     "text": "干草遮罩乘以 OneMinus 石块遮罩，避免草生成在纹理中的石块位置；石块遮罩用于 Stones 输入。"
+    },
+    {
+     "t": 541,
+     "text": "在 Landscape Grass Output 中设置 Grass、Dry Grass、Stones 三个数组元素，分别绑定独立的 LGT_PCG_Grass、LGT_PCG_Dry_Grass、LGT_PCG_Stones 资产，供 PCG 引用。"
+    }
+   ]
+  },
+  {
+   "t": 639,
+   "title": "复制干草 PCG Graph 并配置运行时生成",
+   "points": [
+    {
+     "t": 639,
+     "text": "原有 PCG Grass Graph 使用更新后的茂盛草遮罩；复制该 Graph 并命名为 PCG Dry Grass。"
+    },
+    {
+     "t": 669,
+     "text": "将干草 Point Generator 的点数量设为每个网格块 10000，以适应更小、更紧凑的干草模型；原草地约为 3500。"
+    },
+    {
+     "t": 700,
+     "text": "在 Generate Landscape Textures 的 Select Grass Types 中改用 LGT_PCG_Dry_Grass，并同步修改 Point Generator HLSL 中引用的 Grass Type 名称。"
+    },
+    {
+     "t": 775,
+     "text": "删除干草 HLSL 中的 Spatial Noise 计算及 density -= spatialNoise：材质遮罩已提供分布变化，可省去重复的 GPU 计算。"
+    },
+    {
+     "t": 831,
+     "text": "在 Static Mesh Spawner 中替换为九种 Thatching Grass 模型，并检查各 Mesh Entry 中适用于素材的参数。"
+    },
+    {
+     "t": 880,
+     "text": "在运行场景中沿山坡移动，检查低海拔茂盛草向高海拔干草的渐变，以及材质遮罩控制的区域过渡。"
+    },
+    {
+     "t": 961,
+     "text": "将 PCG Dry Grass Graph 拖入场景，居中并将缩放设为 140、140、60 以覆盖示例地形；启用 Is Partitioned，并将 Generation Trigger 设为 Generate at Runtime。"
+    },
+    {
+     "t": 1037,
+     "text": "调整干草参数覆盖：最小缩放 0.7，最大缩放口述为 0.1 或 1.2（?）；Spatial Noise Strength 设为 0，Density Min/Max 设为 0.7 和 1.5。"
+    }
+   ]
+  },
+  {
+   "t": 1087,
+   "title": "制作碎石 PCG、调整嵌入效果与课程总结",
+   "points": [
+    {
+     "t": 1087,
+     "text": "复制草地 Graph 制作碎石版本，将 Grid Size 从 1600 改为 800，以较小网格块管理碎石；Point Generator 元素数量设为 2500。"
+    },
+    {
+     "t": 1107,
+     "text": "Generate Landscape Textures 选择 LGT_PCG_Stones，将材质中的碎石遮罩传入 Point Generator；同样删除 Spatial Noise 计算。"
+    },
+    {
+     "t": 1163,
+     "text": "调整 HLSL 中的 Position.z：在地形采样高度基础上减去 1.5 cm，使碎石稍微嵌入地面。"
+    },
+    {
+     "t": 1225,
+     "text": "移除高度偏移并重新生成，对比石块浮在地表的效果；再测试减去 3 cm，最终恢复为减去 1.5 cm。"
+    },
+    {
+     "t": 1268,
+     "text": "将 PCG Pebbles Graph 加入场景，水平居中、高度设为 1920，缩放设为 140、140、60；覆盖范围需按实际地形尺寸调整。"
+    },
+    {
+     "t": 1312,
+     "text": "碎石启用 Is Partitioned 与 Generate at Runtime，缩放范围设为 0.3–0.7，让模型尺寸接近地表纹理中的石块。"
+    },
+    {
+     "t": 1337,
+     "text": "总结三套 Graph 的协作：Grass、Dry Grass、Pebbles 分别读取材质遮罩，在运行时通过 GPU Compute Shader 生成点，并按玩家周围的需要加载或移除细节。"
+    },
+    {
+     "t": 1430,
+     "text": "课程收尾与下集预告：计划转向 CPU PCG，生成更大的巨石，并可能加入树木。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}

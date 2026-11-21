@@ -1,0 +1,229 @@
+{
+ "schema": 1,
+ "id": "yt_VMpXSEomAAk",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=VMpXSEomAAk",
+ "title": "Water Foam - Advanced Materials - Episode 40",
+ "date": "2024-02-08",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Advanced Materials",
+ "index": 40,
+ "duration": 2003,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本课在已有的动态水材质上添加岩石边缘泡沫，分别演示 Unreal Engine 与 Unity 的实现。通过 RGB 通道打包三种泡沫密度，并将四向滚动采样与水深驱动的渐变遮罩结合，控制泡沫的运动、分布和浓淡。随后将泡沫接入颜色、粗糙度或光滑度以及透明度，使其融入水面。Unity 部分还修正了水面交界硬边、投影以及折射颜色与深度采样不一致的问题。",
+ "chapters": [
+  {
+   "t": 0,
+   "title": "课程目标与泡沫纹理的通道设计",
+   "points": [
+    {
+     "t": 0,
+     "text": "展示岩石周围的水面泡沫效果，介绍纹理、运动、遮罩和材质整合四个制作环节。"
+    },
+    {
+     "t": 48,
+     "text": "在 Photoshop 中检查两张输入纹理：泡沫图案纹理与控制各密度分布的 Blend Ramp。"
+    },
+    {
+     "t": 69,
+     "text": "将三种泡沫密度打包进 RGB：R 为稀疏泡沫，G 为中等密度，B 为浓密泡沫。"
+    },
+    {
+     "t": 144,
+     "text": "解释渐变纹理的水深方向：左端对应深水，右端对应浅水；R 通道让稀疏泡沫覆盖除最深处以外的区域。"
+    },
+    {
+     "t": 192,
+     "text": "用 G、B 渐变逐步缩小覆盖范围，使中等泡沫靠近浅水，浓密泡沫集中在岩石接触处。"
+    }
+   ]
+  },
+  {
+   "t": 242,
+   "title": "Unreal Engine：四向滚动泡沫与灰度预览",
+   "points": [
+    {
+     "t": 242,
+     "text": "在 Content Drawer 中筛选 Material Functions、搜索 motion，并在 Engine 文件夹找到 Motion FourWay Chaos。"
+    },
+    {
+     "t": 293,
+     "text": "分析函数内部：同一纹理采样四次，分别向四个对角方向滚动；Quality Switch 会在较低质量下减少采样。"
+    },
+    {
+     "t": 355,
+     "text": "将四次采样相加，再以 Divisor 输入的 0.25 相乘，得到四个样本的平均值。"
+    },
+    {
+     "t": 397,
+     "text": "回顾已有水材质结构：表面法线涟漪、驱动顶点的 Gerstner Waves，以及水深计算。"
+    },
+    {
+     "t": 447,
+     "text": "添加 Motion FourWay Chaos，将泡沫 Texture Object 接入纹理输入。"
+    },
+    {
+     "t": 473,
+     "text": "使用 World Position 的 XY 分量进行俯视投影，乘以 0.007 控制纹理尺度；Speed 设为 1，Divisor 设为 0.25。"
+    },
+    {
+     "t": 557,
+     "text": "临时断开 Opacity、World Position Offset 和 Refraction，单独预览四向滚动的 RGB 泡沫。"
+    },
+    {
+     "t": 610,
+     "text": "拆分并相加 R、G、B 通道，将彩色通道预览转为灰度泡沫，接入 Base Color 检查。"
+    }
+   ]
+  },
+  {
+   "t": 659,
+   "title": "Unreal Engine：水深遮罩与完整材质整合",
+   "points": [
+    {
+     "t": 659,
+     "text": "添加泡沫 Blend Ramp 的 Texture Sample，与 Motion FourWay Chaos 输出逐通道相乘，分别控制三种泡沫密度。"
+    },
+    {
+     "t": 730,
+     "text": "从已有水深计算分支取值，为泡沫单独设置最大深度：除以 40，将覆盖范围限定在约 40 cm 以内的浅水区域。"
+    },
+    {
+     "t": 776,
+     "text": "对归一化水深依次执行 Saturate 和 One Minus，再作为渐变纹理的 UV。"
+    },
+    {
+     "t": 797,
+     "text": "将遮罩后的泡沫拆分 RGB、相加并 Saturate，防止结果超过 1；接入 Base Color 检查岩石边缘分布。"
+    },
+    {
+     "t": 844,
+     "text": "临时把泡沫最大深度改为 100，放大观察稀疏、中等与浓密泡沫的过渡层次。"
+    },
+    {
+     "t": 897,
+     "text": "把泡沫遮罩直接接入 Roughness 和 Base Color：泡沫处变白且粗糙，其余水面保持黑色基色与光滑表面。"
+    },
+    {
+     "t": 945,
+     "text": "将泡沫加到原有水深透明度上，再乘以 Depth Fade，使泡沫区域更不透明，同时保留交界处淡出。"
+    },
+    {
+     "t": 992,
+     "text": "恢复 Opacity 与 Refraction 连接，保存并检查最终效果，回顾泡沫、水深、Gerstner Waves 和表面涟漪的材质结构。"
+    }
+   ]
+  },
+  {
+   "t": 1065,
+   "title": "Unity：修复水面交界硬边与深度采样",
+   "points": [
+    {
+     "t": 1065,
+     "text": "切换到 Unity，回顾已有 Shader Graph，并在场景中增加岩石以检查水下与交界效果。"
+    },
+    {
+     "t": 1135,
+     "text": "在 Graph Settings 中关闭 Preserve Specular Lighting，减少透明水面边缘仍保留高光所造成的硬边。"
+    },
+    {
+     "t": 1189,
+     "text": "添加 Depth Fade 子图，将 Distance 设为 2 并接入 Alpha，使水面与岩石相交处逐渐透明。"
+    },
+    {
+     "t": 1215,
+     "text": "拆解 Depth Fade：Scene Depth 使用 Eye 模式，减去 Raw Screen Position 的 A 分量，再除以 Distance 并 Saturate。"
+    },
+    {
+     "t": 1262,
+     "text": "选中水面平面，将 Cast Shadows 设为 Off，消除水面投影导致的水下岩石变暗与明显分界线。"
+    },
+    {
+     "t": 1311,
+     "text": "诊断深度与折射颜色错位：Scene Depth 仍使用默认屏幕坐标，而颜色已经使用扭曲后的坐标。"
+    },
+    {
+     "t": 1335,
+     "text": "将扭曲后的 Screen Position 同样用于 Scene Depth 采样，使水深与折射颜色的变化保持一致。"
+    },
+    {
+     "t": 1355,
+     "text": "断开原有深蓝色 Color 节点，改用黑色深水效果，并将水体 Maximum Depth 调整为 8 m。"
+    }
+   ]
+  },
+  {
+   "t": 1403,
+   "title": "Unity：构建四向滚动泡沫子图",
+   "points": [
+    {
+     "t": 1403,
+     "text": "打开自建 Motion Chaos Four-Way 子图，检查与 Unreal Engine 对应的泡沫运动实现。"
+    },
+    {
+     "t": 1424,
+     "text": "将四个 Sample Texture 2D 的 RGBA 输出相加，再乘以 Weight 输出混合结果。"
+    },
+    {
+     "t": 1447,
+     "text": "用 Time × Speed 驱动 UV 滚动，再乘方向向量产生不同运动方向；字幕中的方向向量存在重复，具体数值需以节点画面为准。"
+    },
+    {
+     "t": 1497,
+     "text": "为其中三路采样加入不同的固定偏移，错开纹理相位；将输入 UV、偏移与时间滚动量相加后用于采样。"
+    },
+    {
+     "t": 1541,
+     "text": "接入同一张泡沫纹理，添加 Position 节点并将坐标空间设置为 Absolute World。"
+    },
+    {
+     "t": 1567,
+     "text": "使用 Swizzle 提取 XZ 分量，乘以 0.7 后接入 UV；Speed 设为 0.3，Weight 保持 0.25。"
+    },
+    {
+     "t": 1612,
+     "text": "将输出接入颜色预览，再用 Split 拆分 RGB、依次相加并 Saturate，得到灰度泡沫。"
+    }
+   ]
+  },
+  {
+   "t": 1663,
+   "title": "Unity：深度控制泡沫、材质整合与课程收尾",
+   "points": [
+    {
+     "t": 1663,
+     "text": "引入渐变纹理作为泡沫分布遮罩，并检查渐变纹理与泡沫纹理均关闭 sRGB。"
+    },
+    {
+     "t": 1709,
+     "text": "将渐变与动态泡沫逐通道相乘；添加 Sampler State 并设为 Clamp，避免渐变在边缘重复平铺。"
+    },
+    {
+     "t": 1757,
+     "text": "从水深 Subtract 节点输出建立独立泡沫分支，除以 3 m，再执行 Saturate 和 One Minus，作为渐变采样坐标。"
+    },
+    {
+     "t": 1814,
+     "text": "保存并检查深度分层：外围为稀疏泡沫，中间为中等泡沫，紧贴岩石处为浓密泡沫。"
+    },
+    {
+     "t": 1841,
+     "text": "把泡沫与原有水体颜色相加后接入 Base Color；对泡沫执行 One Minus 后接入 Smoothness，使泡沫区域更粗糙。"
+    },
+    {
+     "t": 1886,
+     "text": "将泡沫遮罩加入原有透明度计算，使出现泡沫的区域更不透明，并检查岩石及水槽边缘的效果。"
+    },
+    {
+     "t": 1939,
+     "text": "展示最终水材质：边缘泡沫、Depth Fade、水下模糊与轻微色差共同形成完整水面效果。"
+    },
+    {
+     "t": 1963,
+     "text": "预告下一课制作水下 Caustics 投影材质，随后结束讲解；1994 秒起为片尾音乐。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}

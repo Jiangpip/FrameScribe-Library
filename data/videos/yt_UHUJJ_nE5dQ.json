@@ -1,0 +1,237 @@
+{
+ "schema": 1,
+ "id": "yt_UHUJJ_nE5dQ",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=UHUJJ_nE5dQ",
+ "title": "Snowy Rock Shader - Advanced Materials - Episode 4",
+ "date": "2022-10-20",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Advanced Materials",
+ "index": 4,
+ "duration": 2659,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本课在 Unity 和 Unreal Engine 中，将已有岩石材质与雪材质组合成可调节积雪覆盖范围的 Snowy Rock Shader。先用 Sub Graph 和 Material Function 拆分岩石基础贴图、宏观细节与微观细节，再混合雪的颜色、法线、光滑度或粗糙度、AO 和闪光效果。重点介绍如何利用世界空间法线生成朝上表面的积雪遮罩，以及两款引擎向上轴的差异。最后将 Coverage 暴露为参数，演示不同覆盖程度，并说明通过脚本实现随天气逐渐积雪的思路。",
+ "chapters": [
+  {
+   "t": 0,
+   "title": "Unity：将岩石 Shader 拆分为可复用子图",
+   "points": [
+    {
+     "t": 0,
+     "text": "课程目标：合并前两期的岩石与雪 Shader，先在 Unity 实现，再迁移到 Unreal Engine。"
+    },
+    {
+     "t": 41,
+     "text": "模块划分：将基础贴图采样封装为 Rock Base，将重复的宏观与微观细节采样封装为同一个 Rock Detail 子图。"
+    },
+    {
+     "t": 111,
+     "text": "创建 Sub Graph：右键选择 Create → Shader Graph → Sub Graph；在 Graph Inspector 定义 Color、Normal、Smoothness、UVs、AO 输出，在 Blackboard 定义贴图输入。"
+    },
+    {
+     "t": 157,
+     "text": "基础贴图通道打包：颜色贴图 RGB 存颜色、Alpha 存 Smoothness；另一张贴图 RG 存法线、B 存 AO，通过 Swizzle 等节点拆分。"
+    },
+    {
+     "t": 185,
+     "text": "手动还原法线：为保留 B 通道的 AO，贴图按 Default 类型处理；使用 Normal Unpack 将数值从 0～1 转到 -1～1，再用 Normal Reconstruct Z 重建 Z 分量。"
+    },
+    {
+     "t": 234,
+     "text": "统一 Texel Density：网格 UV 乘以 Object Scale 和 Rock Scale，为尺寸不同的岩石资产设置相对比例，并输出给细节模块。"
+    },
+    {
+     "t": 312,
+     "text": "Rock Detail 子图：UV 乘 Detail Scale；法线乘 (2,2,0) 再减 (1,1,0) 后叠加输入法线，Alpha 与颜色做 Overlay，B 通道乘输入 Smoothness。"
+    },
+    {
+     "t": 423,
+     "text": "串联 Rock Base 与两次 Rock Detail：宏观 Detail Scale 为 0.25，微观为 12；最终颜色、法线和 Smoothness 继续传入雪模块，也可扩展雨水等效果。"
+    }
+   ]
+  },
+  {
+   "t": 587,
+   "title": "Unity：混合岩石与雪的材质属性",
+   "points": [
+    {
+     "t": 587,
+     "text": "改造 Snow 子图：接收岩石的 Color、Base Normal、Normal、Smoothness、UVs、AO 和 Coverage，将雪材质叠加到输入材质上。"
+    },
+    {
+     "t": 630,
+     "text": "雪颜色混合：基础雪颜色叠加 Fresnel，再用 Lerp 根据 Snow Mask 在岩石颜色与雪颜色之间插值。"
+    },
+    {
+     "t": 696,
+     "text": "雪贴图解包：RG 提供法线，B 存 AO，Alpha 存 Smoothness；法线乘 2 减 1 后重建 Z 分量。"
+    },
+    {
+     "t": 739,
+     "text": "降低贴图分辨率：使用一张 1024 基础雪贴图和一张 512 细节法线，细节 UV 乘 8；Normal Blend 选择 Reoriented 提高混合质量。"
+    },
+    {
+     "t": 789,
+     "text": "Fresnel 的坐标空间：混合后的雪法线位于 Tangent Space，先转换到 World Space，再用于 Fresnel 计算。"
+    },
+    {
+     "t": 820,
+     "text": "雪仅继承岩石 Base Normal：保留岩石整体形状，不叠加会被积雪遮住的宏观与微观细节法线；再按 Snow Mask 混合岩石与雪的最终法线。"
+    },
+    {
+     "t": 937,
+     "text": "限制雪闪光范围：表面与屏幕空间的闪光纹理重合时产生亮点，结果乘 Snow Mask，避免裸露岩石发光。"
+    },
+    {
+     "t": 965,
+     "text": "统一属性混合：用同一 Snow Mask 混合岩石与雪的 Smoothness 和 AO，使各项材质属性的覆盖范围一致。"
+    }
+   ]
+  },
+  {
+   "t": 987,
+   "title": "Unity：朝上积雪遮罩与 Coverage 控制",
+   "points": [
+    {
+     "t": 987,
+     "text": "Snow Mask 子图：将输入法线从 Tangent Space 转为 World Space，提取 G／Y 分量；Unity 的世界空间 Y 轴向上。"
+    },
+    {
+     "t": 1031,
+     "text": "观察朝向遮罩：向上表面为 1，侧面为 0，向下表面为 -1，据此区分可积雪的表面。"
+    },
+    {
+     "t": 1052,
+     "text": "收窄混合边缘：法线 Y 分量乘 10，提高遮罩对比度；使用 Saturate 将最终遮罩限制在 0～1。"
+    },
+    {
+     "t": 1125,
+     "text": "通过偏移调整积雪范围：给遮罩加负值会将覆盖区域收缩到顶部，加正值则让覆盖范围向侧面及部分朝下区域延伸。"
+    },
+    {
+     "t": 1195,
+     "text": "Coverage 参数映射：用 Lerp 将 0～1 映射到 -15～3，作为遮罩偏移；0 对应无积雪，1 对应该配置的最大覆盖程度。"
+    },
+    {
+     "t": 1264,
+     "text": "动态积雪思路：降雪粒子启动后，由脚本在一两分钟内逐渐提高 Coverage，让积雪覆盖从顶部向侧面扩展。"
+    },
+    {
+     "t": 1314,
+     "text": "遮罩统一驱动 Color、Normal、Emissive、Smoothness 和 AO；模块化结构允许继续加入雨水或颜色投射模块。"
+    },
+    {
+     "t": 1344,
+     "text": "检查 Unity 最终效果：观察顶部积雪、闪光与岩石近景细节，对比 Coverage 为 1 和约 0.3 时的覆盖差异。"
+    }
+   ]
+  },
+  {
+   "t": 1409,
+   "title": "Unreal Engine：用 Material Function 重构岩石材质",
+   "points": [
+    {
+     "t": 1409,
+     "text": "切换到 Unreal Engine：检查已有岩石材质的近景细节与缩放效果，准备通过 Material Function 组合岩石和雪。"
+    },
+    {
+     "t": 1460,
+     "text": "拆分材质结构：基础贴图与 UV 计算放入 Rock Base，细节采样放入 Rock Detail，并复用后者处理宏观与微观细节。"
+    },
+    {
+     "t": 1519,
+     "text": "Function Output 设置：为 Color、Roughness、Normal、UVs、AO 命名，并用 Sort Priority 0～4 控制输出端口顺序。"
+    },
+    {
+     "t": 1568,
+     "text": "Rock Base 参数与通道：暴露基础贴图供 Material Instance 使用；颜色贴图 Alpha 存 Roughness，法线贴图 RG 存法线、B 存 AO。"
+    },
+    {
+     "t": 1616,
+     "text": "UV 密度控制：Texture Coordinates 乘 Object Scale，并通过 Rock Scale 为不同岩石资产校准细节贴图的 Texel Density。"
+    },
+    {
+     "t": 1656,
+     "text": "Function Input 设置：定义 Color、Roughness、Normal、UVs、Detail Texture、Detail Scale；选择 Vector3、Scalar 或 Texture2D 类型，并设置端口排序。"
+    },
+    {
+     "t": 1743,
+     "text": "启用 Use Preview Value as Default：为未连接端口提供默认值，避免 Material Function 因缺少输入而报错。"
+    },
+    {
+     "t": 1785,
+     "text": "Rock Detail 运算与串联：Alpha 与颜色做 Overlay，1−B 加到 Roughness，细节法线叠加输入法线；两次调用共用基础 UV，Detail Scale 分别为 0.25 和 12。"
+    }
+   ]
+  },
+  {
+   "t": 1942,
+   "title": "Unreal Engine：封装雪材质并混合各项属性",
+   "points": [
+    {
+     "t": 1942,
+     "text": "连接 Snow 函数输入：传入细节处理后的 Color、Roughness、Normal，以及 Rock Base 的 Base Normal、UVs 和 AO。"
+    },
+    {
+     "t": 1983,
+     "text": "刷新重命名后的端口：关闭并重新打开材质，使原 Snow Mask 输入名称更新为 Coverage。"
+    },
+    {
+     "t": 2010,
+     "text": "雪颜色混合：沿用前期雪材质的颜色计算，再使用 Snow Mask 作为 Lerp 权重，与岩石颜色混合。"
+    },
+    {
+     "t": 2059,
+     "text": "BlendAngleCorrectedNormals：先混合基础雪法线与细节雪法线，再与岩石 Base Normal 组合。"
+    },
+    {
+     "t": 2081,
+     "text": "区分基础形状与表面细节：雪法线继承岩石整体形状，排除被雪覆盖的两层岩石细节法线；最终通过 Snow Mask 与完整岩石法线插值。"
+    },
+    {
+     "t": 2150,
+     "text": "闪光与其他属性：Emissive 闪光乘 Snow Mask，仅在积雪处显示；同一遮罩混合岩石与雪的 Roughness 和 AO。"
+    }
+   ]
+  },
+  {
+   "t": 2203,
+   "title": "Unreal Engine：积雪遮罩、参数暴露与场景验证",
+   "points": [
+    {
+     "t": 2203,
+     "text": "生成朝上遮罩：将法线从 Tangent Space 转为 World Space，提取 B／Z 分量；Unreal Engine 使用 Z 轴向上，与 Unity 的 Y 轴不同。"
+    },
+    {
+     "t": 2247,
+     "text": "检查法线分量范围：顶部为 1、侧面为 0、底部为 -1；乘 10 提高遮罩对比度，缩小岩石与雪之间的混合带。"
+    },
+    {
+     "t": 2300,
+     "text": "测试遮罩偏移：依次比较 0、-5、-9 和 +3，观察积雪从覆盖侧面收缩到顶部，或进一步向下扩展。"
+    },
+    {
+     "t": 2374,
+     "text": "Coverage 映射：用 Lerp 将输入 0～1 转为 -15～3 的偏移量，演示 0、0.5、1 对应的积雪覆盖变化。"
+    },
+    {
+     "t": 2444,
+     "text": "将 Snow Mask 接入雪函数内的各个 Lerp，统一控制岩石材质与雪材质的混合范围。"
+    },
+    {
+     "t": 2489,
+     "text": "暴露 Snow Coverage：新建常量，右键 Convert to Parameter，命名 Snow Coverage；Slider Min 设为 0、Max 设为 1，默认值约 0.6，然后保存材质。"
+    },
+    {
+     "t": 2534,
+     "text": "场景验证：从顶部和底部检查积雪与闪光，比较 Coverage 为 1、0.3、0 的效果；说明通常应创建 Material Instance 来调节参数，本次直接修改主材质演示。"
+    },
+    {
+     "t": 2609,
+     "text": "天气系统联动与收尾：通过脚本随降雪逐步增加 Snow Coverage，实现积雪覆盖增长；预告下一期制作冰材质。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}

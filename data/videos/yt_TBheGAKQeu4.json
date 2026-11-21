@@ -1,0 +1,93 @@
+{
+ "schema": 1,
+ "id": "yt_TBheGAKQeu4",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=TBheGAKQeu4",
+ "title": "Procedural Brick Distortion - Advanced Materials - Episode 31",
+ "date": "2023-11-23",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Advanced Materials",
+ "index": 30,
+ "duration": 1047,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本课在已有的程序化砖块材质上加入 UV 扰动，让规则的砖缝和轮廓产生自然起伏。首先在 Unity Shader Graph 中使用 Gradient Noise，调整噪声范围与强度，再偏移生成砖块的基础 UV。随后在 Unreal Engine 中使用 Noise 节点实现同样效果，介绍坐标转换、Levels、Turbulence 和输出范围设置。最后比较噪声尺度与扰动幅度的影响，并提醒程序化材质增加功能时需要考虑实时渲染成本。",
+ "chapters": [
+  {
+   "t": 0,
+   "title": "Unity：使用 Gradient Noise 扰动程序化砖块 UV",
+   "points": [
+    {
+     "t": 0,
+     "text": "回顾已有砖块图案、颜色与法线，明确本课目标：打破过于整齐、对称的砖块轮廓。"
+    },
+    {
+     "t": 51,
+     "text": "定位基础砖块图案的 UV：颜色与法线都依赖基础图案，因此修改上游坐标可以让后续效果同步变化。"
+    },
+    {
+     "t": 115,
+     "text": "添加 Gradient Noise 节点并输入原有 UV；介绍单个 octave，即只运行一层噪声算法，不叠加多层细节。"
+    },
+    {
+     "t": 171,
+     "text": "将 Gradient Noise 的 Scale 调至约 3；准备通过 Add 将噪声叠加到原始 UV。"
+    },
+    {
+     "t": 229,
+     "text": "使用 Multiply ×2，再 Subtract 1，将噪声从 0～1 映射到 −1～1，使 UV 能向正负两个方向偏移。"
+    },
+    {
+     "t": 258,
+     "text": "将扰动后的 UV 接入 Fraction 与用于颜色计算的 Floor；观察直接使用完整噪声幅度导致砖块图案严重扭曲。"
+    },
+    {
+     "t": 308,
+     "text": "在噪声与 Add 之间增加 Multiply，设置为 0.015，缩小偏移量，获得轻微弯曲的砖缝与自然轮廓。"
+    },
+    {
+     "t": 357,
+     "text": "比较 Scale 与扰动强度：强度 0.05 带来明显扭曲，Scale 1 形成跨越多块砖的大幅起伏；最终采用强度 0.015、Scale 约 3，保留单块砖的局部细节。"
+    }
+   ]
+  },
+  {
+   "t": 498,
+   "title": "Unreal Engine：配置 Noise 节点并控制砖块形变",
+   "points": [
+    {
+     "t": 498,
+     "text": "回顾现有材质结构：基础砖块 UV、Hash23 生成每块砖的颜色差异，以及 PreparePerturbNormalHQ、PerturbNormalHQ 生成法线。"
+    },
+    {
+     "t": 575,
+     "text": "在基础 UV 处添加 Noise 节点，选择 Fast Gradient 3D Texture 噪声类型，用于生成砖块坐标偏移。"
+    },
+    {
+     "t": 637,
+     "text": "使用 AppendVector 将二维 UV 与常量 0 拼接成 float3，满足 Noise 的 Position 输入要求。"
+    },
+    {
+     "t": 690,
+     "text": "解释 Levels 与 octaves 的关系：默认叠加六层噪声产生过多细节，将 Levels 改为 1，简化图案与计算。"
+    },
+    {
+     "t": 721,
+     "text": "暂设 Output Min 为 0、Output Max 为 1 以观察噪声；关闭 Turbulence，去掉明显条纹，得到柔和的雾状图案。"
+    },
+    {
+     "t": 766,
+     "text": "调整 Scale 控制噪声形状大小；将 Output Min、Output Max 设置为 −0.02、0.02，直接在 Noise 内控制正负偏移范围，无需额外重映射节点。"
+    },
+    {
+     "t": 849,
+     "text": "用 Add 将 Noise 输出加到原始 UV，并接回后续材质；比较 Scale 与输出上下限，观察局部砖块起伏及过强扰动造成的明显变形。"
+    },
+    {
+     "t": 977,
+     "text": "总结基础图案、颜色、法线与 UV 扰动的完整流程；提醒新增功能会提高程序化砖块的实时渲染成本，随后结束教程。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}

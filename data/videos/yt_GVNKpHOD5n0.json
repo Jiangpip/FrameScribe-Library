@@ -1,0 +1,145 @@
+{
+ "schema": 1,
+ "id": "yt_GVNKpHOD5n0",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=GVNKpHOD5n0",
+ "title": "Eye Shaders - Advanced Materials - Episode 12",
+ "date": "2023-01-12",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Advanced Materials",
+ "index": 12,
+ "duration": 1412,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本课介绍眼球的结构及其对眼睛材质的要求，重点包括角膜折射、瞳孔变化和湿润表面的高光。演示 Unity HDRP 自带眼睛示例的导入、配套模型与纹理，以及次表面散射和各部位材质参数。随后解析 Unreal Engine MetaHuman 眼睛材质，展示多通道遮罩、视差遮蔽映射和血丝控制。课程建议优先复用引擎提供的眼睛材质与配套模型，再按需求修改。",
+ "chapters": [
+  {
+   "t": 0,
+   "title": "眼睛材质的视觉重点与眼球结构",
+   "points": [
+    {
+     "t": 0,
+     "text": "眼睛容易吸引观众注意，且通常占用较少屏幕像素，因此可以考虑分配较高的着色计算预算。"
+    },
+    {
+     "t": 66,
+     "text": "角膜 Cornea 的透明凸起产生折射，使后方虹膜 Iris 的外观随观察角度变化。"
+    },
+    {
+     "t": 94,
+     "text": "瞳孔 Pupil 随虹膜收缩改变大小：暗处扩大、亮处缩小，可作为增强真实感的动态效果。"
+    },
+    {
+     "t": 116,
+     "text": "巩膜 Sclera 需要血丝纹理；湿润的巩膜与角膜使用较高 Smoothness，或在 Unreal 中使用较低 Roughness。"
+    },
+    {
+     "t": 164,
+     "text": "建议复用 Unity 与 Unreal 提供的眼睛材质和纹理，再根据角色需求调整。"
+    }
+   ]
+  },
+  {
+   "t": 188,
+   "title": "Unity HDRP：导入眼睛示例、配置材质与检查 Shader Graph",
+   "points": [
+    {
+     "t": 188,
+     "text": "通过 Window → Package Manager → High Definition RP → Samples 导入 Material Samples，再打开示例 Scenes 下的 Eye 场景。"
+    },
+    {
+     "t": 218,
+     "text": "检查人眼尺度与配套模型：示例眼球直径约 25 mm，由直径 1 m 的模型缩放至 0.025；Human Eye Model.fbx 包含角膜凸起，UV 采用近似正面投影布局。"
+    },
+    {
+     "t": 334,
+     "text": "查看巩膜血丝颜色贴图、表面凹凸法线，以及多种虹膜颜色贴图；灰度虹膜可用于染色，虹膜法线表现内部纤维结构。"
+    },
+    {
+     "t": 404,
+     "text": "材质参数按 Sclera、Iris、Pupil、Limbal Ring、Cornea 和 Geometry 分组；巩膜可调整 Smoothness 与法线强度。"
+    },
+    {
+     "t": 451,
+     "text": "配置巩膜与虹膜各自的 Diffusion Profile；在 Edit → Project Settings → Graphics → HDRP Global Settings 的列表中注册所用配置，否则次表面散射无法正确工作。"
+    },
+    {
+     "t": 546,
+     "text": "调整虹膜贴图、位置偏移、颜色亮度与法线强度；通过 Pupil Aperture 及最小、最大开口参数控制瞳孔大小。"
+    },
+    {
+     "t": 619,
+     "text": "调整 Limbal Ring 虹膜边缘暗环与角膜 Smoothness；通过 Caustics 强度和混合参数观察角膜聚光在虹膜上形成的亮部。"
+    },
+    {
+     "t": 714,
+     "text": "检查 Shader Graph 的巩膜与虹膜分区，以及 Utilities → High Definition Render Pipeline 下的眼睛专用节点；观察 Refraction 节点造成的侧视变形，按需复制 Shader Graph 后扩展虹膜颜色控制。"
+    }
+   ]
+  },
+  {
+   "t": 838,
+   "title": "Unreal MetaHuman：眼睛纹理与视差折射效果",
+   "points": [
+    {
+     "t": 838,
+     "text": "打开 MetaHuman 示例项目中的眼睛 Material Instance，查看暴露的材质参数。"
+    },
+    {
+     "t": 862,
+     "text": "巩膜底色与血丝使用独立纹理，通过混合控制血丝显现程度；虹膜 Height Map 用于表现内部起伏。"
+    },
+    {
+     "t": 916,
+     "text": "检查 Iris Mask 的四个通道，分别存储纤维纹理、肌肉状结构、虹膜内外过渡和瞳孔遮罩。"
+    },
+    {
+     "t": 961,
+     "text": "巩膜与血丝还各有法线贴图，可在较平滑的巩膜和具有血丝凹凸的表面之间混合。"
+    },
+    {
+     "t": 988,
+     "text": "定位 MF_ParallaxOcclusionMappingEye 材质函数，将材质应用到平面盒体上，观察视差遮蔽映射产生的虹膜深度与折射观感。"
+    },
+    {
+     "t": 1038,
+     "text": "在 Refraction 参数组中调整 Index of Refraction；观察虹膜中心呈现内凹感，而模型本身没有对应的内部几何结构。"
+    }
+   ]
+  },
+  {
+   "t": 1088,
+   "title": "Unreal MetaHuman：外观控制、模型匹配与材质结构",
+   "points": [
+    {
+     "t": 1088,
+     "text": "梳理 Iris、Iris Generator、Refraction 和 Sclera 参数组；调整血丝 Falloff 与 Rotation，控制充血程度并增加不同角色之间的图案差异。"
+    },
+    {
+     "t": 1186,
+     "text": "默认预览球体会出现拉伸和虹膜形状异常，因为其 UV 与该眼睛材质要求的配套模型不同。"
+    },
+    {
+     "t": 1208,
+     "text": "检查 Feature Level Switch：根据设备能力切换默认版本与 ES 3.1 回退版本，分别使用 Eye 和 Default Lit Shading Model。"
+    },
+    {
+     "t": 1271,
+     "text": "查看 Base Color 中巩膜与虹膜颜色的组合，以及 Specular 的生成；MF_IrisGenerator 利用虹膜遮罩生成内部图案。"
+    },
+    {
+     "t": 1292,
+     "text": "定位虹膜折射使用的视差遮蔽映射，以及瞳孔缩放逻辑；使用 Pupil Scale 调整瞳孔大小，并可为其制作动画。"
+    },
+    {
+     "t": 1337,
+     "text": "建议直接使用现成材质与参数；如需定制，可检查复杂逻辑，并考虑将不需要动态调整的参数改为固定值。"
+    },
+    {
+     "t": 1364,
+     "text": "总结 Unity 与 Unreal 内置眼睛材质的复用价值，预告下一期介绍 Hair Shaders。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}

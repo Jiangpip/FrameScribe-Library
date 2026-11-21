@@ -1,0 +1,191 @@
+{
+ "schema": 1,
+ "id": "yt_PNXIGplTsgU",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=PNXIGplTsgU",
+ "title": "Using Landscape Grass Masks With PCG - Procedural Content Generation (PCG) - Episode 3",
+ "date": "2026-04-30",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Procedural Content Generation (PCG)",
+ "index": 3,
+ "duration": 1734,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本课介绍如何使用 Unreal Engine 的 Landscape Grass Mask 控制 PCG 草地的生成范围，排除斜坡、积雪和水坑。首先创建 Landscape Grass Type，并在地形材质中组合坡度、积雪和水坑遮罩。随后在 PCG 图中读取 Grass Map，将纹理传入 Point Generator，并修改 HLSL，根据遮罩值提前剔除不需要的点。最后重新生成草地并进入运行模式检查结果，预告使用多个遮罩控制不同类型的 PCG 网格。",
+ "chapters": [
+  {
+   "t": 0,
+   "title": "目标说明与 Landscape Grass Type 准备",
+   "points": [
+    {
+     "t": 0,
+     "text": "回顾上一课的 PCG 草地系统：通过距离淡入淡出、密度和绘制距离平衡画面与性能。"
+    },
+    {
+     "t": 54,
+     "text": "指出现有系统会在泥土坡面、陡坡和积雪区域生成草；本课改用地形材质遮罩限制生成位置。"
+    },
+    {
+     "t": 105,
+     "text": "在 Content Drawer 中右键搜索 Grass，创建 Landscape Grass Type；示例命名为 LGT_PCGGrass，后续引用须保持名称及大小写一致。"
+    },
+    {
+     "t": 154,
+     "text": "Landscape Grass Type 仅用于关联并传递遮罩，无须填充 Grass Varieties，也不通过它直接生成草网格。"
+    },
+    {
+     "t": 219,
+     "text": "梳理现有地形材质：Altitude Mask 混合不同海拔的草地与坡面材质，Terrain Angle Mask 混合平地和斜坡，最后叠加积雪。"
+    },
+    {
+     "t": 300,
+     "text": "检查材质中的水坑效果，确认水坑也需要从草地生成区域中排除。"
+    }
+   ]
+  },
+  {
+   "t": 322,
+   "title": "在地形材质中构建草地生成遮罩",
+   "points": [
+    {
+     "t": 322,
+     "text": "添加 Landscape Grass Output 节点，将 Grass Type 指定为刚创建的 LGT_PCGGrass。"
+    },
+    {
+     "t": 387,
+     "text": "将现有 Terrain Angle Mask 输出临时接入 Base Color，保存后把视口从 Lit 切换到 Unlit，查看平地白、坡面黑的遮罩。"
+    },
+    {
+     "t": 433,
+     "text": "分析遮罩中的细碎噪声：Pixel Normal 输入引入逐像素法线细节，适合材质混合，但对成簇草地的放置过于细致。"
+    },
+    {
+     "t": 503,
+     "text": "复制 Terrain Angle Mask 专供草地使用；将 Pixel Normal 输入设为 0，改用顶点法线，并将 Mask Center 设为 -0.4。"
+    },
+    {
+     "t": 552,
+     "text": "再次通过 Base Color 预览，确认坡度遮罩去除了逐像素噪声，平地到斜坡的过渡更简洁。"
+    },
+    {
+     "t": 603,
+     "text": "找到 Snow Mask，用 OneMinus 反相，再与坡度遮罩相乘，使积雪区域变黑并禁止生成草。"
+    },
+    {
+     "t": 651,
+     "text": "对 Puddle Mask 同样使用 OneMinus，再通过 Multiply 叠乘；预览最终遮罩，白色允许生成，黑色排除水坑、斜坡和积雪。"
+    },
+    {
+     "t": 724,
+     "text": "将最终遮罩连接到 Landscape Grass Output，并恢复原有 Base Color 连接，保存地形材质。"
+    }
+   ]
+  },
+  {
+   "t": 773,
+   "title": "配置 Grass Map 生成并接入 PCG",
+   "points": [
+    {
+     "t": 773,
+     "text": "补充运行时资源设置：在控制台输入 grass.GrassMap.AlwaysBuildRuntimeGenerationResources 1，确保需要时生成 Grass Map 相关资源。"
+    },
+    {
+     "t": 851,
+     "text": "回顾 PCG 图的数据流程：获取 Landscape Data、调整 Grid Size、生成点，最后在点上生成草网格。"
+    },
+    {
+     "t": 872,
+     "text": "添加 Generate Grass Maps 节点，并连接 Change Grid Size 的输出，读取地形中的草地遮罩。"
+    },
+    {
+     "t": 895,
+     "text": "在 Select Grass Types 中添加条目，准确填写 LGT_PCGGrass，并取消勾选 Exclude Selected Grass Types。"
+    },
+    {
+     "t": 951,
+     "text": "在 Point Generator 的 Input Pins 中新增 GrassMask 输入；该名称后续必须与 HLSL 中的引用一致。"
+    },
+    {
+     "t": 1002,
+     "text": "将 GrassMask 输入类型从 Points 改为 Base Texture 2D，并把生成的地形遮罩纹理连接到该输入。"
+    },
+    {
+     "t": 1031,
+     "text": "点击 Open HLSL Editor，查看 Point Generator 在 GPU 上执行的 Compute Shader 代码。"
+    },
+    {
+     "t": 1096,
+     "text": "梳理生成代码：创建规则点阵、按密度初筛、随机偏移位置、随机旋转与缩放、应用空间噪声和最终密度筛选，再输出点数据。"
+    }
+   ]
+  },
+  {
+   "t": 1164,
+   "title": "修改 HLSL：采样遮罩并提前剔除点",
+   "points": [
+    {
+     "t": 1164,
+     "text": "分析剔除位置对性能的影响：尽早删除不需要的点，可减少后续旋转、缩放等计算。"
+    },
+    {
+     "t": 1217,
+     "text": "选择在随机位置偏移之后、随机旋转和缩放之前应用遮罩，确保按点的最终位置采样。"
+    },
+    {
+     "t": 1246,
+     "text": "参考现有密度筛选中的 Remove Point 逻辑，复制条件判断代码作为草地遮罩剔除逻辑的基础。"
+    },
+    {
+     "t": 1275,
+     "text": "在选定位置粘贴剔除代码并添加 Grass Mask 注释，将原有密度判断替换为遮罩采样判断。"
+    },
+    {
+     "t": 1301,
+     "text": "使用点的位置采样 LGT_PCGGrass 对应的 Grass Map；当遮罩值小于 0.9 时删除该点。"
+    },
+    {
+     "t": 1348,
+     "text": "核对两个名称：HLSL 中的 GrassMask 必须匹配新增输入引脚，LGT_PCGGrass 必须匹配 Landscape Grass Type 资产名称。"
+    },
+    {
+     "t": 1416,
+     "text": "保存修改并点击 Force Regen，重新生成草地，使地形材质遮罩参与点筛选。"
+    }
+   ]
+  },
+  {
+   "t": 1443,
+   "title": "验证生成效果与多遮罩应用展望",
+   "points": [
+    {
+     "t": 1443,
+     "text": "检查重新生成后的地形：水坑、斜坡和积雪区域不再出现草，验证材质遮罩对 PCG 放置的控制效果。"
+    },
+    {
+     "t": 1472,
+     "text": "扩展遮罩来源：地形高度、绘制的 Landscape 材质层、坡度以及水坑等计算结果，都可参与控制 PCG 资产分布。"
+    },
+    {
+     "t": 1503,
+     "text": "点击 Play，在环境中移动检查草地分布，确认坡面、水坑和悬崖区域的排除效果。"
+    },
+    {
+     "t": 1534,
+     "text": "介绍工作流优势：熟悉 Material Editor 的用户可先在材质中制作复杂遮罩，再交给 PCG 使用；后续课程将探索在 PCG 图内实现类似控制。"
+    },
+    {
+     "t": 1604,
+     "text": "提出扩展需求：在坡面放置岩石、积雪悬崖放置雪块，或在森林区域分布枯枝、落叶等不同资产。"
+    },
+    {
+     "t": 1663,
+     "text": "预告下一课：从地形材质输出多个 Grass Mask，分别控制多种 PCG 网格的放置。"
+    },
+    {
+     "t": 1689,
+     "text": "课程收尾：回顾通过地形材质 Grass Mask 控制 PCG 网格位置的方法，结束致辞及片尾音乐。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}

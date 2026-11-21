@@ -1,0 +1,161 @@
+{
+ "schema": 1,
+ "id": "yt_sjvL4q_KRZA",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=sjvL4q_KRZA",
+ "title": "Metal Shader - Advanced Materials - Episode 7",
+ "date": "2022-11-10",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Advanced Materials",
+ "index": 7,
+ "duration": 1289,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本课在 Unity HDRP Shader Graph 和 Unreal Engine 中制作铜质岩石材质，说明 Metallic 如何改变 Base Color 的含义。通过金属反射率颜色、法线贴图和 AO，建立金属外观并处理缝隙中的反射遮蔽。使用 Fresnel、渐变纹理和 Fraction／Frac 节点制作随视角变化的虹彩，再以较低混合强度加入铜色。最后对照两套节点实现，总结金属遮罩、反射率取值及可选虹彩效果的使用方法。",
+ "chapters": [
+  {
+   "t": 0,
+   "title": "Unity：金属材质原理与铜质岩石基础",
+   "points": [
+    {
+     "t": 0,
+     "text": "介绍课程目标：先在 Unity 制作金属材质，再切换 Unreal Engine 对照实现。"
+    },
+    {
+     "t": 29,
+     "text": "创建 HDRP Lit Shader Graph，命名为 Test Metal；将 Metallic 从 0 改为 1，使表面呈现金属属性。"
+    },
+    {
+     "t": 58,
+     "text": "使用黑白纹理控制 Metallic：白色对应金属，黑色对应非金属；该输入会改变着色器的底层反射行为。"
+    },
+    {
+     "t": 87,
+     "text": "理解 Base Color：非金属模式下表示 Albedo／漫反射颜色，金属模式下表示反射的颜色与亮度。"
+    },
+    {
+     "t": 142,
+     "text": "将 Smoothness 设为 0.9，对比 Metallic 为 0 和 1 时的反射表现。"
+    },
+    {
+     "t": 186,
+     "text": "添加 Metal Reflectance 节点并连接 Base Color，使用实测金属反射率预设；从 Iron 切换为 Copper。"
+    },
+    {
+     "t": 232,
+     "text": "添加 Sample Texture 2D，载入岩石法线贴图，将采样类型设为 Normal，并连接 Normal（Tangent Space）。"
+    },
+    {
+     "t": 274,
+     "text": "将 Test Metal 材质应用到场景中的岩石模型，检查铜质表面与法线细节。"
+    }
+   ]
+  },
+  {
+   "t": 294,
+   "title": "Unity：使用 AO 处理金属反射遮蔽",
+   "points": [
+    {
+     "t": 294,
+     "text": "介绍 Specular Occlusion／反射遮蔽：缝隙和凹陷中的环境反射需要适当压暗。"
+    },
+    {
+     "t": 322,
+     "text": "添加 Sample Texture 2D，载入岩石 Mask Map，提取绿色通道中的 AO。"
+    },
+    {
+     "t": 345,
+     "text": "将 Mask Map 的绿色通道连接 Master Stack 的 Ambient Occlusion 输入。"
+    },
+    {
+     "t": 366,
+     "text": "进入 Graph Inspector → Graph Settings → Advanced Options，检查 Specular Occlusion Mode；默认 From AO 使用 AO 输入计算反射遮蔽。"
+    },
+    {
+     "t": 416,
+     "text": "演示替代做法：关闭 Specular Occlusion Mode，用 Multiply 将 AO 与 Metal Reflectance 相乘，再接入 Base Color。"
+    },
+    {
+     "t": 443,
+     "text": "避免重复压暗：采用 AO 乘反射颜色的方法时，关闭 From AO 反射遮蔽，防止两种处理叠加。"
+    }
+   ]
+  },
+  {
+   "t": 472,
+   "title": "Unity：制作视角驱动的细微虹彩与混合材质",
+   "points": [
+    {
+     "t": 472,
+     "text": "引入 Iridescence（虹彩）效果，并以视角驱动的颜色变化模拟薄膜表面的外观。"
+    },
+    {
+     "t": 496,
+     "text": "创建 Fresnel Effect 节点，Power 设为 2，生成正对相机区域偏黑、掠射角边缘偏白的遮罩。"
+    },
+    {
+     "t": 521,
+     "text": "添加 Sample Texture 2D，载入从红色循环回红色的光谱渐变纹理，以 Fresnel 输出作为 UV。"
+    },
+    {
+     "t": 568,
+     "text": "将 Fresnel 乘以范围为 0–4 的滑块值，再接 Fraction 节点，使 UV 在 0–1 之间重复，控制虹彩条带数量。"
+    },
+    {
+     "t": 658,
+     "text": "暂时把光谱采样结果直接接入 Base Color，旋转场景观察颜色随视角变化的效果。"
+    },
+    {
+     "t": 685,
+     "text": "使用 Lerp 混合铜色与虹彩：Metal Reflectance 接 A，光谱渐变接 B，混合系数先设为 0.1。"
+    },
+    {
+     "t": 730,
+     "text": "将 Lerp 结果乘以 AO 后接入 Base Color；检查场景效果，并可将混合系数降至 0.05，保留细微色彩变化。"
+    },
+    {
+     "t": 808,
+     "text": "扩展金属与非金属混合材质：在 Mask Map 红色通道绘制 Metallic 遮罩，并在 Base Color 纹理的金属区域使用相应反射率颜色，避免颜色过暗。"
+    }
+   ]
+  },
+  {
+   "t": 880,
+   "title": "Unreal Engine：复现铜材质、反射遮蔽与虹彩",
+   "points": [
+    {
+     "t": 880,
+     "text": "查看对应的 Unreal 材质图：Metallic 设为 1，Roughness 设为 0.1，并将岩石法线纹理连接 Normal。"
+    },
+    {
+     "t": 934,
+     "text": "按住 3 并单击创建 Constant3Vector，输入铜的反射率颜色，替代 Unity 的 Metal Reflectance 预设节点。"
+    },
+    {
+     "t": 955,
+     "text": "将 AO 接入 Ambient Occlusion，同时用 Lerp 将 AO 从 0–1 重映射至 0.5–1，减轻暗部，再乘以铜的反射颜色。"
+    },
+    {
+     "t": 1013,
+     "text": "将法线从 Tangent Space 转换至 World Space，再连接 Fresnel 的 Normal 输入，让视角遮罩包含法线贴图细节。"
+    },
+    {
+     "t": 1042,
+     "text": "将 Fresnel 输出乘以 4，再通过 Frac 取小数部分，使用循环结果作为光谱渐变纹理的采样 UV。"
+    },
+    {
+     "t": 1099,
+     "text": "依次将 Fresnel、循环灰度条带和光谱采样接入 Base Color，并切换 Unlit 查看各阶段的分布。"
+    },
+    {
+     "t": 1149,
+     "text": "用 Lerp 将虹彩以 0.1 或更低的 0.05 强度混入铜色，再乘以 AO 接入 Base Color，检查场景中的铜质岩石。"
+    },
+    {
+     "t": 1193,
+     "text": "总结与结尾：用 Metallic 切换金属属性，选择正确的反射率颜色，处理反射遮蔽；虹彩属于可选的细节增强，随后结束课程。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}

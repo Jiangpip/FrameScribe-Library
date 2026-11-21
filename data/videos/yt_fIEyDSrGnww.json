@@ -1,0 +1,169 @@
+{
+ "schema": 1,
+ "id": "yt_fIEyDSrGnww",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=fIEyDSrGnww",
+ "title": "Particle System Life Time - Advanced Materials - Episode 47",
+ "date": "2024-04-04",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Advanced Materials",
+ "index": 47,
+ "duration": 1711,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本课在已有的卡片网格粒子系统上，分别用 Unity Shader Graph 和 Unreal Engine 材质节点实现粒子生命周期。通过 Time、Particle Speed、顶点颜色偏移与 Fraction／Frac，生成各粒子错开循环的生命周期，并驱动起始尺寸到结束尺寸的插值。将生命周期轮次加入随机值生成过程，使粒子重生时更新位置和颜色，减少固定模式重复。随后加入 Debug Time 与 Manual Time，实现手动调试或由脚本、Blueprint 控制时间，并演示发射器范围、粒子尺寸和速度参数；粒子的持续位移留待下一课实现。",
+ "chapters": [
+  {
+   "t": 0,
+   "title": "Unity：构建粒子生命周期并更新重生随机值",
+   "points": [
+    {
+     "t": 0,
+     "text": "回顾已有结构：堆叠卡片网格、Billboard 朝向相机、Hash33 随机值，以及 Emitter Dimensions 控制粒子分布范围。"
+    },
+    {
+     "t": 70,
+     "text": "在 Blackboard 新建 Particle Speed 参数，默认值设为 1；使用 Multiply 将其与 Time 相乘，控制生命周期推进速度。"
+    },
+    {
+     "t": 142,
+     "text": "使用 Vertex Color 与 Split 提取红色通道：每张卡片具有不同灰度值，将其加到时间上，使各粒子的生命周期相位错开。"
+    },
+    {
+     "t": 209,
+     "text": "添加 Fraction 节点，把偏移后的时间转换为循环的 0–1 生命周期进度。"
+    },
+    {
+     "t": 235,
+     "text": "将 Fraction 输出连接到 Particle Start Size 与 Particle End Size 之间的 Lerp，驱动粒子随生命周期改变尺寸。"
+    },
+    {
+     "t": 261,
+     "text": "将 Particle Speed 降至 0.3，观察粒子从起始尺寸变化到结束尺寸，再重置并开始下一轮。"
+    },
+    {
+     "t": 287,
+     "text": "识别固定随机种子的问题：粒子每轮都在相同位置、以相同颜色重复相同变化，形成明显的循环模式。"
+    },
+    {
+     "t": 315,
+     "text": "把生命周期相关的时间信息加入随机值生成链路，使粒子重生时更新随机颜色和发射器内的位置偏移。"
+    }
+   ]
+  },
+  {
+   "t": 435,
+   "title": "Unity：手动时间调试与场景参数演示",
+   "points": [
+    {
+     "t": 435,
+     "text": "新建 Boolean 参数 Debug Time，默认关闭；新建 Float 参数 Manual Time，设为范围 0–1、默认值 0 的 Slider。"
+    },
+    {
+     "t": 462,
+     "text": "添加 Branch 节点：Debug Time 为 True 时使用 Manual Time，为 False 时使用自动推进的时间。"
+    },
+    {
+     "t": 507,
+     "text": "临时连接 Slider 并开启 Debug Time，拖动滑块检查生命周期任意阶段；也可由脚本向公开的 Manual Time 参数传值。"
+    },
+    {
+     "t": 552,
+     "text": "关闭 Debug Time，将生命周期节点整理到 Particle Lifetime 分组，保存 Shader 并切换到场景查看效果。"
+    },
+    {
+     "t": 604,
+     "text": "调整 Emitter Dimensions，使粒子集中在小范围或沿单轴拉长；交换起止尺寸大小，让粒子随生命周期缩小。"
+    },
+    {
+     "t": 657,
+     "text": "将起止尺寸都设为 0.1，保持粒子大小不变；提高 Particle Speed 可加快重生。此处关于数值越大寿命越长的口述有误，按 Time × Speed 的节点关系应为寿命越短。"
+    },
+    {
+     "t": 685,
+     "text": "将 Particle Speed 设为 0 可冻结生命周期，较小正值让生命周期缓慢推进；开启 Debug Time 后可用 Manual Time 往返检查效果。"
+    },
+    {
+     "t": 752,
+     "text": "明确当前功能边界：粒子能生长、缩小及重生，但在单次生命周期内仍固定在原位；下一课将加入从起点到终点的运动。"
+    }
+   ]
+  },
+  {
+   "t": 821,
+   "title": "Unreal Engine：生命周期节点与逐轮随机化",
+   "points": [
+    {
+     "t": 821,
+     "text": "回顾 Unreal 材质结构：Billboards 负责朝向相机，Vector Noise 生成随机值；当前用颜色显示随机值，后续还会用于其他行为参数。"
+    },
+    {
+     "t": 866,
+     "text": "回顾 Position Offset 与 Emitter Size：X、Y、Z 控制发射器范围；各轴设为 300 对应约 3 米，设为 6 对应约 6 厘米。"
+    },
+    {
+     "t": 946,
+     "text": "创建默认值为 1 的 Particle Speed 参数并乘以 Time；数值越大，生命周期推进越快，实际存活周期越短。"
+    },
+    {
+     "t": 1000,
+     "text": "将每张卡片的 Vertex Color 灰度值加到时间上，为粒子分配不同相位，避免所有粒子同步生长和重置。"
+    },
+    {
+     "t": 1030,
+     "text": "添加 Frac 节点，仅保留时间的小数部分，使进度从 0 增长到接近 1 后回到 0，形成循环生命周期。"
+    },
+    {
+     "t": 1077,
+     "text": "将 Frac 输出接到尺寸 Lerp 的 Alpha；调整 Particle Start Size 和 Particle End Size，可在逐渐放大与逐渐缩小之间切换。"
+    },
+    {
+     "t": 1151,
+     "text": "观察固定模式重复问题；在随机值链路中添加 Floor，并对 Frac 之前的偏移时间取 Floor，将生命周期轮次相加后送入 Vector Noise，让每次重生更新随机位置和颜色。"
+    },
+    {
+     "t": 1301,
+     "text": "若需要每轮重复相同行为，可绕过加入生命周期轮次的 Add 节点；加入轮次用于变化随机种子，不应理解为数学上保证颜色或位置永不重复。"
+    }
+   ]
+  },
+  {
+   "t": 1327,
+   "title": "Unreal Engine：手动时间控制、材质实例调参与课程收尾",
+   "points": [
+    {
+     "t": 1327,
+     "text": "比较持续循环效果与爆炸等单次效果的时间控制需求，准备在自动推进时间之外增加手动时间输入。"
+    },
+    {
+     "t": 1380,
+     "text": "创建 Manual Time 与 Debug Time 参数，在连续时间和手动时间之间切换；Debug Time 设为 1 时，由 Manual Time 控制生命周期进度。"
+    },
+    {
+     "t": 1434,
+     "text": "在 0–1 范围内调整 Manual Time 检查粒子状态；提出由外部脚本或 Blueprint 推进一次时间后停止的控制方式。"
+    },
+    {
+     "t": 1460,
+     "text": "将 Debug Time 默认值恢复为 0，并设置最小值 0、最大值 1；选中相关节点，右键执行 Create Comment from Selection，命名为 Lifetime。"
+    },
+    {
+     "t": 1533,
+     "text": "在场景中打开 Material Instance，将 Particle Speed 设为 0.2 观察慢速变化；起止尺寸都设为 0.1 可保持大小不变，速度设为 0 可冻结生命周期。"
+    },
+    {
+     "t": 1580,
+     "text": "缩小 Emitter Size，让粒子聚集在约 10 厘米范围；拉长其中一个轴形成链状分布，并增大粒子尺寸观察效果。"
+    },
+    {
+     "t": 1624,
+     "text": "将 Particle Speed 恢复为 1，观察粒子循环重生并切换位置；预告下一课加入运动方向以及偏离该方向的变化。"
+    },
+    {
+     "t": 1673,
+     "text": "课程收尾：邀请观众提出粒子系统功能建议，并预告继续完善该系列。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}

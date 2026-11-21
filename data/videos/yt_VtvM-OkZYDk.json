@@ -1,0 +1,255 @@
+{
+ "schema": 1,
+ "id": "yt_VtvM-OkZYDk",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=VtvM-OkZYDk",
+ "title": "Automatic Landscape Tree Blending - Procedural Content Generation (PCG) - Episode 6",
+ "date": "2026-05-21",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Procedural Content Generation (PCG)",
+ "index": 6,
+ "duration": 2362,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本课演示在 Unreal Engine 中利用 Runtime Virtual Texture（RVT），为 PCG 生成的树木自动添加泥土与树根地表，并随树木重新散布同步更新。流程包括创建 RVT 及其 Volume、配置树木写入遮罩，以及在 Landscape 材质中读取遮罩并混合地表材质。随后通过径向渐变与 HeightLerp 改善边缘过渡，并用反向遮罩排除树下的水坑和草。最后利用 RVT 的第二个通道驱动 World Position Offset，让树根附近的地形局部隆起。",
+ "chapters": [
+  {
+   "t": 0,
+   "title": "效果目标与自动融合流程",
+   "points": [
+    {
+     "t": 0,
+     "text": "展示目标：为 PCG 树木自动添加树下泥土和树根，使树木与 Landscape 衔接。"
+    },
+    {
+     "t": 74,
+     "text": "观察实景参考：树干周围的裸土、落针和外露树根形成不同于草地的地表区域。"
+    },
+    {
+     "t": 148,
+     "text": "手工绘制的局限：修改 PCG Random Seed 后树木位置改变，原先绘制的泥土地表无法自动跟随。"
+    },
+    {
+     "t": 200,
+     "text": "方案适用范围：遮罩由树木自身写入，也可用于非 PCG 放置的 Landscape 物体。"
+    },
+    {
+     "t": 245,
+     "text": "梳理五步流程：创建 RVT、添加 Volume、配置树木 Mesh 写入、修改树木材质、在 Landscape 材质中读取并混合。"
+    }
+   ]
+  },
+  {
+   "t": 357,
+   "title": "创建 RVT、设置覆盖范围并配置 PCG Mesh",
+   "points": [
+    {
+     "t": 357,
+     "text": "在 Content Drawer 中右键创建 Runtime Virtual Texture，命名为 Terrain Tree Dirt。"
+    },
+    {
+     "t": 405,
+     "text": "将 Virtual Texture Content 设置为 Mask4，仅保存四通道遮罩，不使用 Base Color、Normal 等完整材质数据。"
+    },
+    {
+     "t": 450,
+     "text": "降低遮罩分辨率：Size of Virtual Texture in Tiles 设为 32，Tile Size 设为 128。"
+    },
+    {
+     "t": 473,
+     "text": "将 Border Padding 设置为 1、Low Mips to Remove 设置为 4；本例以低分辨率遮罩减少资源需求。"
+    },
+    {
+     "t": 516,
+     "text": "向关卡添加 Runtime Virtual Texture Volume，并指定 Terrain Tree Dirt RVT。"
+    },
+    {
+     "t": 560,
+     "text": "在 Bounds Align Actor 中选择 Landscape，点击 Set Bounds，使 Volume 覆盖地形范围。"
+    },
+    {
+     "t": 606,
+     "text": "打开已有 PCG Graph，定位生成高、中、矮树木的 Static Mesh Spawner 节点。"
+    },
+    {
+     "t": 655,
+     "text": "在各树木条目中搜索 runtime，向 Runtime Virtual Textures 数组添加 Terrain Tree Dirt；逐项配置并保存 PCG Graph。"
+    }
+   ]
+  },
+  {
+   "t": 753,
+   "title": "树木写入遮罩与 Landscape 读取调试",
+   "points": [
+    {
+     "t": 753,
+     "text": "打开树木使用的材质，添加 Runtime Virtual Texture Output 节点，定义写入 RVT 的内容。"
+    },
+    {
+     "t": 807,
+     "text": "对应 RVT 的 Mask4 格式，使用 Runtime Virtual Texture Output 的 Mask4 输入。"
+    },
+    {
+     "t": 849,
+     "text": "将常量 1 接入 Mask4，使树木覆盖的位置写入白色遮罩，保存树木材质。"
+    },
+    {
+     "t": 870,
+     "text": "查看 RVT 预览中的白色斑点，确认树木已经写入纹理。"
+    },
+    {
+     "t": 915,
+     "text": "在 Landscape 材质中添加 Runtime Virtual Texture Sample，指定 Terrain Tree Dirt。"
+    },
+    {
+     "t": 941,
+     "text": "将 Mask4 输出接入 ComponentMask，仅提取 R 通道；当前四个通道写入的值相同。"
+    },
+    {
+     "t": 991,
+     "text": "临时把遮罩接入 Base Color，并切换 Unlit 查看树下白色区域；低分辨率块状结果用于后续材质混合。"
+    }
+   ]
+  },
+  {
+   "t": 1040,
+   "title": "构建树根地表材质并验证自动跟随",
+   "points": [
+    {
+     "t": 1040,
+     "text": "定位原有草地材质分支：现有流程按海拔混合绿色草地与干燥岩质草地，再与其他地表层融合。"
+    },
+    {
+     "t": 1060,
+     "text": "新增 BlendMaterialAttributes，在草地与树根泥土材质之间混合，将 RVT 遮罩接入 Alpha。"
+    },
+    {
+     "t": 1109,
+     "text": "用新增混合节点的输出替换原草地分支的下游连接。"
+    },
+    {
+     "t": 1130,
+     "text": "选择 Fab 上的 Quixel Megascans 森林地表材质，包含泥土、落叶与树根。"
+    },
+    {
+     "t": 1181,
+     "text": "介绍预先完成的纹理打包：CR 保存 Color 与 Roughness，NOH 保存 Normal、Occlusion 与 Height，以减少纹理采样。"
+    },
+    {
+     "t": 1227,
+     "text": "创建两份 Texture Object，分别选择树根材质的 CR、NOH 纹理，接入前期课程制作的 Simple Layer 材质函数。"
+    },
+    {
+     "t": 1308,
+     "text": "将 Simple Layer 的纹理尺度设置为 237 cm，输出接入 BlendMaterialAttributes 的 B，保存并查看树下泥土效果。"
+    },
+    {
+     "t": 1381,
+     "text": "修改 PCG 表面采样节点的 Random Seed 重新散布树木，验证 RVT 与树下泥土、树根区域同步更新。"
+    }
+   ]
+  },
+  {
+   "t": 1449,
+   "title": "径向渐变与 HeightLerp 改善树根边缘",
+   "points": [
+    {
+     "t": 1449,
+     "text": "再次将 RVT 遮罩接入 Base Color 检查块状边缘，准备改为中心白、外围黑的渐变。"
+    },
+    {
+     "t": 1525,
+     "text": "在树木材质中添加 Local Position，取 XY 分量并计算 Length，获得相对树木 Pivot 的水平径向距离。"
+    },
+    {
+     "t": 1578,
+     "text": "对距离执行 Subtract 40，再 Multiply 0.007，控制中心实心区域与外围渐变宽度。"
+    },
+    {
+     "t": 1632,
+     "text": "依次接入 Saturate 和 OneMinus，将结果限制在 0–1 并反转，接回 Mask4 形成中心白、边缘黑的遮罩。"
+    },
+    {
+     "t": 1678,
+     "text": "在 Landscape 材质中添加 HeightLerp；检查树根 NOH 纹理的 Alpha 高度信息，树根较亮、泥土较暗。"
+    },
+    {
+     "t": 1720,
+     "text": "将 RVT 渐变接入 HeightLerp 的 Transition Phase，树根材质高度接入 Height Texture，Contrast 设为 1。"
+    },
+    {
+     "t": 1742,
+     "text": "临时预览 HeightLerp 的 Alpha 输出，确认高度纹理打散过渡边缘，形成向草地伸出的树根细节。"
+    },
+    {
+     "t": 1770,
+     "text": "将 HeightLerp 的 Alpha 接入 BlendMaterialAttributes，使草地与树根泥土按高度细节自然过渡。"
+    }
+   ]
+  },
+  {
+   "t": 1800,
+   "title": "利用反向遮罩排除树下水坑与草",
+   "points": [
+    {
+     "t": 1800,
+     "text": "观察树根区域与水坑的交叠，准备让水坑避开树干附近的泥土和树根。"
+    },
+    {
+     "t": 1848,
+     "text": "对 HeightLerp 生成的树根遮罩使用 OneMinus，将反向结果接入水坑材质函数的 Puddle Mask，替换原来的常量 1。"
+    },
+    {
+     "t": 1892,
+     "text": "检查场景：水坑仍保留在周围地表，但不再紧贴树木基部。"
+    },
+    {
+     "t": 1918,
+     "text": "找到原有 Base Grass Mask，将其乘以反向树根遮罩，限制草的生成范围。"
+    },
+    {
+     "t": 1959,
+     "text": "验证泥土和树根区域不再长草，并总结同一遮罩对水坑与植被的共同控制。"
+    }
+   ]
+  },
+  {
+   "t": 1985,
+   "title": "第二通道驱动地形隆起与最终巡视",
+   "points": [
+    {
+     "t": 1985,
+     "text": "提出地形融合目标：用额外遮罩让树根附近地表轻微隆起，增强树木扎根地面的视觉效果。"
+    },
+    {
+     "t": 2036,
+     "text": "在树木材质中添加 AppendMany，利用 Mask4 的独立通道同时保存地表混合遮罩与地形位移遮罩。"
+    },
+    {
+     "t": 2079,
+     "text": "复用 Local Position 的 XY 距离，新分支执行 Subtract 15、Multiply 0.01（字幕口述含混），再接 Saturate 与 OneMinus，生成更小的位移遮罩。"
+    },
+    {
+     "t": 2100,
+     "text": "将第二份遮罩写入 G 通道并保存；在 Landscape 材质中用新的 ComponentMask 提取 G。"
+    },
+    {
+     "t": 2147,
+     "text": "将 G 通道临时接入 Base Color，检查用于地形隆起的遮罩范围；随后添加 AppendMany 构建位移向量。"
+    },
+    {
+     "t": 2175,
+     "text": "设置位移向量 X、Y 为 0，G 通道遮罩乘以 35 后作为 Z，使白色区域向上偏移 35 cm。"
+    },
+    {
+     "t": 2206,
+     "text": "将位移向量接入 World Position Offset，保存并恢复正常材质显示，观察树木周围的地表隆起。"
+    },
+    {
+     "t": 2299,
+     "text": "切换到 Mannequin 在关卡中巡视，检查树根地表、水坑排除和树下无草的最终效果；随后结束课程。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}

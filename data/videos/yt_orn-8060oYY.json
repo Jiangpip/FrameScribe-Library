@@ -1,0 +1,149 @@
+{
+ "schema": 1,
+ "id": "yt_orn-8060oYY",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=orn-8060oYY",
+ "title": "Underwater Caustics Part 2 - Advanced Materials - Episode 42",
+ "date": "2024-02-22",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Advanced Materials",
+ "index": 42,
+ "duration": 1625,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本课完善水下焦散（Caustics）贴花投射 Shader，分别在 Unity 和 Unreal Engine 中解决投射方向切换产生的噪点与贴花边界截断问题。通过世界空间位置的 DDX、DDY、Cross Product 和 Normalize 计算面法线，替代受法线贴图影响的逐像素法线，减少三平面投射的斑块。随后构建边缘渐隐遮罩，并通过强度参数控制过渡宽度。课程也展示了将相关节点封装为 Sub Graph 或 Material Function 的复用方式；面法线方案仍可能留下多边形边缘接缝。",
+ "chapters": [
+  {
+   "t": 0,
+   "title": "Unity：定位焦散噪点并计算面法线",
+   "points": [
+    {
+     "t": 0,
+     "text": "回顾水下焦散贴花，明确两项待修复问题：投射边界硬截断，以及岩石表面焦散方向切换产生的噪点。"
+    },
+    {
+     "t": 98,
+     "text": "打开 Rendering Debugger 的法线视图：法线贴图的高频变化使三平面投射频繁切换方向，形成碎裂边界。"
+    },
+    {
+     "t": 162,
+     "text": "检查现有 Shader Graph：HD Sample Buffer 采样 World Space Normal，用于混合不同方向的投射 UV。"
+    },
+    {
+     "t": 230,
+     "text": "将 Position 设置为 Absolute World，连接 DDX 与 DDY，获取世界空间位置在屏幕两个方向上的导数。"
+    },
+    {
+     "t": 282,
+     "text": "对位置导数执行 Cross Product，再用 Normalize 得到单位长度的世界空间面法线；结果是逐面法线，并非平滑的顶点法线。"
+    },
+    {
+     "t": 358,
+     "text": "用计算出的面法线替换原法线输入，保存并对比场景：像素级噪点显著减少，但多边形边缘仍可能出现投射切换接缝。"
+    }
+   ]
+  },
+  {
+   "t": 428,
+   "title": "Unity：制作三维贴花边缘渐隐遮罩",
+   "points": [
+    {
+     "t": 428,
+     "text": "观察贴花上下与侧面的硬边界，准备通过遮罩让焦散在投射体边缘平滑淡出。"
+    },
+    {
+     "t": 450,
+     "text": "将位置导数、叉积和归一化节点封装为 Face Normal Sub Graph，使用 World Space 输出以便复用。"
+    },
+    {
+     "t": 517,
+     "text": "新增 Object Space 的 Position，并加上 0.5，为投射体边界遮罩准备局部坐标。"
+    },
+    {
+     "t": 561,
+     "text": "使用 One Minus 与 Multiply 构造各轴的 p×(1−p) 渐变，再通过 Split 和二维 Preview 检查 X、Y、Z 通道。"
+    },
+    {
+     "t": 648,
+     "text": "将 X、Y、Z 三个分量相乘，得到三维边界遮罩；再将结果自乘，调整渐变形状。"
+    },
+    {
+     "t": 711,
+     "text": "将遮罩乘以 50000 增强，再用 Saturate 限制到 0–1，最后乘入焦散输出，使投射边缘淡出。"
+    },
+    {
+     "t": 783,
+     "text": "保留末端乘以 10000 的 HDRP 发光亮度调整；将遮罩节点封装为 Decal Edge Mask Sub Graph，暴露 Sharpness 参数。"
+    },
+    {
+     "t": 848,
+     "text": "比较 Sharpness 为 50000 与 100000 的效果：数值越大边缘越锐利；保存后检查焦散噪点与边缘渐隐的最终效果。"
+    }
+   ]
+  },
+  {
+   "t": 917,
+   "title": "Unity 成果总结与 Unreal Engine 面法线修复",
+   "points": [
+    {
+     "t": 917,
+     "text": "说明 Decal Edge Mask 可复用于其他三轴投射贴花，并预告水体 Shader 系列收尾及下周停更安排。"
+    },
+    {
+     "t": 966,
+     "text": "切换 Unreal Engine，检查同样的焦散斑块与边界问题；通过默认贴花示例观察其投射方向已有渐隐，但侧边仍存在硬截断。"
+    },
+    {
+     "t": 1065,
+     "text": "检查三平面投射网络：两张滚动焦散纹理、用于扭曲坐标的法线贴图，以及控制投射方向混合的 SceneTexture WorldNormal。"
+    },
+    {
+     "t": 1142,
+     "text": "用 World Position 替代法线采样来源，添加 DDY、DDX，并对两个位置导数执行 Cross Product。"
+    },
+    {
+     "t": 1209,
+     "text": "使用 Normalize 将叉积结果归一化，以世界空间面法线替换逐像素 WorldNormal，保存材质并返回场景。"
+    },
+    {
+     "t": 1253,
+     "text": "对比替换前后：焦散斑块减少，投射方向改为按面切换；局部仍有接缝，但视觉上比逐像素切换更平顺。"
+    }
+   ]
+  },
+  {
+   "t": 1302,
+   "title": "Unreal Engine：制作二维渐隐遮罩与最终展示",
+   "points": [
+    {
+     "t": 1302,
+     "text": "添加 TextureCoordinate，使用贴花的二维 0–1 坐标构建侧边渐隐遮罩。"
+    },
+    {
+     "t": 1350,
+     "text": "通过 One Minus 与 Multiply 计算 UV×(1−UV)，再用 Component Mask 分别提取 R、G 通道并相乘。"
+    },
+    {
+     "t": 1407,
+     "text": "将二维遮罩自乘以调整形状，再乘以约 1000 增强；提高该值使有效区域更接近边界，降低该值则得到更柔和的过渡。"
+    },
+    {
+     "t": 1450,
+     "text": "用 Saturate 将遮罩限制到 0–1，并在材质末端将焦散结果乘以遮罩；保留末端乘以 2 的亮度调整。"
+    },
+    {
+     "t": 1493,
+     "text": "建议分别把渐隐遮罩与面法线计算封装成 Material Function，供其他贴花或材质复用。"
+    },
+    {
+     "t": 1524,
+     "text": "保存并检查最终效果：贴花边缘与角落平滑淡出，逐像素法线引起的焦散斑块得到改善。"
+    },
+    {
+     "t": 1575,
+     "text": "展示完整水体效果，包括动画顶点波浪、表面涟漪、深度与泡沫；总结系列成果，预告停更一周后开启新主题并结束视频。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}

@@ -1,0 +1,127 @@
+{
+ "schema": 1,
+ "id": "yt_AWJ7H4C6ObI",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=AWJ7H4C6ObI",
+ "title": "Using Splines For Boundaries - Procedural Content Generation (PCG) - Episode 7",
+ "date": "2026-05-28",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Procedural Content Generation (PCG)",
+ "index": 7,
+ "duration": 1161,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本课介绍在 Unreal Engine 的 PCG 中使用闭合 Spline 控制森林生成范围。首先绘制多个带有相同 Actor Tag 的样条区域，通过 Get Spline Data、Create Surface from Spline 和 Union，让森林只生成在指定区域内。随后使用 Spline Sampler 与 Difference 建立排除区域，为手工布置场景保留空间。最后排查排除区域仍残留树木的问题，将 Difference 的 Density Function 改为 Binary，实现完整排除。",
+ "chapters": [
+  {
+   "t": 0,
+   "title": "创建森林边界：绘制闭合 Spline 与设置标签",
+   "points": [
+    {
+     "t": 0,
+     "text": "介绍本课目标：使用 Spline 作为 PCG 边界，控制资产生成位置。"
+    },
+    {
+     "t": 71,
+     "text": "分析现有森林范围：PCG Volume 覆盖整个 Landscape，需要用 Spline 更精确地限定生成区域。"
+    },
+    {
+     "t": 94,
+     "text": "隐藏森林方便观察地形，通过添加菜单创建 Basic Actor，作为 Spline 的容器。"
+    },
+    {
+     "t": 120,
+     "text": "切换到 PCG 模式，选择 Draw Spline Surface，拖动绘制闭合区域并点击 Accept。"
+    },
+    {
+     "t": 143,
+     "text": "选中 Actor，在 Details 中搜索 Tag，新增 Actor Tag 并命名为 forest，供 PCG Graph 筛选。"
+    },
+    {
+     "t": 217,
+     "text": "重复创建 Actor、绘制 Spline 和添加 forest 标签，共定义三个森林生成区域。"
+    },
+    {
+     "t": 281,
+     "text": "打开已有森林 PCG Graph，准备将样条边界接入生成流程。"
+    }
+   ]
+  },
+  {
+   "t": 310,
+   "title": "限定生成区域：读取 Spline、创建表面与合并投射目标",
+   "points": [
+    {
+     "t": 310,
+     "text": "添加 Get Spline Data，将 Actor Filter 从 Self 改为 All World Actors，并使用 By Tag 筛选。"
+    },
+    {
+     "t": 357,
+     "text": "将筛选标签设为 forest，勾选 Select Multiple，读取多个带标签 Actor 中的 Spline。"
+    },
+    {
+     "t": 385,
+     "text": "连接 Get Spline Data 与 Create Surface from Spline；编辑器自动插入类型转换节点，将 Polyline 转为 Spline。"
+    },
+    {
+     "t": 439,
+     "text": "回顾原有森林流程：从 Landscape 采样种子点、扩展森林分布，再通过 Projection 投射到目标表面。"
+    },
+    {
+     "t": 465,
+     "text": "用 Create Surface from Spline 的输出替换 Landscape 投射目标，让投射范围受闭合样条内部区域限制。"
+    },
+    {
+     "t": 486,
+     "text": "排查 Projection 警告：三个 Spline 产生多个数据项，而 Projection Target 输入只接受单个数据项。"
+    },
+    {
+     "t": 539,
+     "text": "添加 Union 合并多个样条表面，再接入 Projection Target；连接时自动将 Spatial 数据转换为 Concrete 数据。"
+    },
+    {
+     "t": 587,
+     "text": "保存并检查结果：森林只出现在三个 Spline 内；同样的方法可用于分别限定岩石、草地等分布区域。"
+    }
+   ]
+  },
+  {
+   "t": 656,
+   "title": "建立排除区域：Spline Sampler、Difference 与残留树木排查",
+   "points": [
+    {
+     "t": 656,
+     "text": "介绍排除区域的用途：由 PCG 快速生成背景环境，同时为需要精确手工布置的场景区域留出空间。"
+    },
+    {
+     "t": 754,
+     "text": "移除前一方案的边界限制节点，将 Get Landscape Data 重新连接到 Projection，恢复全地形森林生成。"
+    },
+    {
+     "t": 776,
+     "text": "重新配置 Get Spline Data：选择 All World Actors、By Tag，填写 forest 并勾选 Select Multiple；添加 Spline Sampler。"
+    },
+    {
+     "t": 832,
+     "text": "将 Spline Sampler 的采样区域设为 Interior，启用 Project Points onto Surface 和 Unbounded，在闭合样条内部生成采样点。"
+    },
+    {
+     "t": 881,
+     "text": "添加 Difference，将 Spline Sampler 接入 Differences 输入，将 Transform Points 输出接入 Source，从森林点分布中扣除样条内部区域。"
+    },
+    {
+     "t": 931,
+     "text": "把 Difference 输出连接到三个 Density Filter 分支，移除原有直连线，使排除操作位于 Transform Points 与 Density Filter 之间。"
+    },
+    {
+     "t": 981,
+     "text": "保存后发现区域内仍有树木残留；检查 Difference，将 Density Function 从 Minimum 改为 Binary，以完整排除对应区域内的点。"
+    },
+    {
+     "t": 1033,
+     "text": "在 Transform Points 上按 D 显示调试点，观察颜色反映的密度差异；确认使用 Binary 后三个排除区域内的树木全部移除。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}

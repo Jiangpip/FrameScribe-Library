@@ -1,0 +1,133 @@
+{
+ "schema": 1,
+ "id": "yt_OFgj4cTCMM4",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=OFgj4cTCMM4",
+ "title": "Build Your Own Particle System! - Advanced Materials - Episode 43",
+ "date": "2024-03-07",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Advanced Materials",
+ "index": 43,
+ "duration": 666,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本集介绍在 Unreal Engine 和 Unity 中用 Shader 构建粒子系统的思路，展示瀑布、烟雾、喷泉和薄雾效果。核心做法是预先制作由多张平面卡片组成的网格，再用每张卡片不同的顶点颜色灰度值作为粒子 ID，使 Shader 能分别控制它们。视频说明了这种方案面向低成本环境特效的用途，并演示两款引擎中的网格与顶点颜色检查方法。本集尚未开始搭建完整粒子运动逻辑，下集将制作让卡片朝向摄像机的 Billboard 效果。",
+ "chapters": [
+  {
+   "t": 0,
+   "title": "系列目标与 Shader 粒子方案的适用范围",
+   "points": [
+    {
+     "t": 0,
+     "text": "展示由同一套粒子 Shader 制作的瀑布、水花和薄雾，介绍 Unreal Engine 与 Unity 双引擎系列目标。"
+    },
+    {
+     "t": 56,
+     "text": "比较自建 Shader 与 Niagara、VFX Graph；作者以 Compute Shader 硬件支持作为选择方案的考虑因素。"
+    },
+    {
+     "t": 79,
+     "text": "介绍性能思路：粒子效果的计算放在 GPU，数学运算主要安排在 Vertex Shader，面向低成本环境特效。"
+    },
+    {
+     "t": 100,
+     "text": "说明可定制性：按具体效果删减不需要的功能，或添加更复杂的粒子行为。"
+    },
+    {
+     "t": 145,
+     "text": "明确用途：作为环境特效与移动设备项目的一种方案，不以全面替代 Niagara 或 VFX Graph 为目标。"
+    }
+   ]
+  },
+  {
+   "t": 167,
+   "title": "Unreal Engine：预制卡片网格与顶点颜色粒子 ID",
+   "points": [
+    {
+     "t": 167,
+     "text": "进入 Unreal Engine，展示瀑布、烟囱烟雾、喷泉和漂浮薄雾四种粒子效果。"
+    },
+    {
+     "t": 209,
+     "text": "将 UI Scale 调为 2，选中 Outliner 中用于烟雾的 Particle Stack 25 网格。"
+    },
+    {
+     "t": 235,
+     "text": "移除 Smoke 材质实例，查看粒子效果的原始结构：由多张平面卡片堆叠成的静态网格。"
+    },
+    {
+     "t": 261,
+     "text": "检查网格尺寸：共 25 张卡片，每张约 1 m × 1 m，整体堆叠范围约为 1 m 立方体。"
+    },
+    {
+     "t": 290,
+     "text": "解释离线预制卡片的思路：提前生成粒子所需平面，避免运行时动态生成这些几何体。"
+    },
+    {
+     "t": 315,
+     "text": "说明网格可在 3ds Max、Maya 或 Blender 中制作，并提供包含 25、50、100 张卡片的 FBX 下载版本。"
+    },
+    {
+     "t": 344,
+     "text": "进入 Material Editor，使用 Vertex Color 显示网格顶点颜色，观察每张卡片不同的灰度。"
+    },
+    {
+     "t": 397,
+     "text": "将每张卡片的顶点颜色灰度作为唯一粒子 ID，使 Shader 能独立移动各张卡片，而非统一处理整个网格。"
+    }
+   ]
+  },
+  {
+   "t": 422,
+   "title": "Unity：检查卡片结构、单面显示与渲染管线支持",
+   "points": [
+    {
+     "t": 422,
+     "text": "展示 Unity 中对应的瀑布、烟雾、喷泉和薄雾，说明系列将同步演示两款引擎的实现。"
+    },
+    {
+     "t": 472,
+     "text": "选中烟雾网格，将 Smoke Build-up 材质设为 None，检查与 Unreal Engine 相同的卡片堆叠结构。"
+    },
+    {
+     "t": 492,
+     "text": "移动网格并旋转观察角度；说明卡片为单面显示，从背面观察时会消失。"
+    },
+    {
+     "t": 492,
+     "text": "使用 Vertex Colors 材质显示网格顶点颜色，便于检查各张卡片携带的数据。"
+    },
+    {
+     "t": 517,
+     "text": "观察卡片从白到黑的不同灰度，再次说明这些数值用于识别和独立控制各个粒子平面。"
+    },
+    {
+     "t": 543,
+     "text": "说明本系列的 Unity Shader 方案同时适用于 HDRP 和 URP。"
+    }
+   ]
+  },
+  {
+   "t": 565,
+   "title": "下集 Billboard 预告与技术灵感来源",
+   "points": [
+    {
+     "t": 565,
+     "text": "预告下集制作 Billboard：让预制网格中的每张粒子卡片朝向摄像机。"
+    },
+    {
+     "t": 589,
+     "text": "回顾 2019 年 GDC Tech Art Summit：Epic Games 的 Ryan Brooks 在 Shader 演讲中提到仅用 Shader 构建粒子系统的思路。"
+    },
+    {
+     "t": 611,
+     "text": "介绍实践背景：作者在工作项目需要自建粒子系统时，重新观看该演讲并据此完成当前方案。"
+    },
+    {
+     "t": 632,
+     "text": "致谢技术分享者，并再次明确后续课程将从卡片朝向摄像机的实现开始。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}

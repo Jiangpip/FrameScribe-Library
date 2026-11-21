@@ -1,0 +1,217 @@
+{
+ "schema": 1,
+ "id": "yt_zcrk6RDj2bw",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=zcrk6RDj2bw",
+ "title": "Particle System Rotation - Advanced Materials - Episode 50",
+ "date": "2024-04-25",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Advanced Materials",
+ "index": 50,
+ "duration": 2514,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本课在已有的材质粒子系统中加入旋转控制，分别演示 Unreal Engine Material Editor 和 Unity Shader Graph 的实现。通过静态角度与 Time 驱动的旋转速度控制粒子朝向，再利用每个粒子的随机值生成初始角度偏移和顺逆时针旋转。为随机偏移和随机方向添加开关，并在瀑布、喷泉、烟雾和薄雾效果中比较不同设置。最后说明烟雾保留统一朝向的原因，并预告后续添加 Flipbook 纹理动画。",
+ "chapters": [
+  {
+   "t": 0,
+   "title": "Unreal Engine：旋转基础与时间驱动",
+   "points": [
+    {
+     "t": 0,
+     "text": "回顾材质粒子系统已有的生命周期、风力、重力、随机值和 Billboard 功能，展示瀑布、烟雾、喷泉与薄雾。"
+    },
+    {
+     "t": 121,
+     "text": "准备旋转预览：将起止速度和 Gravity 设为 0，将 Particle Start Size 与 Particle End Size 均设为 2。"
+    },
+    {
+     "t": 173,
+     "text": "在 Billboard 前接入 CustomRotator，使用 Texture Coordinate 提供 UV；未提供正确输入时粒子会消失。"
+    },
+    {
+     "t": 227,
+     "text": "用 Vector2（0.5, 0.5）设置 Rotation Center；CustomRotator 的 Rotation Angle 以 0–1 表示一整圈。"
+    },
+    {
+     "t": 321,
+     "text": "将输入角度乘以 1/360，转换为 CustomRotator 所需范围，用 45°、50°测试旋转。"
+    },
+    {
+     "t": 418,
+     "text": "通过 Convert to Parameter 暴露 Rotation 参数，默认设为 0，用于统一的静态旋转角度。"
+    },
+    {
+     "t": 468,
+     "text": "创建 Rotation Speed 参数，将 Time × Rotation Speed 加到 Rotation 上，实现以度/秒控制的持续旋转。"
+    },
+    {
+     "t": 541,
+     "text": "将 Particle Speed 调低至 0.05，减少粒子频繁消失重生；Rotation Speed 为 0 时保留静态角度，非零时持续旋转。"
+    }
+   ]
+  },
+  {
+   "t": 607,
+   "title": "Unreal Engine：随机角度偏移与旋转方向",
+   "points": [
+    {
+     "t": 607,
+     "text": "复用 Vector Noise 生成的逐粒子随机值：原值乘以 2 再减去 1，得到 −1 到 1 的 Vector3。"
+    },
+    {
+     "t": 674,
+     "text": "用 Split Components 拆分随机值，取 G 通道乘以 180，生成 −180° 到 180° 的随机角度偏移。"
+    },
+    {
+     "t": 745,
+     "text": "纠正随机偏移的接线：应使用 Add 加到已有旋转角度上，误用 Multiply 会大幅放大旋转速度。"
+    },
+    {
+     "t": 790,
+     "text": "添加 Static Switch 和默认开启的 Static Bool Parameter：Rotation Random Offset，在带随机偏移与不带偏移的角度之间切换。"
+    },
+    {
+     "t": 903,
+     "text": "取随机值 R 通道接入 Sign，按正负输出 1 或 −1，再乘以旋转角度，让粒子分别顺时针或逆时针旋转。"
+    },
+    {
+     "t": 976,
+     "text": "添加第二个 Static Switch，以 Random Rotation Direction 参数控制是否启用随机旋转方向，默认开启。"
+    },
+    {
+     "t": 1049,
+     "text": "汇总静态角度、旋转速度、随机偏移和随机方向四项控制，并整理旋转节点布局。"
+    }
+   ]
+  },
+  {
+   "t": 1094,
+   "title": "Unreal Engine：为场景粒子效果配置旋转",
+   "points": [
+    {
+     "t": 1094,
+     "text": "打开场景粒子的 Material Instance，检查新增 Rotation 参数组；左侧瀑布示例在口述中一度被称为 Fountain。"
+    },
+    {
+     "t": 1145,
+     "text": "为左侧水流效果保持 Rotation 为 0，将 Rotation Speed 设为 −30°/秒，并开启随机方向和随机偏移。"
+    },
+    {
+     "t": 1190,
+     "text": "烟囱烟雾保持不旋转：后续使用的 Flipbook 纹理具有方向性；启用参数覆盖，避免父材质默认值变化影响烟雾。"
+    },
+    {
+     "t": 1252,
+     "text": "为喷泉开启随机角度偏移和随机旋转方向，将 Rotation Speed 设为 −30°/秒，增加水粒子的变化。"
+    },
+    {
+     "t": 1295,
+     "text": "为薄雾保持静态角度为 0，开启随机偏移与方向，并使用较低旋转速度，形成缓慢漂浮的效果。"
+    },
+    {
+     "t": 1360,
+     "text": "比较旋转前后的整体效果，预告下一课用 Flipbook 纹理替换彩色方形粒子，表现烟雾、薄雾与水花。"
+    }
+   ]
+  },
+  {
+   "t": 1403,
+   "title": "Unity：Rotate About Axis 与旋转参数",
+   "points": [
+    {
+     "t": 1403,
+     "text": "切换到 Unity，回顾四种场景效果及 Shader Graph 中的生命周期、Billboard、运动和随机位置计算。"
+    },
+    {
+     "t": 1476,
+     "text": "在 Billboard 前添加 Rotate About Axis；打开预览窗口，暂时断开缺少正确输入的旋转节点。"
+    },
+    {
+     "t": 1503,
+     "text": "调整预览默认值：起止尺寸设为 2，降低 Particle Speed，将 Gravity 和起止速度设为 0，并调整 Emitter Dimensions。"
+    },
+    {
+     "t": 1572,
+     "text": "给 Rotate About Axis 输入 Object Space 的 Position，将 Axis 设为（0, 0, 1），与当前粒子计算空间保持一致。"
+    },
+    {
+     "t": 1645,
+     "text": "将 Rotate About Axis 的角度单位从 Radians 切换为 Degrees，用 0–360 的 Slider 检查整圈旋转。"
+    },
+    {
+     "t": 1696,
+     "text": "在 Blackboard 创建 Rotation（默认 0、Slider 范围 −180 到 180）、Rotation Random Offset（默认 true）、Rotation Speed（默认 80）和 Randomize Rotation Direction（默认 true）。"
+    },
+    {
+     "t": 1818,
+     "text": "将 Time × Rotation Speed 与静态 Rotation 相加，接入 Rotate About Axis，实现持续旋转。"
+    },
+    {
+     "t": 1841,
+     "text": "多选四个旋转参数，创建名为 Rotation 的 Category，并放在 Movement 下方整理 Blackboard。"
+    }
+   ]
+  },
+  {
+   "t": 1893,
+   "title": "Unity：随机旋转与 Branch 开关",
+   "points": [
+    {
+     "t": 1893,
+     "text": "检查统一旋转的局限，复用 Hash33 函数生成的随机值，经过 ×2−1 映射到 −1 至 1。"
+    },
+    {
+     "t": 1934,
+     "text": "使用 Split 拆分 Vector3，取 G 通道乘以 180，再加到已有旋转角度上，形成逐粒子的随机初始偏移。"
+    },
+    {
+     "t": 2051,
+     "text": "添加 Branch，以 Rotation Random Offset 为 Predicate：True 接带随机偏移的角度，False 接原始旋转角度。"
+    },
+    {
+     "t": 2098,
+     "text": "取 R 通道接入 Sign（不是 Sin），用随机值正负生成方向符号，再乘以旋转角度以翻转部分粒子的旋转方向。"
+    },
+    {
+     "t": 2164,
+     "text": "添加第二个 Branch，以 Randomize Rotation Direction 控制是否使用经过 Sign 翻转的旋转结果。"
+    },
+    {
+     "t": 2210,
+     "text": "连接最终角度并切换布尔参数验证效果：开启时粒子双向旋转，关闭时全部同向旋转。"
+    },
+    {
+     "t": 2235,
+     "text": "整理节点，通过 Group Selection 创建 Rotation 分组，保存 Shader Graph 并返回场景。"
+    }
+   ]
+  },
+  {
+   "t": 2260,
+   "title": "Unity：场景效果对比与 Flipbook 预告",
+   "points": [
+    {
+     "t": 2260,
+     "text": "打开各粒子材质的旋转参数；将左侧瀑布的速度设为 0 对比原效果，再启用旋转速度、随机偏移和随机方向。"
+    },
+    {
+     "t": 2322,
+     "text": "烟雾继续保持统一朝向和零旋转，为下一课具有固定方向的动画纹理做准备。"
+    },
+    {
+     "t": 2352,
+     "text": "对比喷泉关闭与开启旋转的效果，启用随机参数并设置 −30°/秒，使水粒子表现更有变化。"
+    },
+    {
+     "t": 2403,
+     "text": "薄雾使用 7°/秒的低速旋转，分别切换随机方向和随机偏移，观察缓慢漂浮时的朝向差异。"
+    },
+    {
+     "t": 2449,
+     "text": "总结旋转对粒子自然感的改善，预告下一课加入纹理与 Flipbook Animation，将彩色方块转为具体的烟、水和雾效果。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}

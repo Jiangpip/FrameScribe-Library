@@ -1,0 +1,183 @@
+{
+ "schema": 1,
+ "id": "yt_Qw2fkZK79M8",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=Qw2fkZK79M8",
+ "title": "Particle System Color - Advanced Materials - Episode 53",
+ "date": "2024-05-16",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Advanced Materials",
+ "index": 53,
+ "duration": 1971,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本课在 Unreal Engine 和 Unity 的 Shader 粒子系统中加入 Start Color、End Color，让粒子颜色和透明度随生命周期变化。通过在 Vertex Shader 中计算生命周期并传递给 Pixel Shader／Fragment Shader，避免逐像素重复计算。课程用瀑布、烟囱烟雾、喷泉和薄雾演示颜色与 Alpha 参数的调整，并在 Unreal Engine 中制作基于 HLSL clip 的 Pixel Clip Material Function。最后预告通过交界处淡出来改善粒子 Billboard 与场景几何相交时的硬边。",
+ "chapters": [
+  {
+   "t": 0,
+   "title": "Unreal Engine：实现生命周期颜色与透明度控制",
+   "points": [
+    {
+     "t": 0,
+     "text": "回顾 Shader 粒子系统系列成果，介绍本课的颜色控制与附加优化功能。"
+    },
+    {
+     "t": 50,
+     "text": "定位 Flipbook Texture Sample：原有纹理颜色直接连接 Emissive Color，在这条连接中加入 Multiply。"
+    },
+    {
+     "t": 100,
+     "text": "创建 End Color 和 Start Color 参数，用 Linear Interpolate（Lerp）混合，再与纹理颜色相乘后输出到 Emissive Color。"
+    },
+    {
+     "t": 164,
+     "text": "将两个颜色参数的默认 RGB 与 Alpha 全部设为 1，使默认染色保持白色。"
+    },
+    {
+     "t": 185,
+     "text": "以粒子生命周期作为 Lerp 混合权重：出生时使用 Start Color，生命结束时使用 End Color。"
+    },
+    {
+     "t": 214,
+     "text": "使用 Vertex Interpolator 将生命周期从 Vertex Shader 传到 Pixel Shader；同一粒子的生命周期一致，无需为每个像素重复计算。"
+    },
+    {
+     "t": 286,
+     "text": "另建 Lerp 混合两个颜色参数的 Alpha，再与纹理 Alpha 和原有淡入淡出透明度结果相乘，连接 Opacity。"
+    },
+    {
+     "t": 413,
+     "text": "性能取舍：颜色参数便于实时调节；若将颜色烘焙进 Flipbook Texture，可省去额外的颜色混合与乘法。"
+    }
+   ]
+  },
+  {
+   "t": 484,
+   "title": "Unreal Engine：调整瀑布、烟雾、喷泉与薄雾",
+   "points": [
+    {
+     "t": 513,
+     "text": "瀑布：将 Start Color 设为蓝色、End Color 保持白色，表现顶部水体较集中、下落后逐渐散开并泛白。"
+    },
+    {
+     "t": 563,
+     "text": "检查瀑布完整粒子范围：部分粒子位于地面下方，因此生命周期末端的白色区域被地面遮挡。"
+    },
+    {
+     "t": 589,
+     "text": "烟囱烟雾：降低 Start Color 的亮度，让烟雾从出生时的深灰逐渐过渡到较浅的颜色。"
+    },
+    {
+     "t": 641,
+     "text": "喷泉：将 Start Color 调为浅蓝色，使水粒子喷出后随生命周期逐渐变白。"
+    },
+    {
+     "t": 693,
+     "text": "薄雾：将 Start Color 和 End Color 的 Alpha 都设为 0.3，降低整体不透明度，让效果更轻、更淡。"
+    }
+   ]
+  },
+  {
+   "t": 726,
+   "title": "Unreal Engine：用 Pixel Clip 裁剪透明边缘与调节阈值",
+   "points": [
+    {
+     "t": 726,
+     "text": "观察粒子选中轮廓：矩形粒子平面边缘即使 Alpha 为 0，仍可能产生像素着色与混合开销。"
+    },
+    {
+     "t": 800,
+     "text": "解释 Overdraw：多个透明粒子覆盖同一屏幕区域时，需要处理多层像素并混合，增加渲染成本。"
+    },
+    {
+     "t": 867,
+     "text": "从 Content Drawer 拖入自制 Pixel Clip Material Function，插入 Texture Sample 的 Alpha 输出与第一个透明度 Multiply 之间。"
+    },
+    {
+     "t": 922,
+     "text": "Pixel Clip 按阈值丢弃低 Alpha 片元；课程将其作为减少无贡献透明区域处理与混合开销的优化。"
+    },
+    {
+     "t": 981,
+     "text": "制作 Material Function：添加标量输入 A、Threshold，将 Threshold 默认值设为 0.04；Custom 节点设置对应输入与 float 输出。"
+    },
+    {
+     "t": 1035,
+     "text": "Custom 节点代码使用 clip(A - Threshold)，随后 return A；准确条件是差值小于 0 时丢弃片元，讲述中将其说成等于 0 属于口误。"
+    },
+    {
+     "t": 1107,
+     "text": "保存并返回场景，观察选中轮廓贴近有效粒子形状；将 Threshold 改为 0.5，会裁掉更多半透明区域并产生明显硬边，再试用 0.08 比较视觉取舍。"
+    },
+    {
+     "t": 1274,
+     "text": "预告后续内容：烟雾等粒子与地面相交时仍有硬边，下节将加入与场景几何交界处的淡出。"
+    }
+   ]
+  },
+  {
+   "t": 1333,
+   "title": "Unity：通过 Particle Data 传递生命周期并实现染色",
+   "points": [
+    {
+     "t": 1333,
+     "text": "切换到 Unity Shader Graph，定位 Flipbook 采样区域及其通向 Master Stack 的 Base Color 连接。"
+    },
+    {
+     "t": 1407,
+     "text": "在 Blackboard 新增 Start Color、End Color 两个 Color 属性，拖入图中，并将默认颜色设为白色、Alpha 设为 1。"
+    },
+    {
+     "t": 1472,
+     "text": "创建 Lerp，将 Start Color 接 A、End Color 接 B；T 使用从 0 到 1 的粒子生命周期。"
+    },
+    {
+     "t": 1494,
+     "text": "找到 Fraction 节点输出的生命周期，写入 Particle Data 的 B 通道；R、G 保留 Flipbook UV，A 保留已有透明度。"
+    },
+    {
+     "t": 1566,
+     "text": "在 Fragment Shader 中通过 Split 读取 Particle Data 的 B 通道并连接 Lerp 的 T；将混合颜色与纹理颜色相乘后接入 Base Color。"
+    },
+    {
+     "t": 1611,
+     "text": "用 Split 提取颜色 Lerp 结果的 Alpha，与原有透明度相乘，再连接 Master Stack 的 Alpha。"
+    },
+    {
+     "t": 1655,
+     "text": "比较实时颜色参数与纹理烘焙：省略染色可减少少量运算，保留参数则便于在引擎中实时调整效果。"
+    }
+   ]
+  },
+  {
+   "t": 1739,
+   "title": "Unity：四种粒子效果调色与交界软化预告",
+   "points": [
+    {
+     "t": 1739,
+     "text": "打开四种粒子效果的材质属性；瀑布 Start Color 设为浅蓝、End Color 保持白色，检查地面下方被遮挡的末端粒子。"
+    },
+    {
+     "t": 1795,
+     "text": "烟雾：降低 Start Color 亮度，让底部新生粒子接近黑色，升起后逐渐变为浅灰。"
+    },
+    {
+     "t": 1816,
+     "text": "喷泉：将 Start Color 设为浅蓝，让粒子从喷出到散开逐渐过渡为白色。"
+    },
+    {
+     "t": 1838,
+     "text": "薄雾：保持白色，将 Start Color 与 End Color 的 Alpha 都调至约 0.5，获得更淡的雾效。"
+    },
+    {
+     "t": 1880,
+     "text": "观察瀑布粒子与地面的硬性交线：这会暴露 Billboard 平面的形状；下节将实现接近场景物体时淡出，以软化交界。"
+    },
+    {
+     "t": 1954,
+     "text": "课程结束与片尾音乐。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}

@@ -1,0 +1,131 @@
+{
+ "schema": 1,
+ "id": "yt_sYLbdO3VB8c",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=sYLbdO3VB8c",
+ "title": "Vertex Displacement - Advanced Materials - Episode 35",
+ "date": "2024-01-04",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Advanced Materials",
+ "index": 35,
+ "duration": 1329,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本课介绍 vertex displacement：利用顶点着色器改变网格顶点的位置。首先在 Unity Shader Graph 中演示均匀缩放、沿法线膨胀，以及通过高度贴图控制位移。随后使用 Time、Sine 和 Absolute 制作上下运动与弹跳，并用朝上法线遮罩模拟积雪厚度。最后在 Unreal Engine 中复现这些效果，说明 World Position Offset、厘米单位和 Z 轴朝上带来的实现差异。",
+ "chapters": [
+  {
+   "t": 0,
+   "title": "Unity：顶点位移基础、法线膨胀与贴图位移",
+   "points": [
+    {
+     "t": 0,
+     "text": "介绍 vertex displacement：通过顶点着色器移动网格顶点，并安排 Unity 与 Unreal 两套实现演示。"
+    },
+    {
+     "t": 48,
+     "text": "认识 Shader Graph 的 Master Stack：Vertex 区域的 Position 输入控制顶点位置，Fragment 区域负责像素处理。"
+    },
+    {
+     "t": 97,
+     "text": "均匀缩放：将 Object Space Position 乘以标量后接入 Position，使顶点相对物体枢轴等比例移动。"
+    },
+    {
+     "t": 167,
+     "text": "沿法线膨胀：将 Normal Vector 乘以强度，再加到 Object Space Position；正值向外膨胀，负值向内收缩。"
+    },
+    {
+     "t": 247,
+     "text": "观察立方体沿法线位移时的面分离：不同面的独立法线使各面朝不同方向移动，产生裂开效果。"
+    },
+    {
+     "t": 296,
+     "text": "高度贴图位移：用鹅卵石高度贴图乘以强度和法线，再加到原始顶点位置，控制表面凹凸幅度。"
+    },
+    {
+     "t": 422,
+     "text": "在纹理采样节点的 Node Settings 中将 MIP Sampling Mode 设为 LOD；Standard 模式涉及像素着色器专用操作，会导致此顶点着色器编译失败。"
+    },
+    {
+     "t": 475,
+     "text": "通过贴图绘制位移分布：白色区域向外位移较多，黑色区域位移较少或不位移。"
+    }
+   ]
+  },
+  {
+   "t": 498,
+   "title": "Unity：正弦动画、弹跳与顶部积雪",
+   "points": [
+    {
+     "t": 498,
+     "text": "上下运动：将 Time 输入 Sine，再乘以 Vector3(0,1,0)，把随时间变化的偏移限制在 Y 轴。"
+    },
+    {
+     "t": 573,
+     "text": "弹跳效果：在正弦结果上添加 Absolute，将负半波翻为正值，使物体回到最低点后立即向上运动。"
+    },
+    {
+     "t": 625,
+     "text": "讨论应用场景：用顶点着色器实现环境物体的简单运动，减少对骨骼动画等机制的依赖。"
+    },
+    {
+     "t": 650,
+     "text": "构建积雪遮罩：Normal Vector 与 (0,1,0) 做 Dot Product，再经过 Saturate 和 Power，指数设为 8；也可直接取法线 Y 分量。"
+    },
+    {
+     "t": 680,
+     "text": "把遮罩接入 Base Color 检查分布：顶部呈白色，其余区域呈黑色；切换 Object Space 法线查看预览效果。"
+    },
+    {
+     "t": 730,
+     "text": "积雪位移：遮罩乘以仅含 Y 分量的向量，加到 World Space Position，再通过 Transform 以 Position 类型从 World 转为 Object 后接入顶点 Position。"
+    },
+    {
+     "t": 801,
+     "text": "调节积雪高度并配合颜色：从零增加位移强度模拟积雪变厚，再将顶部遮罩接入颜色，呈现顶部发白和隆起。"
+    },
+    {
+     "t": 854,
+     "text": "回顾 Unity 五种效果：均匀缩放、沿法线膨胀、贴图位移、正弦与 Absolute 动画，以及法线遮罩积雪。"
+    }
+   ]
+  },
+  {
+   "t": 929,
+   "title": "Unreal：World Position Offset 与位移效果复现",
+   "points": [
+    {
+     "t": 929,
+     "text": "理解引擎差异：World Position Offset 接收世界空间偏移量，无需再加原始顶点位置；Unreal 使用厘米，100 个单位对应 1 米。"
+    },
+    {
+     "t": 981,
+     "text": "沿法线膨胀：将法线乘以强度接入 World Position Offset，并在球体、立方体和圆柱上观察膨胀及面分离。"
+    },
+    {
+     "t": 1007,
+     "text": "贴图位移：世界空间法线乘以高度纹理与强度后接入 World Position Offset；比较强度 10 与 30 对鹅卵石凸起幅度的影响。"
+    },
+    {
+     "t": 1089,
+     "text": "上下运动与弹跳：Time 经 Sine 后乘以 (0,0,100)，沿 Unreal 的 Z 轴移动；添加 Absolute 将运动限制为正向弹跳。"
+    },
+    {
+     "t": 1140,
+     "text": "积雪遮罩：先用顶点法线与 (0,0,1) 做 Dot Product，再改用 Component Mask 提取 Z 分量，得到相同的朝上分量。"
+    },
+    {
+     "t": 1189,
+     "text": "用 Saturate 和 Power 控制积雪覆盖范围：较小指数使过渡更宽，较大指数如 16 将白色遮罩集中在更靠近顶部的位置。"
+    },
+    {
+     "t": 1217,
+     "text": "积雪厚度：将遮罩乘以 (0,0,30) 后接入 World Position Offset，通过调整 Z 分量控制顶部隆起高度。"
+    },
+    {
+     "t": 1267,
+     "text": "总结法线位移、贴图位移、时间动画与积雪效果，并预告下一课使用顶点位移制作水面波浪。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}

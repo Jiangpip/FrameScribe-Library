@@ -1,0 +1,61 @@
+{
+ "schema": 1,
+ "id": "yt_PvDW0ENjQb0",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=PvDW0ENjQb0",
+ "title": "Introduction - Advanced Materials - Episode 1",
+ "date": "2022-09-29",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Advanced Materials",
+ "index": 1,
+ "duration": 175,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本集介绍 Advanced Materials 系列的目标，并回顾 Unreal Engine 和 Unity 使用的物理光照模型及常见材质输入。基础属性可以表现木材、金属、塑料等材料，但不足以覆盖所有材质效果。后续教程将围绕次表面散射、各向异性高光、清漆层等效果，在 Unreal Engine 和 Unity 中制作多种进阶材质；本集没有实际操作演示。",
+ "chapters": [
+  {
+   "t": 0,
+   "title": "物理光照模型与基础材质属性的局限",
+   "points": [
+    {
+     "t": 0,
+     "text": "介绍 Advanced Materials 系列：Unreal Engine、Unity 等现代游戏引擎通过物理光照模型近似真实光线行为。"
+    },
+    {
+     "t": 24,
+     "text": "回顾常见材质输入：Color、Normal、Smoothness 或 Roughness、Metallic、Ambient Occlusion，以及 Specular 或 Reflectance。"
+    },
+    {
+     "t": 47,
+     "text": "基础材质属性可以表现木材、金属、塑料、橡胶等材料；此前的视频已介绍这些属性及制作规范。"
+    },
+    {
+     "t": 68,
+     "text": "建议先观看基础材质属性教程，并指出仅靠颜色、法线、粗糙度、金属度等输入无法表现所有材质效果。"
+    }
+   ]
+  },
+  {
+   "t": 97,
+   "title": "进阶材质效果、系列选题与片尾",
+   "points": [
+    {
+     "t": 97,
+     "text": "介绍进阶效果：Subsurface Scattering（次表面散射）、Anisotropic Specular（各向异性高光）、Clear Coat（清漆层）、Retroreflection（逆反射）和 Iridescence（虹彩）；预告雪、冰与岩石等材质。"
+    },
+    {
+     "t": 119,
+     "text": "继续预告拉丝金属、车漆、碳纤维、布料、皮肤和玻璃，计划分别在 Unreal Engine 与 Unity 中制作。"
+    },
+    {
+     "t": 141,
+     "text": "邀请观众留言推荐材质选题，预告下一周开始正式教程，从 Shader Graph 基础进入进阶材质制作。"
+    },
+    {
+     "t": 162,
+     "text": "片尾音乐，无新增教学内容。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}

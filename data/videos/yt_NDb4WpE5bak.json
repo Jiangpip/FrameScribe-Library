@@ -1,0 +1,169 @@
+{
+ "schema": 1,
+ "id": "yt_NDb4WpE5bak",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=NDb4WpE5bak",
+ "title": "Sand Shader - Advanced Materials - Episode 14",
+ "date": "2023-02-02",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Advanced Materials",
+ "index": 14,
+ "duration": 1936,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本课在 Unreal Engine 和 Unity 中制作兼顾远景沙纹与近景颗粒感的沙地 Shader。先在 Photoshop 中将沙地颜色拆成固定底色与灰度细节，并把颜色细节打包进法线贴图的蓝通道，减少贴图采样。再制作噪声细节法线，用来模拟沙粒朝向并控制粗糙度或光滑度。最后对照两个引擎的法线方向、UV 尺度与节点设置，展示仅用两张贴图的沙地效果。",
+ "chapters": [
+  {
+   "t": 0,
+   "title": "沙地参考分析与 Photoshop 贴图通道优化",
+   "points": [
+    {
+     "t": 21,
+     "text": "分析沙地的多层尺度：大型沙丘、中型起伏、风吹波纹与微观沙粒；本课重点制作波纹和颗粒材质。"
+    },
+    {
+     "t": 141,
+     "text": "在 Quixel Bridge 中选择 Bright Desert Sand，观察风吹形成的波纹，并下载材质贴图。"
+    },
+    {
+     "t": 200,
+     "text": "检查 Color、Normal、Ambient Occlusion 和 Roughness：将近似单一色相的颜色贴图拆成固定底色与单通道细节。"
+    },
+    {
+     "t": 252,
+     "text": "复制颜色贴图，通过 Image → Adjustments → Desaturate 提取灰度细节；另一个副本应用 Gaussian Blur，半径设为 256，再用 Eyedropper 采样底色。"
+    },
+    {
+     "t": 316,
+     "text": "用 Levels 将灰度细节分布调整到以 0.5 为中心：Overlay 中高于 0.5 的部分提亮，低于 0.5 的部分压暗。"
+    },
+    {
+     "t": 394,
+     "text": "在 Photoshop 中把灰度细节层设为 Overlay，叠加到纯色底层，验证能近似重建原始颜色贴图。"
+    },
+    {
+     "t": 463,
+     "text": "保留法线贴图 R、G 通道中的 X、Y 数据，将灰度颜色细节写入 B 通道；法线 Z 分量留给 Shader 重建。"
+    },
+    {
+     "t": 529,
+     "text": "针对当前素材，省去几乎全白的 AO 贴图，并计划用噪声替代 Roughness 细节，使基础沙地信息集中到一张贴图。"
+    }
+   ]
+  },
+  {
+   "t": 557,
+   "title": "Unreal Engine：导入打包贴图并重建基础沙地材质",
+   "points": [
+    {
+     "t": 557,
+     "text": "检查沙丘场景与 Quixel Bridge 原材质：原方案使用四次贴图采样，近看缺少清晰的沙粒细节。"
+    },
+    {
+     "t": 638,
+     "text": "对比改进方案：使用打包贴图和额外细节法线，共两次采样，同时改善近景颗粒感与高光。"
+    },
+    {
+     "t": 705,
+     "text": "设置打包贴图导入选项：关闭 sRGB，Compression Settings 设为 BC7，避免按 Normal Map 处理而改变通道数据。"
+    },
+    {
+     "t": 745,
+     "text": "新建 Sand2 材质并添加 Texture Sample，载入打包后的沙地贴图。"
+    },
+    {
+     "t": 775,
+     "text": "用 Append 合并 R、G 通道，再 Multiply ×2、Subtract −1，将法线 XY 从 0–1 解码到 −1–1；通过 DeriveNormalZ 重建 Z 并接入 Normal。"
+    },
+    {
+     "t": 871,
+     "text": "按演示场景的 UV 尺度，将 TextureCoordinate 乘以 0.1，使基础波纹贴图覆盖约 10 米范围。"
+    },
+    {
+     "t": 939,
+     "text": "从 Photoshop 取出固定沙色，以 Blend_Overlay 将 B 通道的灰度细节叠加到底色，再连接 Base Color。"
+    },
+    {
+     "t": 1010,
+     "text": "检查颜色与高光效果，暂时将 Roughness 设为 1 压低光泽；近看仍能看到模糊纹理，需要加入颗粒级细节。"
+    }
+   ]
+  },
+  {
+   "t": 1070,
+   "title": "制作沙粒噪声法线，完善 Unreal 近景细节与粗糙度",
+   "points": [
+    {
+     "t": 1070,
+     "text": "在 Photoshop 新建 2048 尺寸的临时纹理，填充约 RGB 127 的中灰色；执行 Filter → Noise → Add Noise，选择 Gaussian、Amount 13 和 Monochromatic。"
+    },
+    {
+     "t": 1138,
+     "text": "将噪声视为沙粒朝向变化：用固定 1024 尺寸选区截取不同区域，分别写入新贴图的 R、G 通道，B 通道保持白色，制作细节法线。"
+    },
+    {
+     "t": 1208,
+     "text": "将噪声纹理导入 Unreal，设为 Normal Map 并关闭 sRGB；添加第二个 Texture Sample，准备按约半毫米沙粒的尺度设置平铺。"
+    },
+    {
+     "t": 1295,
+     "text": "讨论纹理像素密度与沙粒尺度：基础波纹贴图负责大尺度变化，近景由细节法线补充；此处 UV 倍率口误会在 24:37 更正。"
+    },
+    {
+     "t": 1365,
+     "text": "使用 BlendAngleCorrectedNormals，将重建的基础沙纹法线与噪声细节法线混合，连接材质 Normal。"
+    },
+    {
+     "t": 1409,
+     "text": "复用细节法线中的噪声控制 Roughness：先乘 0.5、加 0.5，将解码数据映射回 0–1，再通过 Power，指数设为 0.2 调整分布。"
+    },
+    {
+     "t": 1477,
+     "text": "更正 UV 设置：细节法线应将原始 TextureCoordinate 乘以 2，而非 2000，使 1024 纹理覆盖半米；检查近景颗粒与远处太阳高光。"
+    },
+    {
+     "t": 1551,
+     "text": "运行场景验证两张贴图的效果；提出进一步优化：将 1024 噪声纹理缩小到 256 或 128，并相应将平铺频率提高 4 倍或 8 倍。"
+    }
+   ]
+  },
+  {
+   "t": 1644,
+   "title": "Unity：复现沙地 Shader 与跨引擎设置差异",
+   "points": [
+    {
+     "t": 1644,
+     "text": "查看 Unity Shader Graph：演示 Terrain 尺寸为 1000 米，UV 的 0–1 覆盖整块地形，因此先乘以 100，让基础贴图每 10 米重复一次。"
+    },
+    {
+     "t": 1672,
+     "text": "适配法线方向：相较 Unreal 使用的打包贴图，Unity 版本翻转 G 通道，对应 Unity 的 Y+ 与 Unreal 的 Y− 法线约定。"
+    },
+    {
+     "t": 1694,
+     "text": "将打包贴图 Texture Type 设为 Default，并关闭 sRGB；它包含颜色细节，不能作为普通 Normal Map 导入。"
+    },
+    {
+     "t": 1715,
+     "text": "合并 R、G 通道，乘 2、减 1，再用 Normal Reconstruct Z 重建基础法线；随后与细节法线混合。"
+    },
+    {
+     "t": 1737,
+     "text": "使用 Overlay 混合固定 Sand Color 与打包贴图 B 通道中的灰度细节，恢复沙地颜色变化。"
+    },
+    {
+     "t": 1784,
+     "text": "细节纹理使用与 Unreal 相同的 1K 噪声法线，设为 Normal Map 并关闭 sRGB；在基础 UV ×100 后再乘 20，实现每米平铺两次。"
+    },
+    {
+     "t": 1851,
+     "text": "用细节法线 R 通道控制 Smoothness：乘 0.5、加 0.5 后接 Power，指数设为 2，并根据目标高光调整。"
+    },
+    {
+     "t": 1882,
+     "text": "展示 Unity 沙丘场景并总结：通过通道打包减少采样，以细节法线补足近景颗粒感，同时按实际尺度匹配纹理分辨率。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}

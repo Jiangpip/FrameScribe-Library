@@ -1,0 +1,153 @@
+{
+ "schema": 1,
+ "id": "yt_an8zDRTjUYc",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=an8zDRTjUYc",
+ "title": "Subsurface Scattering - Advanced Materials - Episode 8",
+ "date": "2022-11-17",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Advanced Materials",
+ "index": 8,
+ "duration": 1320,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本课介绍 Subsurface Scattering（次表面散射）的原理，以及光在物体内部散射和穿透物体形成透射的区别。Unreal Engine 部分比较 Preintegrated Skin、Subsurface 和 Subsurface Profile 三种着色模型的效果、性能取舍与参数设置，重点说明 Opacity 在不同模型中的相反用法。Unity 部分演示 Subsurface Scattering 材质、Diffusion Profile，以及散射遮罩、透射遮罩和厚度参数。通过调整尺度和厚度，展示如何控制皮肤或蜡质物体的散射柔化与背光透射效果。",
+ "chapters": [
+  {
+   "t": 0,
+   "title": "次表面散射原理：表面反射、内部散射与透射",
+   "points": [
+    {
+     "t": 0,
+     "text": "课程主题与手电筒照手示例：光进入皮肤后在内部散射，并带上内部组织的颜色。"
+    },
+    {
+     "t": 42,
+     "text": "区分 Specular 与 Diffuse：表面反射中，集中方向的反射与向各方向散开的反射。"
+    },
+    {
+     "t": 63,
+     "text": "半透明材质中的光可以进入内部，从不同位置射出；穿过物体到达另一侧的光称为 Transmitted Light。"
+    },
+    {
+     "t": 93,
+     "text": "明确本课讨论范围：同时观察受光侧的散射出光和背光侧的透射，并准备比较 Unreal Engine 的三种实现。"
+    }
+   ]
+  },
+  {
+   "t": 123,
+   "title": "Unreal Engine：Preintegrated Skin 与 Subsurface",
+   "points": [
+    {
+     "t": 123,
+     "text": "按演示中的渲染开销顺序比较模型：Preintegrated Skin 侧重低成本皮肤效果。"
+    },
+    {
+     "t": 144,
+     "text": "选择材质根节点，将 Shading Model 设为 Preintegrated Skin；连接 Base Color、Roughness、Opacity、Normal 和 Subsurface Color。"
+    },
+    {
+     "t": 172,
+     "text": "Base Color 与 Subsurface Color 都可使用纹理，分别定义表面和内部颜色；Normal Map 提供皮肤凹凸细节。"
+    },
+    {
+     "t": 215,
+     "text": "Preintegrated Skin 的 Opacity：设为 1 关闭散射效果，设为 0 获得最强效果；通过观察阴影和背面比较变化。"
+    },
+    {
+     "t": 259,
+     "text": "调整 Subsurface Color 模拟内部血色；降低亮度与饱和度，避免阴影呈现过亮的鲜红色。"
+    },
+    {
+     "t": 335,
+     "text": "切换 Shading Model 为 Subsurface：输入与 Preintegrated Skin 类似，重点比较其背光透射表现。"
+    },
+    {
+     "t": 385,
+     "text": "Subsurface 的 Opacity 同样在 1 时关闭、0 时开启散射；切换数值并保存，观察表面颜色和背面亮度。"
+    },
+    {
+     "t": 456,
+     "text": "绕到物体背面检查 Transmittance：光穿过物体并被内部颜色染色，适合模拟手电筒照穿皮肤的效果。"
+    }
+   ]
+  },
+  {
+   "t": 509,
+   "title": "Unreal Engine：Subsurface Profile 与屏幕空间散射",
+   "points": [
+    {
+     "t": 509,
+     "text": "引入开销更高的 Subsurface Profile；在材质根节点选择该 Shading Model，并指定 Subsurface Profile 资产。"
+    },
+    {
+     "t": 554,
+     "text": "Profile 资产集中控制散射参数，包括 Subsurface Albedo 与 World Unit Scale；其散射计算在屏幕空间进行。"
+    },
+    {
+     "t": 595,
+     "text": "观察散射后的光照特征：Diffuse 变得柔和模糊，Specular 仍然清晰，并保留 Normal Map 的表面细节。"
+    },
+    {
+     "t": 669,
+     "text": "调整 World Unit Scale：较小数值保留更多漫反射细节，较大数值增强散射，使物体表现得更小。"
+    },
+    {
+     "t": 714,
+     "text": "过大的 World Unit Scale 会因采样数量有限而出现颗粒感；根据物体观察距离和实际效果控制数值。"
+    },
+    {
+     "t": 757,
+     "text": "在 Material Instance 中替换 Subsurface Profile：同一套材质可为不同角色肤色或蜡烛等物体使用不同散射配置。"
+    },
+    {
+     "t": 800,
+     "text": "注意 Opacity 方向相反：Subsurface Profile 在 1 时开启、0 时关闭散射；复用前两种模型的遮罩纹理时需使用 OneMinus 反转。"
+    },
+    {
+     "t": 890,
+     "text": "三种模型回顾：Preintegrated Skin 侧重低开销，Subsurface 突出透射，Subsurface Profile 提供更精细但更昂贵的散射效果。"
+    }
+   ]
+  },
+  {
+   "t": 933,
+   "title": "Unity：散射材质、Diffusion Profile 与厚度控制",
+   "points": [
+    {
+     "t": 933,
+     "text": "观察 Unity 示例中的柔化阴影与偏红边缘；在 Diffusion Profile 中减小 World Scale，使物体表现得更小、散射更强。"
+    },
+    {
+     "t": 1001,
+     "text": "检查 Lit 材质，将 Material Type 设为 Subsurface Scattering，显示 Subsurface Mask、Transmission Mask 等附加选项。"
+    },
+    {
+     "t": 1043,
+     "text": "区分两种遮罩：Subsurface Mask 控制受光侧散射，Transmission Mask 控制光穿过物体后在背光侧出现的透射。"
+    },
+    {
+     "t": 1074,
+     "text": "使用 Thickness 表示相对厚薄：示例中耳尖和鼻尖趋近 0，以增强透射；较厚的面部区域趋近 1。"
+    },
+    {
+     "t": 1098,
+     "text": "指定 Diffusion Profile，并在 Inspector 中分别查看散射与透射设置；其作用类似 Unreal Engine 的 Subsurface Profile。"
+    },
+    {
+     "t": 1146,
+     "text": "阅读 Profile 预览：散射预览展示受光侧出光，透射渐变展示穿透过程；减小 Thickness Remap，观察背面透射增加。"
+    },
+    {
+     "t": 1208,
+     "text": "绕到场景中物体背面，朝光源方向观察；实时调整 Thickness Remap，比较光被吸收与穿透物体的程度。"
+    },
+    {
+     "t": 1261,
+     "text": "再次说明 World Scale 对散射范围与光进入表面深度的影响，随后结束课程并邀请观众在评论区提问。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}

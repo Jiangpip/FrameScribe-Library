@@ -1,0 +1,203 @@
+{
+ "schema": 1,
+ "id": "yt_eP-orfi4r68",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=eP-orfi4r68",
+ "title": "Hair Shaders - Advanced Materials - Episode 13",
+ "date": "2023-01-19",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Advanced Materials",
+ "index": 13,
+ "duration": 1899,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本课对比 Unity HDRP 与 Unreal Engine 的毛发着色，介绍发丝几何、Hair Cards、各向异性高光和双重高光的视觉特征。通过 Unity 示例材质演示透明排序、发根到发梢的颜色渐变、灰发与逐发丝变化，并拆解相关 Shader Graph 和打包纹理通道。最后分析 Unreal Engine MetaHuman 的 Groom LOD、黑色素与高光参数，以及按距离和硬件平台切换毛发表现的材质结构。",
+ "chapters": [
+  {
+   "t": 0,
+   "title": "毛发视觉特征与 Unity 毛发示例",
+   "points": [
+    {
+     "t": 0,
+     "text": "从参考图识别毛发特征：大量独立发丝、沿发丝方向变化的各向异性高光，以及透光产生的第二道高光。"
+    },
+    {
+     "t": 73,
+     "text": "区分两道高光的颜色：直接反射的主高光保留光源颜色，经过毛发内部传播的次高光带有毛发颜色。"
+    },
+    {
+     "t": 94,
+     "text": "明确课程范围：重点研究 Shader，简要介绍毛发几何，不展开复杂的毛发建模流程。"
+    },
+    {
+     "t": 136,
+     "text": "导入 Unity HDRP 示例：Window → Package Manager → High Definition RP → Samples → Material Samples；随后打开示例中的 Hair 场景。"
+    },
+    {
+     "t": 182,
+     "text": "观察 Hair Strands：以曲线表示独立发丝，渲染时转换成三角形条带；细节真实，但大量发丝会增加渲染成本。"
+    },
+    {
+     "t": 274,
+     "text": "观察 Hair Cards：用几何条带配合纹理表现成组毛发，能够以较少几何呈现细密发丝。"
+    },
+    {
+     "t": 344,
+     "text": "比较 Hair Cards 的 Approximate 与 Physically Based 着色方式：前者依赖手动调节，后者采用更偏物理的参数体系。"
+    }
+   ]
+  },
+  {
+   "t": 394,
+   "title": "Unity 毛发材质：透明设置、颜色与发丝方向",
+   "points": [
+    {
+     "t": 421,
+     "text": "比较 Surface Type 的 Transparent 与 Opaque：透明模式效果更细腻，不透明模式可作为远距离 LOD 的性能取舍。"
+    },
+    {
+     "t": 451,
+     "text": "将 Rendering Pass 设为 Before Refraction，使毛发能够参与透过玻璃观看时的折射；Blending Mode 使用 Alpha。"
+    },
+    {
+     "t": 481,
+     "text": "开启 Preserve Specular Lighting，避免透明度同时削弱镜面高光。"
+    },
+    {
+     "t": 511,
+     "text": "开启 Transparent Depth Pre-pass：先写入深度，再绘制颜色与高光，改善复杂透明发片之间的前后遮挡错误。"
+    },
+    {
+     "t": 603,
+     "text": "调整 Root Color、Length Color、Tip Color，并用 Root／Tip Distance 与 Fade 控制发根、发中和发梢的渐变范围。"
+    },
+    {
+     "t": 676,
+     "text": "使用 Going Gray 让独立发丝逐步变灰，滑块增大时可过渡到全部灰发。"
+    },
+    {
+     "t": 696,
+     "text": "调整 Smoothness 的最小值、最大值与逐发丝变化；增加变化能加强发丝分离感，提高光滑度可突出各向异性高光。"
+    },
+    {
+     "t": 793,
+     "text": "根据 UV 排布设置 Hair Strand Direction：示例沿负 V 方向从发根流向发梢；反转 V 或改为 U 方向会改变根梢关系与高光走向。"
+    }
+   ]
+  },
+  {
+   "t": 888,
+   "title": "Unity Shader Graph：双高光、纹理通道与逐发丝变化",
+   "points": [
+    {
+     "t": 888,
+     "text": "对比两种毛发 Shader 的高光输入：Physically Based 使用 Smoothness、Radial Smoothness、Cuticle Angle；Approximate 分别提供主次高光的 Tint、Shift 与 Smoothness。"
+    },
+    {
+     "t": 981,
+     "text": "Approximate 可独立调节两道高光，适合需要特殊效果的情况，但每种发型需要更多手动调参。"
+    },
+    {
+     "t": 1002,
+     "text": "通过 UV 生成发根到发梢的渐变，并交给颜色子图混合 Root、Length、Tip 三段颜色及其过渡距离。"
+    },
+    {
+     "t": 1068,
+     "text": "在 Photoshop 检查打包纹理：R 通道打散 Smoothness，G 通道记录深度差异，B 通道以不同灰度标识独立发丝。"
+    },
+    {
+     "t": 1147,
+     "text": "将 B 通道处理后作为 Strands Index 输入 Going Gray 子图，决定哪些发丝先变灰。"
+    },
+    {
+     "t": 1177,
+     "text": "制作 Per Strand Hue Variation：根据发丝索引偏移 Hue，再用 Lerp 混合原始颜色与偏色结果，打破统一发色。"
+    },
+    {
+     "t": 1220,
+     "text": "构建主次高光颜色：主高光直接输入 Master Stack，次高光乘以毛发颜色；两道高光也分别设置 Smoothness。"
+    },
+    {
+     "t": 1271,
+     "text": "回顾两种 Hair Cards Shader 的选择：Physically Based 更容易调节，Approximate 提供更细的高光控制；示例场景展示多种发型效果。"
+    }
+   ]
+  },
+  {
+   "t": 1323,
+   "title": "Unreal MetaHuman：Groom LOD 与毛发材质参数",
+   "points": [
+    {
+     "t": 1323,
+     "text": "观察 Groom 的动态发丝数量：镜头远离角色时，Strand Count Multiplier 降低，减少需要绘制的曲线。"
+    },
+    {
+     "t": 1371,
+     "text": "比较 LOD 0、LOD 1 与 LOD 2：前两级使用不同数量的 Strands，示例的 LOD 2 改用 Hair Cards；Auto 模式随观察距离切换。"
+    },
+    {
+     "t": 1415,
+     "text": "在 Material Instance 中调节 Desaturation，控制毛发颜色的饱和程度。"
+    },
+    {
+     "t": 1435,
+     "text": "通过 Melanin 控制自然发色：较低值偏金发，增加后逐渐变深，值为 1 时接近黑色。"
+    },
+    {
+     "t": 1482,
+     "text": "调整 Hair Roughness：数值越低，高光越集中、毛发越亮，过低会产生过于油亮的效果。"
+    },
+    {
+     "t": 1505,
+     "text": "用 Melanin Variation 的 Fine 与 Rough 控制不同尺度的发色变化：Fine 作用于独立发丝，Rough 作用于较大的发束。"
+    },
+    {
+     "t": 1552,
+     "text": "组合全局 Roughness 与 Roughness Variation，让不同发丝具有不同光滑程度；降低变化量会使外观更统一。"
+    },
+    {
+     "t": 1581,
+     "text": "分别调节 Spec 0 与 Spec 1 的主次高光强度及沿发丝的位置，并浏览 Ombre 渐变和局部 Melanin 等细调参数。"
+    }
+   ]
+  },
+  {
+   "t": 1655,
+   "title": "Unreal 共用材质图：平台分支、发片功能与最终回顾",
+   "points": [
+    {
+     "t": 1655,
+     "text": "Strands 与 Hair Cards 共用同一套 Material Graph，通过不同 Material Instance 配置各自效果。"
+    },
+    {
+     "t": 1676,
+     "text": "查看高端与移动端材质分支：Shading Model 设为 From Material Expression，高端分支使用 Hair，低端分支使用 Default Lit。"
+    },
+    {
+     "t": 1747,
+     "text": "集中组织 Hair Cards 专用功能：Temporal Anti-Aliasing Dithering 用于发片，并为高光与 Specular Edge 设置相应混合控制。"
+    },
+    {
+     "t": 1777,
+     "text": "使用 Tangent Scraggle 为毛发切线引入不规则变化；设为 0 时，发丝表现更统一。"
+    },
+    {
+     "t": 1777,
+     "text": "定位 Hair Color 与 Secondary Hair Color 的生成区域，查看 Melanin 及相关颜色控制。"
+    },
+    {
+     "t": 1805,
+     "text": "补充 Redness、Melanin Variation 与 Hair Dye 参数，修正先前认为该材质无法染色的判断。"
+    },
+    {
+     "t": 1832,
+     "text": "解释远距离 Hair Cards 的质量取舍：示例发片近看较粗糙，但主要服务远距离渲染，以更低成本承接近处的 Strands。"
+    },
+    {
+     "t": 1852,
+     "text": "课程总结与片尾：可从引擎自带毛发 Shader 入手使用、拆解，或据此建立自己的毛发材质。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}

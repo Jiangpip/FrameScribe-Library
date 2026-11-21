@@ -1,0 +1,137 @@
+{
+ "schema": 1,
+ "id": "yt_EdjNt8c2FUE",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=EdjNt8c2FUE",
+ "title": "Vertex Shader Optimization - Advanced Materials - Episode 33",
+ "date": "2023-12-07",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Advanced Materials",
+ "index": 33,
+ "duration": 1360,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本课介绍如何把适合的材质计算从 Pixel Shader 移到 Vertex Shader，以减少逐像素计算开销，并在 Unreal Engine 和 Unity 中分别演示。通过自定义光照案例说明：逐顶点计算高光会产生明显的插值瑕疵，需要权衡画质与性能。通过水面波纹案例展示如何将 UV 平移动画移到顶点阶段，在示例中保持视觉效果一致。最后介绍 Unity Custom Interpolator 的分量打包思路，并提醒指令数只能作为性能判断的粗略参考。",
+ "chapters": [
+  {
+   "t": 0,
+   "title": "Unreal Engine：逐顶点光照优化与插值瑕疵",
+   "points": [
+    {
+     "t": 0,
+     "text": "回顾图形管线：Vertex Shader 每个顶点计算一次，结果插值到像素；Pixel Shader 每个像素计算一次，顶点通常比像素少。"
+    },
+    {
+     "t": 115,
+     "text": "使用 Unlit 材质手动构建漫反射与 Blinn-Phong 高光：通过半程向量与法线的点积、Saturate 和幂运算控制高光。"
+    },
+    {
+     "t": 192,
+     "text": "查看原始材质指令数：Pixel Shader 为 104，Vertex Shader 为 250；两者执行次数不同，不能直接比较总开销。"
+    },
+    {
+     "t": 256,
+     "text": "添加 Vertex Interpolator，将光照计算接到输入端，输出连接 Emissive Color，使上游计算转到顶点阶段。"
+    },
+    {
+     "t": 300,
+     "text": "修复顶点阶段使用像素法线导致的报错：改用顶点法线；保存后 Pixel Shader 指令数从 104 降到 78。"
+    },
+    {
+     "t": 342,
+     "text": "性能判断的限制：指令数仅能作为粗略参考，不能仅凭数字降低就断定实际运行更快。"
+    },
+    {
+     "t": 386,
+     "text": "单独输出高光观察线性插值瑕疵：顶点间亮度插值显露三角形边缘；切回逐像素计算后，高光明显更平滑。"
+    },
+    {
+     "t": 483,
+     "text": "画质与性能取舍：逐顶点高光可考虑用于远处对象或较远的 LOD，但示例中的块状瑕疵仍可能可见。"
+    }
+   ]
+  },
+  {
+   "t": 556,
+   "title": "Unreal Engine：将水面 UV 动画移到顶点阶段",
+   "points": [
+    {
+     "t": 556,
+     "text": "水面波纹结构：取 World Position 的 X、Y 做俯视投影，通过 Panner 滚动 UV，三次采样同一张波纹法线贴图并组合结果。"
+    },
+    {
+     "t": 628,
+     "text": "识别优化位置：原材质 Pixel Shader 为 193 条指令；将纹理采样前的 UV 滚动计算通过 Vertex Interpolator 移到顶点阶段。"
+    },
+    {
+     "t": 680,
+     "text": "比较优化结果：Pixel Shader 指令数从 193 降到 185，示例中的水面视觉效果没有可见变化。"
+    },
+    {
+     "t": 726,
+     "text": "选择适合迁移的计算：整体平移、旋转或振荡的 UV 动画是良好候选；关注计算结果的空间变化与插值是否影响画质。"
+    }
+   ]
+  },
+  {
+   "t": 797,
+   "title": "Unity：用 Custom Interpolator 迁移光照计算",
+   "points": [
+    {
+     "t": 797,
+     "text": "检查 Shader Graph 光照示例：将漫反射与 Blinn-Phong 高光相加并乘以材质颜色，原先在像素阶段计算，明暗过渡平滑。"
+    },
+    {
+     "t": 838,
+     "text": "选中 Vertex 阶段，按空格添加 Custom Interpolator，并将光照计算结果连接进去。"
+    },
+    {
+     "t": 859,
+     "text": "在图中搜索并添加对应的 Custom Interpolator 读取节点，将顶点阶段传来的数据连接到 Master Stack 的像素阶段输入。"
+    },
+    {
+     "t": 900,
+     "text": "观察迁移后的三角形边缘与顶点痕迹；单独传递高光结果，使插值造成的不平滑更加明显。"
+    },
+    {
+     "t": 952,
+     "text": "判断适用范围：像素间变化明显的高光不适合直接改为逐顶点计算；远距离显示可考虑接受瑕疵，切回像素阶段可恢复平滑。"
+    }
+   ]
+  },
+  {
+   "t": 997,
+   "title": "Unity：优化水面 UV 滚动与插值器分量打包",
+   "points": [
+    {
+     "t": 997,
+     "text": "搭建水面波纹：三个纹理采样节点使用同一张法线贴图，以不同方向、缩放和速度滚动 UV；Time 与不同数值相乘控制偏移。"
+    },
+    {
+     "t": 1080,
+     "text": "将均匀滚动的 UV 计算移到顶点阶段：在 Master Stack 中添加三个 Custom Interpolator，分别连接三组 UV。"
+    },
+    {
+     "t": 1123,
+     "text": "添加三个对应的 Custom Interpolator 读取节点，将输出分别接入纹理采样的 UV 输入。"
+    },
+    {
+     "t": 1168,
+     "text": "整理节点布局以区分 Vertex 与 Fragment 阶段：UV 动画在顶点阶段计算，纹理采样在片元阶段执行。"
+    },
+    {
+     "t": 1189,
+     "text": "保存并检查场景：水面效果保持一致；优化来自将 UV 动画由逐像素计算改为逐顶点计算。"
+    },
+    {
+     "t": 1230,
+     "text": "进一步优化的思路：三个插值器各传递一组 Vector2，可将前两组 UV 打包为一个四分量向量，在像素阶段拆开，使插值器数量从三个减到两个；本课未实际操作。"
+    },
+    {
+     "t": 1303,
+     "text": "总结优化原则：寻找能够逐顶点计算且插值后画质可接受的部分；预告下节介绍在 Vertex Shader 中采样纹理所需的技巧。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}

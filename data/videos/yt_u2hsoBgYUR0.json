@@ -1,0 +1,195 @@
+{
+ "schema": 1,
+ "id": "yt_u2hsoBgYUR0",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=u2hsoBgYUR0",
+ "title": "Adding Rocks With Hierarchical Generation - Procedural Content Generation (PCG) - Episode 9",
+ "date": "2026-06-18",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Procedural Content Generation (PCG)",
+ "index": 9,
+ "duration": 1790,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本课在 Unreal Engine 中使用 PCG 的 Hierarchical Generation，为森林环境按玩家位置动态生成岩石。通过网格布点、随机变换、地形投射和坡度筛选，控制岩石的分布与外观变化。随后配置六种岩石网格，并结合实例剔除距离与材质抖动淡出，减轻岩石出现和消失时的突变。课程最后演示运行效果，并说明这套方法适合远处不明显的小型环境物件。",
+ "chapters": [
+  {
+   "t": 0,
+   "title": "分层生成原理、岩石素材与运行时设置",
+   "points": [
+    {
+     "t": 0,
+     "text": "介绍本课目标：使用 PCG Hierarchical Generation，在已有森林环境中高效放置岩石。"
+    },
+    {
+     "t": 48,
+     "text": "说明远距离大量物件的性能开销：将环境划分为网格，随玩家移动生成附近区域、清理远处区域。"
+    },
+    {
+     "t": 141,
+     "text": "展示六种 Megascans 岩石；顶部苔藓是额外修改的材质效果，本课不展开制作方法。"
+    },
+    {
+     "t": 210,
+     "text": "在 Content Drawer 中右键选择 PCG → PCG Graph，创建空图 PCG Rocks 并拖入场景。"
+    },
+    {
+     "t": 230,
+     "text": "调整 PCG 体积覆盖地形：X、Y Scale 设为 120，居中后将 Z Scale 调整为 60。"
+    },
+    {
+     "t": 279,
+     "text": "将 Generation Trigger 改为 Generate at Runtime，并启用 Is Partitioned，让生成结果随玩家位置更新。"
+    },
+    {
+     "t": 328,
+     "text": "在 PCG World Actor 中将 Serialization Mode 设为 Always Serialize，启用 Treat Editor Viewport as Generation Source，以编辑器视口相机测试动态生成。"
+    }
+   ]
+  },
+  {
+   "t": 378,
+   "title": "搭建分层网格并调试相机附近的生成区域",
+   "points": [
+    {
+     "t": 378,
+     "text": "在 PCG Graph 设置中启用 Use Hierarchical Generation，将默认网格大小设为 Unbounded，后续由节点指定分层尺寸。"
+    },
+    {
+     "t": 422,
+     "text": "添加 Create Points Grid：Grid Extents 设为 100000，Cell Size 设为 700，让岩石初始间距约为 7 米。"
+    },
+    {
+     "t": 495,
+     "text": "解释 Cell Size 与数量的关系：减小数值会增加点数；Coordinate Space 设为 Local Component，并启用 Cull Points Outside the Volume。"
+    },
+    {
+     "t": 541,
+     "text": "添加 Change Grid Size，将 Grid Size 设为 1600，对应约 16 × 16 米的分层生成单元。"
+    },
+    {
+     "t": 565,
+     "text": "讨论分层尺寸的取舍：较大的单元减少单元数量及管理开销，但生成与清理的空间粒度更粗。"
+    },
+    {
+     "t": 593,
+     "text": "添加 Intersection：点数据接入 Primary Source，Grid Cell Volume 接入 Source 1，将点限制在对应网格单元内。"
+    },
+    {
+     "t": 639,
+     "text": "连接 Debug 节点并保存，移动编辑器相机，观察附近点阵随位置更新；检查点仍处于规则平面、尚未贴合地形的问题。"
+    }
+   ]
+  },
+  {
+   "t": 740,
+   "title": "随机化岩石分布、投射地形与过滤陡坡",
+   "points": [
+    {
+     "t": 740,
+     "text": "添加 Transform Points，准备随机调整点的位置、旋转与缩放，打破规则网格排列。"
+    },
+    {
+     "t": 764,
+     "text": "将位置偏移范围设为 -300 至 +300，让点在约 7 米的初始间距内随机移动，并保留一定间隔。"
+    },
+    {
+     "t": 794,
+     "text": "设置随机旋转范围 0–360°，缩放范围 0.7–1.5，为岩石增加朝向与尺寸变化。"
+    },
+    {
+     "t": 873,
+     "text": "将 Intersection 接入 Transform Points；编辑器自动插入数据转换节点，将空间数据转换为点数据。"
+    },
+    {
+     "t": 894,
+     "text": "添加 Projection，将 Get Landscape Data 接入 Projection Target，再用 Debug 确认点已投射到地形表面。"
+    },
+    {
+     "t": 965,
+     "text": "检查陡坡上的点，并添加 Normal to Density，以向上向量 (0, 0, 1) 为参考，将点朝向转换为 Density 值。"
+    },
+    {
+     "t": 1035,
+     "text": "通过调试颜色观察坡度：朝向越接近向上，Density 越接近 1、颜色越白；倾斜较大的点颜色更暗。"
+    },
+    {
+     "t": 1078,
+     "text": "添加 Density Filter，仅保留 Density 为 0.93–1 的点；按 D 开启调试，确认陡坡点被移除。"
+    }
+   ]
+  },
+  {
+   "t": 1190,
+   "title": "生成岩石并验证运行时加载与清理",
+   "points": [
+    {
+     "t": 1190,
+     "text": "添加 Static Mesh Spawner，将筛选后的点转换为岩石实例；先使用一种岩石检查效果。"
+    },
+    {
+     "t": 1216,
+     "text": "在 Mesh Entries 中新增条目，展开 Descriptor，在 Static Mesh 中指定岩石网格并保存。"
+    },
+    {
+     "t": 1244,
+     "text": "移动相机观察岩石突然出现与消失，确认分层网格会随相机位置生成和清理附近岩石。"
+    },
+    {
+     "t": 1295,
+     "text": "将 Change Grid Size 临时改为 800，观察本例中清理位置更靠近相机，再恢复为 1600。"
+    },
+    {
+     "t": 1319,
+     "text": "进入角色运行测试，前后移动，验证岩石只在玩家附近生成。"
+    },
+    {
+     "t": 1343,
+     "text": "将 Always Build Runtime Generation Resources (?) 对应命令设为 1，解决角色运行时草地未正确生成的问题；字幕未提供完整控制台命令。"
+    },
+    {
+     "t": 1371,
+     "text": "总结运行时生成效果：远处不保留或渲染这些岩石，将资源集中用于玩家附近可见的区域。"
+    }
+   ]
+  },
+  {
+   "t": 1400,
+   "title": "补齐岩石种类、制作距离淡出与课程总结",
+   "points": [
+    {
+     "t": 1400,
+     "text": "提出优化目标：让岩石随距离逐渐淡入淡出，减轻分层生成造成的突现感。"
+    },
+    {
+     "t": 1428,
+     "text": "将 Static Mesh Spawner 的 Mesh Entries 补齐为六项，分别指定六种岩石网格，增加散布结果的种类变化。"
+    },
+    {
+     "t": 1474,
+     "text": "在生成器参数中搜索 cull，为每种岩石设置 Instance Start Cull Distance = 3500、Instance End Cull Distance = 4000，准备在 35–40 米范围内淡出。"
+    },
+    {
+     "t": 1519,
+     "text": "打开岩石材质，将 Blend Mode 从 Opaque 改为 Masked，启用材质根节点上的 Opacity Mask 输入。"
+    },
+    {
+     "t": 1544,
+     "text": "连接 PerInstanceFadeAmount → DitherTemporalAA → Opacity Mask，将实例距离产生的淡出值转换为抖动透明遮罩。"
+    },
+    {
+     "t": 1599,
+     "text": "保存材质并测试；临时将剔除距离改为 1000–2000，更清楚地观察岩石淡入淡出，再恢复为 3500–4000。"
+    },
+    {
+     "t": 1651,
+     "text": "最终角色测试与流程回顾：六种岩石使用随机位置偏移、旋转和缩放，并通过 Hierarchical Generation 在玩家附近生成。"
+    },
+    {
+     "t": 1726,
+     "text": "说明适用范围：可扩展到其他小型环境物件；远处依然显眼的树木不适合直接采用本例的近距离清理方式。随后预告岩石外观优化并结束课程。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}

@@ -1,0 +1,233 @@
+{
+ "schema": 1,
+ "id": "yt_DoZRYtvb8OU",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=DoZRYtvb8OU",
+ "title": "How To Grow A Forest in Unreal With PCG - Procedural Content Generation (PCG) - Episode 5",
+ "date": "2026-05-14",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Procedural Content Generation (PCG)",
+ "index": 5,
+ "duration": 3041,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本课演示如何在 Unreal Engine 中使用 PCG 按规则生成森林，从基础随机散布逐步搭建按树木大小分层的生成系统。首先使用地形采样、密度过滤、变换和坡度筛选控制树木的位置、朝向与数量。随后建立森林中心，通过复制点阵、随机扰动、计算距离和投射到地形，实现中心大树、外围中树与幼树的分布。这是一种模拟森林向外扩展的简化生成规则，课程最后展示效果，并预告树下针叶地表材质的制作。",
+ "chapters": [
+  {
+   "t": 0,
+   "title": "PCG 基础流程与树木资产配置",
+   "points": [
+    {
+     "t": 0,
+     "text": "介绍课程目标：先搭建随机散布森林，再加入树木分组与生长分布规则。"
+    },
+    {
+     "t": 47,
+     "text": "在 Content Drawer 的 PCG 文件夹中新建空白 PCG Graph，命名为 PCG Forest。"
+    },
+    {
+     "t": 90,
+     "text": "将 PCG Forest 拖入关卡，设置体积 Scale 为 120 × 120 × 60，并移动到覆盖地形的位置。"
+    },
+    {
+     "t": 136,
+     "text": "说明 PCG 工作流程：生成点，调整 Position、Rotation、Scale 等属性，再在点上生成网格。"
+    },
+    {
+     "t": 183,
+     "text": "连接 Get Landscape Data → Surface Sampler，在地形表面生成采样点。"
+    },
+    {
+     "t": 231,
+     "text": "选中节点按 D 显示调试点，按 A 查看属性表；黑白颜色显示 Density，本例采样点的值在 0–1 之间。"
+    },
+    {
+     "t": 328,
+     "text": "添加 Static Mesh Spawner；介绍本课使用的 Temperate Vegetation Spruce Forest 资产及不同大小的云杉模型。"
+    },
+    {
+     "t": 423,
+     "text": "在 Mesh Selector → Mesh Entries 添加条目，通过 Descriptor 设置 Static Mesh，共配置 14 个树木网格。"
+    }
+   ]
+  },
+  {
+   "t": 490,
+   "title": "控制森林密度、树木朝向与陡坡排除",
+   "points": [
+    {
+     "t": 490,
+     "text": "初次生成的森林过密；在 Surface Sampler 与 Static Mesh Spawner 之间加入 Density Filter。"
+    },
+    {
+     "t": 540,
+     "text": "设置 Density Filter 的 Lower Bound 为 0.3、Upper Bound 为 0.6，只保留该密度区间的点，并切换调试预览比较数量。"
+    },
+    {
+     "t": 612,
+     "text": "发现树木随地形倾斜；添加 Transform Points，准备调整旋转与缩放。"
+    },
+    {
+     "t": 685,
+     "text": "设置 X、Y 旋转范围为 -5° 至 5°，Z 旋转范围为 -180° 至 180°；勾选 Absolute Rotation，覆盖原有地形朝向。"
+    },
+    {
+     "t": 758,
+     "text": "设置 Scale 范围为 0.7–1.5，为树木增加尺寸变化，并接回 Static Mesh Spawner 查看结果。"
+    },
+    {
+     "t": 831,
+     "text": "在 Transform Points 之前添加 Filter Elements by Range，以 Rotation.Pitch 为目标属性，使用两个 Constant 设置 -35 与 35 的筛选范围。"
+    },
+    {
+     "t": 985,
+     "text": "复制范围过滤节点，将属性改为 Rotation.Roll，同样筛选 -35 至 35，并串联 Inside Filter 输出排除陡坡点。"
+    },
+    {
+     "t": 1121,
+     "text": "进入场景检查基础森林；修改 Surface Sampler 的 Seed，快速生成不同位置与模型组合的森林变体。"
+    }
+   ]
+  },
+  {
+   "t": 1201,
+   "title": "建立森林中心并向周围复制点阵",
+   "points": [
+    {
+     "t": 1201,
+     "text": "提出简化生长规则：以高大老树为中心，周围分布中等树木，外围分布幼树，替代完全随机的混合散布。"
+    },
+    {
+     "t": 1325,
+     "text": "断开 Static Mesh Spawner，重组现有图表，为森林中心建立单独的采样与坡度过滤流程。"
+    },
+    {
+     "t": 1403,
+     "text": "将森林中心的 Pitch、Roll 筛选范围收紧至 -5 至 5，使中心主要出现在平坦地形。"
+    },
+    {
+     "t": 1427,
+     "text": "将 Surface Sampler 的 Points Per Square Meter 从 0.1 调为 0.05，减少中心点；Density Filter 继续保留 0.3–0.6。"
+    },
+    {
+     "t": 1497,
+     "text": "为中心点连接 Transform Points，沿用竖直朝向与缩放变化，并开启调试检查中心分布。"
+    },
+    {
+     "t": 1544,
+     "text": "添加 Create Points Grid，设置 Grid Size 为 2500 × 2500 × 1，Cell Size 为 200，生成约 25 米见方、间隔约 2 米的点阵。"
+    },
+    {
+     "t": 1610,
+     "text": "使用 Copy Points：点阵连接 Source，森林中心点连接 Target，将一份点阵复制到每个中心位置。"
+    },
+    {
+     "t": 1664,
+     "text": "复制后的点 Density 均为 1；添加 Attribute Noise，将 Input Source 设为 Density，赋予 0–1 随机值以便预览与后续筛选。"
+    }
+   ]
+  },
+  {
+   "t": 1740,
+   "title": "扰动点阵、计算中心距离与投射地形",
+   "points": [
+    {
+     "t": 1740,
+     "text": "添加 Transform Points，设置 X、Y 位移范围为 -400 至 400，Z 轴旋转范围为 -180° 至 180°，打散规则点阵。"
+    },
+    {
+     "t": 1818,
+     "text": "添加 Density Filter，仅保留 0.9–1 的随机密度区间，大幅减少候选树木点。"
+    },
+    {
+     "t": 1894,
+     "text": "将最初 Surface Sampler 的 Point Extents 设为 1 × 1 × 1，缩小中心点边界以改善后续距离控制。"
+    },
+    {
+     "t": 1938,
+     "text": "选择空间类 Distance 节点，而非 Vector Distance；散布点连接 Source，原始森林中心点连接 Target。"
+    },
+    {
+     "t": 1986,
+     "text": "让 Distance 将距离结果写入 Density，设置 Maximum Distance 为 2200，得到中心黑、外围白的距离渐变。"
+    },
+    {
+     "t": 2055,
+     "text": "添加 Projection，散布点连接输入，Get Landscape Data 连接 Projection Target；保存并 Force Regen，将悬空点投射到地形。"
+    },
+    {
+     "t": 2131,
+     "text": "在 Distance 与 Projection 之间插入 Execute Blueprint，通过 Blueprint Element Type 选择 Scale by Density。"
+    },
+    {
+     "t": 2200,
+     "text": "反向设置密度对应的缩放：黑色中心点使用 1，白色外围点使用 0.5，使点的尺寸随离中心的距离增加而减小。"
+    }
+   ]
+  },
+  {
+   "t": 2276,
+   "title": "按距离划分大中小树并分别生成",
+   "points": [
+    {
+     "t": 2276,
+     "text": "接回原有坡度筛选和 Transform Points：投射后排除陡坡点，再恢复树木竖直朝向及旋转、缩放变化。"
+    },
+    {
+     "t": 2355,
+     "text": "建立三条 Density Filter 分支：0–0.4 对应大树，0.4–0.6 对应中树，0.6–1 对应小树；此时 Density 表示中心距离。"
+    },
+    {
+     "t": 2403,
+     "text": "分别开启三条分支的调试预览，检查大树位于中心、中树环绕中心、小树位于外围的分区效果。"
+    },
+    {
+     "t": 2452,
+     "text": "在分区之后为各分支添加 Attribute Noise，将 Density 重新随机化为 0–1，供各组独立控制数量。"
+    },
+    {
+     "t": 2501,
+     "text": "在随机化之后再接 Density Filter：小树保留 0.2–1，大树保留 0.8–1，中树保留 0.9–1。"
+    },
+    {
+     "t": 2601,
+     "text": "将 Static Mesh Spawner 配置为三份，分别接收大树、中树、小树分支，并删除各自 Mesh Entries 中不属于该组的模型。"
+    },
+    {
+     "t": 2655,
+     "text": "依次连接三组 Spawner，检查大树中心、中树邻接区域和小树外围的生成结果，关闭调试显示并保存。"
+    }
+   ]
+  },
+  {
+   "t": 2732,
+   "title": "完整图表回顾、场景检查与下集预告",
+   "points": [
+    {
+     "t": 2732,
+     "text": "检查最终分布：树木已形成分层群落，但仍有部分树木距离过近，当前流程尚未解决所有间距问题。"
+    },
+    {
+     "t": 2754,
+     "text": "回顾生成前半段：建立森林中心、复制网格点、随机扰动、密度稀疏化，再计算各点到中心的距离。"
+    },
+    {
+     "t": 2800,
+     "text": "回顾生成后半段：按距离缩放、投射地形、排除陡坡、修正朝向，再用距离密度分成三组树木。"
+    },
+    {
+     "t": 2872,
+     "text": "讨论可扩展的规则：加入日照、水分和海拔等因素；本课实际实现的是从中心向外围分布不同大小树木。"
+    },
+    {
+     "t": 2893,
+     "text": "使用角色在森林中行走，观察中心高大树木、周围中树与边缘幼树的空间层次。"
+    },
+    {
+     "t": 2940,
+     "text": "指出树下地表缺少云杉针叶堆积；预告下一集让树木影响 Landscape 材质，在树根周围生成针叶覆盖区域，随后结束课程。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}

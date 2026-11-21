@@ -1,0 +1,127 @@
+{
+ "schema": 1,
+ "id": "yt_CHrnErTJvHU",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=CHrnErTJvHU",
+ "title": "Introduction To Vertex Shaders - Advanced Materials - Episode 32",
+ "date": "2023-11-30",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Advanced Materials",
+ "index": 32,
+ "duration": 956,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本课介绍 Vertex Shader 在图形管线中的作用，以及顶点数据如何经过光栅化和插值传入 Pixel Shader。说明将部分计算放到顶点阶段的性能动机，以及阶段之间传递数据的数量限制。随后演示 Unity Shader Graph 的顶点输入与 Custom Interpolator，以及 Unreal Engine 的 World Position Offset 和 Vertex Interpolator。最后预告后续将讨论适合顶点阶段的优化及其失效情形。",
+ "chapters": [
+  {
+   "t": 0,
+   "title": "Vertex Shader 基础与图形管线",
+   "points": [
+    {
+     "t": 0,
+     "text": "系列介绍：后续将讨论顶点阶段优化、纹理采样、顶点位移与水面动画。"
+    },
+    {
+     "t": 79,
+     "text": "顶点坐标变换：网格从 CPU 传入 GPU 时，顶点位于相对物体轴心的 Object Space；Vertex Shader 将其变换到 Clip Space。"
+    },
+    {
+     "t": 103,
+     "text": "逐顶点处理数据：除了位置，还可以计算和输出 UV、Color、Normal 等顶点属性。"
+    },
+    {
+     "t": 148,
+     "text": "Primitive Assembly、Rasterization 与 Interpolation：顶点组成三角形，再生成屏幕上的像素并插值顶点数据。"
+    },
+    {
+     "t": 170,
+     "text": "用红、绿、蓝三个顶点演示颜色插值；通过重心坐标（Barycentric Coordinates）得到三角形内部的颜色渐变，UV 和 Normal 也会被插值。"
+    },
+    {
+     "t": 258,
+     "text": "Pixel Shader 根据插值后的输入数据计算像素的最终输出颜色。"
+    },
+    {
+     "t": 279,
+     "text": "性能动机：当顶点数量远少于像素数量时，把适合的计算放在 Vertex Shader 中可以减少重复计算。"
+    },
+    {
+     "t": 320,
+     "text": "插值器限制：Vertex Shader 与 Pixel Shader 之间可传递的数据量有限，具体上限取决于目标硬件与图形 API；讲者对 DirectX 的数量举例未作确定核实。"
+    }
+   ]
+  },
+  {
+   "t": 393,
+   "title": "Unity Shader Graph：顶点输入与 Custom Interpolator",
+   "points": [
+    {
+     "t": 421,
+     "text": "识别 Master Stack 中的 Vertex 与 Fragment 两个阶段；Vertex 默认提供 Position、Normal、Tangent 输入。"
+    },
+    {
+     "t": 442,
+     "text": "默认顶点处理：不连接顶点输入时保留默认行为；连接 Position、Normal 或 Tangent 可以修改对应属性。"
+    },
+    {
+     "t": 463,
+     "text": "顶点位移入口：向 Vertex 阶段的 Position 输入提供新的位置，在进入 Fragment 阶段之前改变顶点位置。"
+    },
+    {
+     "t": 504,
+     "text": "自定义顶点计算：需要传递相机距离等额外数据时，使用 Custom Interpolator。"
+    },
+    {
+     "t": 526,
+     "text": "添加 Custom Interpolator：选中 Vertex 阶段，按空格打开菜单并添加该 Block；在 Inspector 中设置数据类型和名称，示例命名为 My Extra Data。"
+    },
+    {
+     "t": 568,
+     "text": "传入颜色示例：创建红色数据并连接 My Extra Data，使该输入对应的计算在顶点阶段执行。"
+    },
+    {
+     "t": 590,
+     "text": "读取自定义数据：在图中按空格，从 Custom Interpolator 分类创建 My Extra Data 节点，并将输出连接 Base Color。"
+    },
+    {
+     "t": 619,
+     "text": "颜色乘以 2 的示例：将 Multiply 结果传入 Custom Interpolator；连接线表示逐顶点结果经过插值，供逐像素阶段读取。"
+    }
+   ]
+  },
+  {
+   "t": 715,
+   "title": "Unreal Engine：World Position Offset 与 Vertex Interpolator",
+   "points": [
+    {
+     "t": 744,
+     "text": "World Position Offset：通过材质根节点的该输入，为顶点添加世界空间位置偏移，可用于位移或动画。"
+    },
+    {
+     "t": 766,
+     "text": "位移操作示例：按住 3 并单击创建 Constant3Vector，连接 World Position Offset；零向量不产生偏移。"
+    },
+    {
+     "t": 789,
+     "text": "位移单位演示：将偏移值设为 100，对应移动 1 米；预览球体因此移出原来的预览位置。"
+    },
+    {
+     "t": 813,
+     "text": "添加 Vertex Interpolator：节点的 VS 输入侧接入顶点阶段计算，PS 输出侧提供插值后的数据供像素阶段使用。"
+    },
+    {
+     "t": 834,
+     "text": "颜色计算示例：创建 Vector3 颜色并乘以 2，将结果输入 Vertex Interpolator，再把输出用于像素阶段。"
+    },
+    {
+     "t": 887,
+     "text": "两种引擎的界面对比：Unity 用 Master Stack 区分 Vertex 与 Fragment 阶段；Unreal 用 Vertex Interpolator 节点表达这条数据传递路径。"
+    },
+    {
+     "t": 915,
+     "text": "结尾与后续预告：下一课将展示逐顶点计算的优化技巧，以及这种优化不适用或不起作用的情形；邀请观众提出后续主题。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}

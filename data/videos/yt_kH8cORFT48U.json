@@ -1,0 +1,165 @@
+{
+ "schema": 1,
+ "id": "yt_kH8cORFT48U",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=kH8cORFT48U",
+ "title": "Retroreflective Road Sign - Advanced Materials - Episode 22",
+ "date": "2023-04-13",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Advanced Materials",
+ "index": 22,
+ "duration": 1748,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本课在 Unity 和 Unreal Engine 中制作具有逆反射视觉效果的道路标牌，先分析玻璃微珠、微棱镜及表面菱形纹理参考。使用低分辨率模糊灰度图，通过 Inverse Lerp 与 Saturate 收窄灰度过渡，再混合颜色生成清晰标牌。通过反转 Fresnel、Power 和 Emission 模拟正视时变亮的效果，并叠加菱形细节纹理；这一实现依赖观察角度，并未实际计算光线返回光源的物理过程。最后对照两款引擎的纹理设置、节点连接和材质参数，展示两张纹理完成材质的思路。",
+ "chapters": [
+  {
+   "t": 0,
+   "title": "逆反射原理、参考分析与纹理准备",
+   "points": [
+    {
+     "t": 0,
+     "text": "课程目标：在 Unity 与 Unreal Engine 中制作逆反射道路标牌，并先通过参考图明确视觉特征。"
+    },
+    {
+     "t": 41,
+     "text": "逆反射原理：区别于普通镜面反射，入射光返回光源方向，使标牌看起来像在发光。"
+    },
+    {
+     "t": 62,
+     "text": "两种逆反射结构：玻璃微珠聚焦光线，以及微棱镜通过内部反射使光线返回；本课参考微棱镜材料。"
+    },
+    {
+     "t": 162,
+     "text": "观察 3M 反光材料的菱形或蜂窝状网格，将其作为表面细节参考。"
+    },
+    {
+     "t": 203,
+     "text": "Photoshop 纹理准备：将参考中的菱形网格编辑为可平铺纹理，另准备标牌文字与边框图。"
+    },
+    {
+     "t": 268,
+     "text": "标牌图旋转 45°，让边缘对齐方形纹理，减少以菱形构图保存时四角浪费的空间。"
+    },
+    {
+     "t": 291,
+     "text": "将标牌图设为 Image → Mode → Grayscale，用单通道灰度保存形状，颜色留到 Shader 中生成。"
+    },
+    {
+     "t": 348,
+     "text": "标牌纹理使用 256×256 分辨率，Gaussian Blur 半径为 2 像素，再在 Shader 中收窄过渡；说明材质不必固定使用颜色、法线和遮罩三张纹理。"
+    }
+   ]
+  },
+  {
+   "t": 465,
+   "title": "Unity：单通道纹理导入与清晰标牌底色",
+   "points": [
+    {
+     "t": 490,
+     "text": "创建 Shader Graph：Create → Shader Graph → HDRP → Lit Shader，命名为 Retro Reflective Sign；讲师说明同样流程可用于 URP。"
+    },
+    {
+     "t": 520,
+     "text": "导入 Caution Sign Blurred：关闭 sRGB，将 Texture Type 设为 Single Channel，使用 Red 通道，格式设为未压缩 R8。"
+    },
+    {
+     "t": 568,
+     "text": "检查纹理通道：有效灰度数据位于 R 通道，G 通道预览为黑色；示例纹理占用约 85 KB。"
+    },
+    {
+     "t": 590,
+     "text": "添加 Inverse Lerp，将纹理 R 通道接入 T，设置 A=0.48、B=0.52，收窄灰度过渡以锐化文字与边框。"
+    },
+    {
+     "t": 683,
+     "text": "在 Inverse Lerp 后连接 Saturate，将输出限制在 0–1，作为后续颜色混合的遮罩。"
+    },
+    {
+     "t": 714,
+     "text": "使用 Lerp 混合炭灰色与橙黄色，避免直接乘色产生纯黑区域；锐化遮罩控制文字、边框与背景配色。"
+    },
+    {
+     "t": 791,
+     "text": "保存 Shader 并应用材质，在场景中放大检查文字边缘，展示低分辨率模糊纹理经阈值重映射后的效果。"
+    }
+   ]
+  },
+  {
+   "t": 838,
+   "title": "Unity：视角驱动的发光效果与菱形细节",
+   "points": [
+    {
+     "t": 838,
+     "text": "添加 Fresnel Effect，再接 One Minus，使朝向摄像机的表面变亮、掠视角表面变暗。"
+    },
+    {
+     "t": 868,
+     "text": "连接 Power 并设置指数为 14，收紧正视方向的亮区。"
+    },
+    {
+     "t": 898,
+     "text": "将角度遮罩乘以亮度值 25000，再乘标牌颜色并接入 Emission；亮度可进一步暴露为 Blackboard 参数。"
+    },
+    {
+     "t": 969,
+     "text": "在场景中转动观察标牌，检查正视时亮起、偏离正视时发光减弱的效果。"
+    },
+    {
+     "t": 992,
+     "text": "调整表面参数：Smoothness 从 0.7 提高到 0.8，Metallic 设为 0.5；这是讲师用于表现金属底板与涂层的折中设置。"
+    },
+    {
+     "t": 1077,
+     "text": "导入 Diamond Retro Detail 纹理补充菱形网格；讲师口述为 512×512，但界面显示 1024，尺寸在视频中未确认。"
+    },
+    {
+     "t": 1125,
+     "text": "添加 UV 节点并乘以 7，再接入细节纹理的 UV 输入，让网格沿表面重复平铺。"
+    },
+    {
+     "t": 1167,
+     "text": "将菱形纹理乘入发光结果，使网格仅影响模拟逆反射的亮区；转离正视角后，底色中不会保留该图案。"
+    }
+   ]
+  },
+  {
+   "t": 1263,
+   "title": "Unreal Engine：复现节点网络与最终材质检查",
+   "points": [
+    {
+     "t": 1263,
+     "text": "检查纹理导入：模糊标牌图的 Compression Settings 设为 Grayscale 并关闭 sRGB；菱形细节图使用 Default 压缩并开启 sRGB。"
+    },
+    {
+     "t": 1297,
+     "text": "从标牌纹理 R 通道取值，连接 Inverse Lerp，范围设为 0.48–0.52；演示改为 0.4–0.6 会使边缘更柔和。"
+    },
+    {
+     "t": 1388,
+     "text": "将锐化结果接入 Saturate，再作为 Lerp 遮罩混合炭灰色与橙黄色，输出至 Base Color。"
+    },
+    {
+     "t": 1479,
+     "text": "调整 Fresnel：ExponentIn 从默认 5 改为 1，随后反转并接 Power=14，以集中正视方向的亮区。"
+    },
+    {
+     "t": 1537,
+     "text": "将 Texture Coordinate 乘以 7 后采样 Diamond Retro Detail，再与角度遮罩相乘，生成带蜂窝纹理的发光分布。"
+    },
+    {
+     "t": 1585,
+     "text": "将效果乘以 25 控制 Emissive 亮度；可将此值暴露为参数，按场景需要调整。"
+    },
+    {
+     "t": 1631,
+     "text": "设置 Metallic=0.5、Roughness=0.2，保存并在场景中检查正视与掠视角之间的亮度变化。"
+    },
+    {
+     "t": 1679,
+     "text": "成品回顾与结尾：生产项目可继续加入划痕、泥点等变化；总结用灰度标牌图与菱形细节图制作材质的思路，随后结束课程。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}

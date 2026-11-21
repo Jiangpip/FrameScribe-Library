@@ -1,0 +1,165 @@
+{
+ "schema": 1,
+ "id": "yt_Q2XI8cuSBMk",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=Q2XI8cuSBMk",
+ "title": "Rock Shader - Advanced Materials - Episode 3",
+ "date": "2022-10-13",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Advanced Materials",
+ "index": 3,
+ "duration": 1909,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本课在 Unreal Engine 和 Unity 中制作适合场景搭建的岩石材质，改善岩石放大后纹理模糊、不同尺寸岩石拼接时 Texel Density 不一致的问题。通过纹理通道打包保存颜色、粗糙度或光滑度、法线与 AO，并手动解包法线、重建 Z 分量。使用物体缩放补偿 UV，再叠加 Macro Detail 和 Micro Detail，使岩石在远景与近距离观察时都有细节。最后对比两套引擎中的实现差异，说明缩放仍有实际限制，并预告与积雪材质结合。",
+ "chapters": [
+  {
+   "t": 0,
+   "title": "默认岩石材质的问题与纹理通道规划",
+   "points": [
+    {
+     "t": 0,
+     "text": "检查 Unreal 默认岩石材质：包含颜色、固定 Roughness、AO、基础法线和 Detail Normal。"
+    },
+    {
+     "t": 44,
+     "text": "演示岩石放大与相互穿插后出现的问题：纹理变糊，不同尺寸岩石的 Texel Density 不一致。"
+    },
+    {
+     "t": 101,
+     "text": "在 Photoshop 查看原始贴图，区分随模型烘焙的基础法线与用于近距离观察的细节法线。"
+    },
+    {
+     "t": 151,
+     "text": "检查默认 Detail Normal 的 UV：仅平铺 2 次，靠近观察时仍会失去细节。"
+    },
+    {
+     "t": 171,
+     "text": "用 Levels 提亮偏暗的颜色贴图，并将 Roughness 打包到 Alpha，命名为 Rock_CR。"
+    },
+    {
+     "t": 224,
+     "text": "将 AO 打包进基础法线贴图的 B 通道，保留 RG 法线数据，减少单独采样 AO 的需求。"
+    },
+    {
+     "t": 274,
+     "text": "准备 Micro Detail 与 Macro Detail 两层纹理，分别补充近距离微细节和岩石放大后的较大尺度细节。"
+    }
+   ]
+  },
+  {
+   "t": 345,
+   "title": "Unreal：纹理导入、缩放补偿 UV 与基础材质",
+   "points": [
+    {
+     "t": 345,
+     "text": "检查纹理导入设置：颜色纹理启用 sRGB，含 Alpha 时实际格式为 DXT5；打包 AO 的法线使用 BC7，避免 Normal Map 压缩丢失 B 通道数据。"
+    },
+    {
+     "t": 414,
+     "text": "创建 Rock Production 材质，导入 Rock Detail、Rock Macro Detail、Rock_NA 和 Rock_CR 四张纹理。"
+    },
+    {
+     "t": 467,
+     "text": "用 Texture Coordinate 乘以 Object Scale；通过 Component Mask 仅取缩放的 XY，解决 Vector2 与 Vector3 相乘的类型错误。"
+    },
+    {
+     "t": 491,
+     "text": "临时添加 Frac 并连接 Base Color，将 UV 可视化；在场景中缩放岩石，观察 UV 平铺随尺寸增加。"
+    },
+    {
+     "t": 602,
+     "text": "将经过物体缩放补偿的 UV 再乘以 2，用于采样 Rock_CR；颜色连接 Base Color，Alpha 连接 Roughness。"
+    },
+    {
+     "t": 654,
+     "text": "手动解包基础法线：乘以 2 再减去 1，将纹理中的 0–1 数值映射到法线所需的 -1–1 范围。"
+    },
+    {
+     "t": 696,
+     "text": "使用 DeriveNormalZ 根据法线 XY 重建 Z；原始纹理 B 通道连接 Ambient Occlusion，重建结果连接 Normal。"
+    },
+    {
+     "t": 790,
+     "text": "对比阶段性结果：颜色纹理经过缩放补偿后保持较稳定的 Texel Density，但近距离仍需要 Micro Detail。"
+    }
+   ]
+  },
+  {
+   "t": 840,
+   "title": "Unreal：叠加 Macro 与 Micro Detail 并验证缩放效果",
+   "points": [
+    {
+     "t": 840,
+     "text": "添加 Macro Detail：将缩放补偿后的 UV 乘以 0.25，使该层纹理覆盖更大的表面范围。"
+    },
+    {
+     "t": 892,
+     "text": "细节法线 RGB 乘以 (2, 2, 0)，再减去 (1, 1, 0)：解包 XY 并将 Z 置零，随后用 Add 叠加到基础法线。"
+    },
+    {
+     "t": 982,
+     "text": "切换 Buffer Visualization → World Normal，检查 Macro Detail 在岩石放大后是否仍保留稳定的法线细节密度。"
+    },
+    {
+     "t": 1050,
+     "text": "处理 Macro Detail 的附加通道：B 通道经 OneMinus 后加到 Roughness，Alpha 通过 Blend_Overlay 与基础颜色混合。"
+    },
+    {
+     "t": 1146,
+     "text": "复制 Macro Detail 的处理节点用于 Micro Detail，继续叠加 Roughness、Overlay 颜色，并把微细节法线加入已有法线。"
+    },
+    {
+     "t": 1256,
+     "text": "修正 Micro Detail 看起来模糊的问题：补接经过 Object Scale 补偿的 UV，并将其乘以 12，增加微细节平铺次数。"
+    },
+    {
+     "t": 1288,
+     "text": "近距离对比默认材质与新材质，检查 Micro Detail 对模糊纹素和表面细节的改善。"
+    },
+    {
+     "t": 1333,
+     "text": "将岩石放大到 30 倍，再与正常尺寸岩石穿插组合，验证不同缩放下的纹理密度与视觉衔接。"
+    }
+   ]
+  },
+  {
+   "t": 1422,
+   "title": "Unity：复现岩石 Shader Graph 与实现差异",
+   "points": [
+    {
+     "t": 1422,
+     "text": "对比 HDRP 示例岩石与自定义材质：分别检查近距离观察和放大 8 倍后的纹理、法线细节。"
+    },
+    {
+     "t": 1511,
+     "text": "将 Smoothness 打包进颜色贴图 Alpha，命名为 Rock_CS；Macro 与 Micro Detail 的 Alpha 通过设为 Overlay 的 Blend 节点依次混入基础颜色。"
+    },
+    {
+     "t": 1585,
+     "text": "打包 AO 的法线纹理设为 Default，关闭 sRGB 以读取线性数据，并将压缩质量设为 High Quality；视频示例中使用 BC7。"
+    },
+    {
+     "t": 1627,
+     "text": "使用 Normal Unpack 解包法线，再用 Normal Reconstruct Z 从 XY 重建完整法线；原始 B 通道直接连接 Master Stack 的 Ambient Occlusion。"
+    },
+    {
+     "t": 1686,
+     "text": "将 UV 乘以物体缩放，再分别乘以 0.25 和 12，作为 Macro Detail 与 Micro Detail 的采样坐标。"
+    },
+    {
+     "t": 1737,
+     "text": "细节法线采用乘 (2, 2, 0)、减 (1, 1, 0) 的处理方式，将 Z 置零后，与基础法线及另一层细节法线相加。"
+    },
+    {
+     "t": 1785,
+     "text": "汇总三类混合方式：法线相加、颜色 Overlay、Smoothness 相乘；基础颜色 Alpha 依次乘以 Macro 和 Micro Detail 的 B 通道。"
+    },
+    {
+     "t": 1838,
+     "text": "说明缩放范围仍有限，极端放大到 500 倍可能失去细节；预告下一集将岩石与积雪 Shader 结合，并控制顶部积雪量。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}

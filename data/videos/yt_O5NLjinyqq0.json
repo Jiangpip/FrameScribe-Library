@@ -1,0 +1,157 @@
+{
+ "schema": 1,
+ "id": "yt_O5NLjinyqq0",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=O5NLjinyqq0",
+ "title": "Particle System Emitter Size - Advanced Materials - Episode 46",
+ "date": "2024-03-28",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Advanced Materials",
+ "index": 46,
+ "duration": 1402,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本课在已有卡片堆叠网格、Billboard 和随机值节点的基础上，分别在 Unity Shader Graph 与 Unreal Engine 材质中实现粒子的空间分布。通过把随机值从 [0,1] 映射到 [-1,1]，再乘以发射器尺寸参数，让粒子围绕中心散布；按实际公式，该参数控制的是各轴最大偏移，即包围盒半尺寸。课程还用 Lerp 在 Particle Start Size 与 Particle End Size 之间插值，并连接 Billboard 的 Scale 输入。当前仅手动演示尺寸变化，真正的粒子生命周期与动画留到下一课实现。",
+ "chapters": [
+  {
+   "t": 0,
+   "title": "Unity：构建发射器范围与随机粒子分布",
+   "points": [
+    {
+     "t": 0,
+     "text": "回顾已有基础：卡片堆叠网格、面向摄像机的 Billboard 子图，以及为每张卡片生成随机值的 Hash33 子图。"
+    },
+    {
+     "t": 75,
+     "text": "在 Blackboard 新建 Vector3 参数 Emitter Dimensions，用于控制粒子生成位置的空间范围。"
+    },
+    {
+     "t": 124,
+     "text": "在 Graph Inspector 将 Emitter Dimensions 默认值设为 (3,3,3)；结合后续公式，这对应各轴 ±3 的中心偏移范围。"
+    },
+    {
+     "t": 144,
+     "text": "使用 Vertex Color 中每张卡片的灰度标识作为 Hash33 输入，生成三个分量均在 [0,1] 内的随机值。"
+    },
+    {
+     "t": 197,
+     "text": "添加 Multiply ×2 和 Subtract −1，将随机值映射到 [-1,1]，使发射范围围绕原点对称。"
+    },
+    {
+     "t": 243,
+     "text": "将随机向量乘以 Emitter Dimensions，再通过 Add 与 Billboard 输出相加，连接 Vertex Position，使卡片散布到不同位置。"
+    },
+    {
+     "t": 360,
+     "text": "复盘节点链：灰度顶点色 ×255 → Hash33 → 范围映射 → 发射器尺寸缩放 → 叠加 Billboard。"
+    },
+    {
+     "t": 425,
+     "text": "修改 Emitter Dimensions，观察粒子云向中心聚集或向外扩散，并旋转视角检查卡片持续面向摄像机。"
+    }
+   ]
+  },
+  {
+   "t": 470,
+   "title": "Unity：用 Lerp 控制粒子起始与结束尺寸",
+   "points": [
+    {
+     "t": 470,
+     "text": "介绍 Billboard 子图的 Scale 输入，准备通过两个尺寸参数控制粒子生命周期首尾的大小。"
+    },
+    {
+     "t": 492,
+     "text": "在 Blackboard 添加 Particle Start Size 和 Particle End Size，默认值分别设为 0.1 和 2。"
+    },
+    {
+     "t": 536,
+     "text": "添加 Lerp，将起始与结束尺寸接入两端，输出连接 Billboard 的 Scale 输入。"
+    },
+    {
+     "t": 579,
+     "text": "测试 Lerp 的 T：设为 0 时使用起始尺寸，设为 1 时使用结束尺寸。"
+    },
+    {
+     "t": 600,
+     "text": "说明当前尚未实现粒子生命周期；临时添加 Slider 连接 T，手动预览粒子从 0.1 放大到 2。"
+    },
+    {
+     "t": 666,
+     "text": "总结三个参数的分工：Emitter Dimensions 控制粒子位置分布，Start Size 与 End Size 控制单个粒子大小；下一课再接入生命周期动画。"
+    }
+   ]
+  },
+  {
+   "t": 742,
+   "title": "Unreal Engine：随机偏移、坐标转换与发射器形状",
+   "points": [
+    {
+     "t": 742,
+     "text": "回顾 Unreal 材质基础：Vertex Color ×255 后加 0.5，输入 Vector Noise，为卡片生成随机向量。"
+    },
+    {
+     "t": 786,
+     "text": "在 Vector Noise 后添加 Multiply ×2 与 Subtract −1，将随机值从 [0,1] 映射到 [-1,1]。"
+    },
+    {
+     "t": 835,
+     "text": "按住 3 并单击创建 Constant3Vector；考虑 Unreal 默认厘米单位，将各分量设为 300，再右键 Convert to Parameter，命名 Emitter Size。"
+    },
+    {
+     "t": 886,
+     "text": "将 [-1,1] 随机向量乘以 Emitter Size，得到每张卡片的局部空间偏移；300 对应各轴最大偏移 300 cm，完整跨度为 600 cm。"
+    },
+    {
+     "t": 932,
+     "text": "说明 World Position Offset 接收世界空间偏移；添加 Transform 节点，将默认 Tangent → World 改为 Local → World。"
+    },
+    {
+     "t": 976,
+     "text": "使用 Add 将转换后的随机偏移与 Billboard 输出相加，连接 World Position Offset，检查粒子散布与朝向摄像机的效果。"
+    },
+    {
+     "t": 1062,
+     "text": "将 Emitter Size 的 X 分量设为 0，使粒子中心分布压缩到局部 YZ 平面；分别调整三个分量改变粒子云形状。"
+    }
+   ]
+  },
+  {
+   "t": 1108,
+   "title": "Unreal Engine：尺寸插值、节点复盘与后续预告",
+   "points": [
+    {
+     "t": 1108,
+     "text": "为 Billboard 的 Scale 输入创建 Scalar Parameter：Particle Start Size，默认值为 0.1。"
+    },
+    {
+     "t": 1132,
+     "text": "说明本教程自定义 Billboard 的 Scale 输入按米设置，与 Emitter Size 使用的厘米单位不同。"
+    },
+    {
+     "t": 1156,
+     "text": "添加 Particle End Size 参数并设为 2，创建 Linear Interpolate（Lerp），连接两个尺寸参数。"
+    },
+    {
+     "t": 1201,
+     "text": "将 Lerp 输出接入 Billboard Scale；生命周期尚未计算，暂时手动修改 Alpha 观察效果。"
+    },
+    {
+     "t": 1221,
+     "text": "比较 Alpha 取值：0.5 对应两个尺寸的中间值，0 对应起始尺寸 0.1，1 对应结束尺寸 2。"
+    },
+    {
+     "t": 1267,
+     "text": "说明 Vector Noise 接入 Emissive Color 仅用于可视化随机值，后续课程将替换为正式的粒子外观。"
+    },
+    {
+     "t": 1287,
+     "text": "复盘完整位置链：随机向量映射到 [-1,1] → 乘 Emitter Size → Local 转 World → 叠加 Billboard → World Position Offset。"
+    },
+    {
+     "t": 1354,
+     "text": "预告下一课计算粒子生命周期，驱动从小到大或从大到小的尺寸动画；随后结束课程。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}

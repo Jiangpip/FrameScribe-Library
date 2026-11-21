@@ -1,0 +1,233 @@
+{
+ "schema": 1,
+ "id": "yt_9GCfFKxg9c0",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=9GCfFKxg9c0",
+ "title": "Water Surface Ripples - Advanced Materials - Episode 37",
+ "date": "2024-01-18",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Advanced Materials",
+ "index": 37,
+ "duration": 2511,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本课在已有的 Gerstner Waves 水面上叠加动态法线纹理，分别演示 Unreal Engine 和 Unity 中的实现。通过三层不同方向、速度与尺寸的法线采样，组合出细小涟漪和中等尺度的水面起伏。优化部分包括把纹理坐标运算及 Unreal Engine 中的波浪法线计算移到顶点着色器，以及手动解包法线、合并后只重建一次 Z 分量。课程也提醒，Shader 指令数只能辅助判断性能，实际收益应通过目标硬件上的构建版本测试。",
+ "chapters": [
+  {
+   "t": 0,
+   "title": "Unreal Engine：叠加三层动态水面涟漪",
+   "points": [
+    {
+     "t": 0,
+     "text": "回顾上一课的 Gerstner Waves 顶点动画，介绍本课添加细小水面涟漪及后续优化的目标。"
+    },
+    {
+     "t": 79,
+     "text": "导入水面 Normal Map，确认 Texture Sample 的 Sampler Type 为 Normal；临时连接 Normal 输入，观察静止纹理贴在水面上的效果。"
+    },
+    {
+     "t": 194,
+     "text": "使用 Absolute World Position 的 XY 分量进行俯视投影；Unreal Engine 为 Z 轴朝上，因此舍弃 Z 分量。"
+    },
+    {
+     "t": 218,
+     "text": "连接 Panner，设置滚动速度为 (17.5, 8.5)，再乘以 0.002 调整纹理尺寸，形成斜向移动的涟漪。"
+    },
+    {
+     "t": 288,
+     "text": "使用 FlattenNormal 减弱涟漪，通过 BlendAngleCorrectedNormals 将其与 Gerstner Waves 重算的法线混合。"
+    },
+    {
+     "t": 380,
+     "text": "复制第二层法线采样，修改滚动方向、速度和尺寸；先混合两层法线再统一减弱，打破单张纹理整体平移的观感。"
+    },
+    {
+     "t": 522,
+     "text": "添加第三层较大尺度的法线，使用 Vector2 进行非均匀缩放，并单独设置 FlattenNormal 的 Flatness 为 0.3，再与前两层混合。"
+    },
+    {
+     "t": 651,
+     "text": "单独预览第三层贡献，发现并补接 Panner 的坐标输入；对比顶点大浪、中等尺度法线和细小涟漪的组合效果。"
+    }
+   ]
+  },
+  {
+   "t": 726,
+   "title": "性能评估、顶点插值与法线解包原理",
+   "points": [
+    {
+     "t": 726,
+     "text": "查看材质 Stats，当前 Base Pass Shader Instructions 为 258，开始分析水面材质的优化空间。"
+    },
+    {
+     "t": 755,
+     "text": "说明指令数不等同于实际性能：应构建游戏，在目标硬件上比较修改前后的帧率，编辑器统计仅作粗略参考。"
+    },
+    {
+     "t": 805,
+     "text": "在三组纹理坐标运算后加入 VertexInterpolator，将 Panner 和缩放运算移到顶点着色器，指令数从 258 降至 250。"
+    },
+    {
+     "t": 873,
+     "text": "分析 Normal Map 类型采样的隐藏处理；讲者以 X 存入 Alpha、Y 存入 Green、运行时重建 Z 的通道布局解释解包流程。"
+    },
+    {
+     "t": 958,
+     "text": "在纹理查看器中切换颜色通道，演示当前 Normal Map 预览无法关闭 Blue 通道的现象，并解释其与重建 Z 分量的关系。"
+    },
+    {
+     "t": 1023,
+     "text": "用节点模拟法线解包：组合 XY 通道，乘以 2 再减 1，将数值从 [0,1] 映射到 [-1,1]，最后执行 DeriveNormalZ。"
+    },
+    {
+     "t": 1071,
+     "text": "提出延迟重建 Z 的优化：先解包并合并三次采样的 XY 分量，最后只执行一次 DeriveNormalZ。"
+    }
+   ]
+  },
+  {
+   "t": 1095,
+   "title": "Photoshop 与 Unreal Engine：手动打包法线及完整优化",
+   "points": [
+    {
+     "t": 1095,
+     "text": "在 Photoshop 中制作自定义法线纹理：原 Red 中的 X 分量复制到 Alpha，Green 保留 Y，Red 与 Blue 清空；保存为保留 Alpha 的 PNG 或 TGA。"
+    },
+    {
+     "t": 1184,
+     "text": "将自定义纹理导入 Unreal Engine，关闭 sRGB，Compression Settings 设为 Default；检查本例带 Alpha 的纹理格式为 DXT5。"
+    },
+    {
+     "t": 1227,
+     "text": "使用 Append 按 Alpha、Green 的顺序组成 XY，再乘以 2、减 1 手动解包；接入已有 VertexInterpolator 输出的纹理坐标。"
+    },
+    {
+     "t": 1271,
+     "text": "用 Add 合并前两层 XY，用 Multiply 乘以 0.3 控制强度，替代这部分 BlendAngleCorrectedNormals 与 FlattenNormal 运算。"
+    },
+    {
+     "t": 1315,
+     "text": "第三层 XY 乘以 0.6 后加入前两层，最终仅使用一次 DeriveNormalZ 重建完整法线。"
+    },
+    {
+     "t": 1368,
+     "text": "替换原有三层法线混合链，指令数从 250 降至 230；对比水面效果，承认存在细微视觉差异。"
+    },
+    {
+     "t": 1434,
+     "text": "发现 Gerstner Waves 位移进入 World Position Offset，并不意味着其法线分支也在顶点阶段执行；加入 VertexInterpolator 强制转移法线计算，指令数降至 162。"
+    },
+    {
+     "t": 1526,
+     "text": "总结三项优化：波浪法线重算、坐标滚动与缩放移至顶点阶段，以及手动解包法线；本例总指令数由 258 降至 162，并预告反射、折射、深度与泡沫。"
+    }
+   ]
+  },
+  {
+   "t": 1593,
+   "title": "Unity：纹理导入、通道重排与第一层涟漪",
+   "points": [
+    {
+     "t": 1593,
+     "text": "切换 Unity，断开新增涟漪连接，对比上一课仅有 Gerstner Waves 大浪的水面与本课效果。"
+    },
+    {
+     "t": 1644,
+     "text": "介绍沿用的自定义法线纹理：X 存于 Alpha，Y 存于 Green，另外两个通道清空。"
+    },
+    {
+     "t": 1688,
+     "text": "在纹理 Inspector 中关闭 sRGB，使用 Swizzle 将 Alpha 映射到 Red，并反转 Green，以适配本例从 Unreal Engine 转入 Unity 的法线方向。"
+    },
+    {
+     "t": 1762,
+     "text": "将 Blue 设为 1、Alpha 设为 0；Compression 选择 High Quality，观察本例 BC7 格式与 Normal Quality 的压缩伪影差异。"
+    },
+    {
+     "t": 1840,
+     "text": "Shader Graph 中将纹理采样 Type 设为 Default，读取已重排的 Red、Green 组成 Vector2，再乘以 2、减 1 手动解包。"
+    },
+    {
+     "t": 1897,
+     "text": "使用 Tiling And Offset；从 Object Space 的 Position 提取 XZ 作为平面坐标，因为 Unity 为 Y 轴朝上。"
+    },
+    {
+     "t": 1940,
+     "text": "第一层 Tiling 设为 (0.2, 0.2)，Time 乘以速度 (0.1, 0.05) 接入 Offset，控制纹理缩放与滚动。"
+    },
+    {
+     "t": 1963,
+     "text": "将第一层结果单独接入 Normal Reconstruct Z，再输出到 Normal，观察单层法线整体平移、不够自然的效果。"
+    }
+   ]
+  },
+  {
+   "t": 2012,
+   "title": "Unity：多层涟漪混合与统一重建法线",
+   "points": [
+    {
+     "t": 2012,
+     "text": "解释多层采样的作用：让同一张法线纹理以不同方向和速度交错移动，组合出更自然的水面变化。"
+    },
+    {
+     "t": 2032,
+     "text": "第二层 Tiling 设为 (0.15, 0.15)，速度设为 (0.12, 0.07)，使其尺寸与运动方向区别于第一层。"
+    },
+    {
+     "t": 2076,
+     "text": "第二层同样读取 RG、组成 Vector2 并解包；将前两层相加后乘以 0.3，降低过强的法线扰动。"
+    },
+    {
+     "t": 2126,
+     "text": "预览两层混合结果；如果需要减少纹理采样开销，可以省略第三层，但会减少水面的尺度变化。"
+    },
+    {
+     "t": 2146,
+     "text": "第三层 Tiling 设为 (0.03, 0.04)，滚动速度为 (0.03, 0.017)，形成更大尺度、非均匀缩放的涟漪。"
+    },
+    {
+     "t": 2191,
+     "text": "第三层强度乘以 0.6，前两层强度为 0.3；说明速度、尺寸和强度均为视觉调参值，可自由调整相对贡献。"
+    },
+    {
+     "t": 2245,
+     "text": "将所有层的 XY 相加后送入 Normal Reconstruct Z；延迟包含平方根的 Z 重建运算，使其由每次采样执行一次变为最终仅执行一次。"
+    }
+   ]
+  },
+  {
+   "t": 2288,
+   "title": "Unity：使用 Custom Interpolator 优化坐标运算",
+   "points": [
+    {
+     "t": 2288,
+     "text": "继续优化 Shader Graph，将三组纹理坐标的缩放与滚动运算移到顶点着色器。"
+    },
+    {
+     "t": 2312,
+     "text": "在 Master Stack 的 Vertex 区域按空格添加 Custom Interpolator，在 Graph Inspector 中设为 Vector2，并命名为 uv1。"
+    },
+    {
+     "t": 2333,
+     "text": "继续创建 uv2、uv3 两个 Vector2 类型的 Custom Interpolator，为三层纹理分别传递坐标。"
+    },
+    {
+     "t": 2355,
+     "text": "断开原有坐标连接，将三组 Tiling And Offset 的结果接入 Vertex Master Stack 对应的插值器输入。"
+    },
+    {
+     "t": 2377,
+     "text": "从节点菜单的 Custom Interpolator 分类创建 uv1、uv2、uv3 读取节点，分别连接三次纹理采样的 UV 输入。"
+    },
+    {
+     "t": 2398,
+     "text": "保存 Shader 并返回场景检查效果，确认纹理缩放与滚动通过顶点阶段计算后仍能呈现动态涟漪。"
+    },
+    {
+     "t": 2451,
+     "text": "总结三层动态法线、顶点阶段坐标运算与单次 Z 重建的组合效果；结尾预告继续添加水深、折射和泡沫。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}

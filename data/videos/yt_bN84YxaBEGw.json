@@ -1,0 +1,191 @@
+{
+ "schema": 1,
+ "id": "yt_bN84YxaBEGw",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=bN84YxaBEGw",
+ "title": "Iridescent Bubble Shader - Advanced Materials - Episode 19",
+ "date": "2023-03-16",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Advanced Materials",
+ "index": 19,
+ "duration": 1799,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本课在 Unreal Engine 和 Unity 中制作带虹彩、流动纹理与透明边缘的气泡 Shader。先通过参考图片介绍薄膜干涉，以及入射角和膜厚变化对颜色的影响，再准备渐变查找纹理与厚度变化纹理。在 Unreal Engine 中完成入射角计算、三平面投射、纹理动画和 Fresnel 透明度，并用 Metallic 实现彩色反射的视觉近似。最后对照 Unity Shader Graph 的对应节点与材质设置复现效果。",
+ "chapters": [
+  {
+   "t": 0,
+   "title": "参考分析、薄膜干涉原理与纹理准备",
+   "points": [
+    {
+     "t": 0,
+     "text": "制作 Shader 前分析气泡参考图，提取强反射、虹彩和不规则旋涡纹理等特征。"
+    },
+    {
+     "t": 97,
+     "text": "观察气泡薄膜剖面：部分光在外表面反射，另一部分穿过薄膜，在内表面反射后射出。"
+    },
+    {
+     "t": 192,
+     "text": "薄膜干涉：两路反射光叠加，产生增强或抵消，形成随条件变化的颜色。"
+    },
+    {
+     "t": 261,
+     "text": "通过膜厚与颜色对照图，理解薄膜厚度变化如何影响反射颜色。"
+    },
+    {
+     "t": 303,
+     "text": "分析气泡微距照片：入射角与膜厚共同影响虹彩，局部厚度差异形成旋涡图案。"
+    },
+    {
+     "t": 351,
+     "text": "在 Photoshop 中整理参考，将颜色渐变处理为 512×4 像素的查找纹理。"
+    },
+    {
+     "t": 418,
+     "text": "准备可平铺的厚度变化纹理，与薄膜颜色渐变纹理配合使用。"
+    }
+   ]
+  },
+  {
+   "t": 439,
+   "title": "Unreal Engine：计算入射角并采样虹彩渐变",
+   "points": [
+    {
+     "t": 439,
+     "text": "新建 Bubble 材质，将 Blend Mode 设为 Translucent，Lighting Mode 设为 Surface Translucency Volume。"
+    },
+    {
+     "t": 498,
+     "text": "使用 PixelNormalWS 与 Atmosphere Sun Light Vector 做 Dot Product，计算表面法线与光照方向的关系。"
+    },
+    {
+     "t": 568,
+     "text": "将点积结果乘以 0.5 再加 0.5，把范围从 −1～1 映射为 0～1。"
+    },
+    {
+     "t": 611,
+     "text": "导入 Thin Film Gradient；检查 UserInterface2D 压缩设置，以较小的未压缩纹理避免颜色压缩伪影。"
+    },
+    {
+     "t": 688,
+     "text": "用 AppendVector 组合 UV：计算结果作为 U，常数 0.5 作为 V；渐变采样颜色连接 Base Color。"
+    },
+    {
+     "t": 732,
+     "text": "将 Texture Sample 的 Sampler Source 设为 Shared: Clamp，避免渐变首尾循环采样造成极点色斑。"
+    },
+    {
+     "t": 759,
+     "text": "加入 OneMinus 翻转渐变采样方向，调整虹彩在球面上的分布。"
+    },
+    {
+     "t": 801,
+     "text": "将入射角对应的采样值乘以 0.6，限制使用的渐变区间，为厚度变化留下调整空间。"
+    }
+   ]
+  },
+  {
+   "t": 854,
+   "title": "Unreal Engine：膜厚纹理、三平面投射与流动动画",
+   "points": [
+    {
+     "t": 854,
+     "text": "引入 Bubble 厚度纹理，检查球体原有 UV 在顶部和底部汇聚造成的纹理畸变。"
+    },
+    {
+     "t": 917,
+     "text": "使用 WorldAlignedTexture 与 Texture Object，从顶面、正面和侧面投射纹理，绕开球体 UV 极点。"
+    },
+    {
+     "t": 939,
+     "text": "将 Texture Size 设为 300，使用 XYZ 投射结果；观察三向投射交界处的混合效果。"
+    },
+    {
+     "t": 981,
+     "text": "把厚度纹理值与入射角采样值相加，用合成结果偏移渐变查找坐标。"
+    },
+    {
+     "t": 1027,
+     "text": "排查 UV 类型错误：WorldAlignedTexture 输出 float3，直接相加并 Append 会得到无法用作 UV 的 float4。"
+    },
+    {
+     "t": 1050,
+     "text": "加入 ComponentMask，仅提取 R 通道，将厚度数据转为标量，恢复有效的二维 UV。"
+    },
+    {
+     "t": 1100,
+     "text": "将厚度值乘以 0.1，减弱纹理对渐变坐标的扰动，保留虹彩层次并形成旋涡图案。"
+    },
+    {
+     "t": 1145,
+     "text": "制作流动动画：将 World Position 与 Time×5 相加，驱动世界投射位置，让厚度纹理持续移动。"
+    }
+   ]
+  },
+  {
+   "t": 1212,
+   "title": "Unreal Engine：彩色反射与 Fresnel 透明度",
+   "points": [
+    {
+     "t": 1212,
+     "text": "将 Metallic 设为 1，利用 Base Color 为反射光着色，近似表现气泡的彩色反射。"
+    },
+    {
+     "t": 1287,
+     "text": "将 Roughness 设为 0，获得平滑反射；此时尚未设置透明度，外观仍像金属装饰球。"
+    },
+    {
+     "t": 1308,
+     "text": "把 Fresnel 连接 Opacity，使正对视线的区域更透明，轮廓边缘更不透明。"
+    },
+    {
+     "t": 1354,
+     "text": "在 Fresnel 输出上加 0.2，提高整体不透明度，避免气泡主体过于透明。"
+    },
+    {
+     "t": 1377,
+     "text": "检查完成效果：流动的薄膜干涉纹理、彩色反射，以及中心透明、边缘较实的气泡轮廓。"
+    }
+   ]
+  },
+  {
+   "t": 1427,
+   "title": "Unity Shader Graph：复现气泡材质并检查图设置",
+   "points": [
+    {
+     "t": 1427,
+     "text": "使用 Main Light Direction、Normal Vector 与 Dot Product，计算光照方向和表面法线的点积。"
+    },
+    {
+     "t": 1473,
+     "text": "用乘以 0.5、加 0.5 将点积映射至 0～1，并通过 One Minus 调整渐变方向。"
+    },
+    {
+     "t": 1518,
+     "text": "将采样范围缩放至 0～0.6；使用 Thin Film Gradient，并把 Sampler State 设为 Clamp，避免边界异常。"
+    },
+    {
+     "t": 1563,
+     "text": "读取 Bubble 纹理，通过 Swizzle 提取 R 通道、乘以 0.1，再与入射角结果相加以扰动渐变 UV。"
+    },
+    {
+     "t": 1629,
+     "text": "使用 Triplanar 在 World 空间从三个方向投射厚度纹理，通过 Tile 调整图案大小。"
+    },
+    {
+     "t": 1674,
+     "text": "将渐变采样结果接入 Base Color，设置 Metallic 为 1、Smoothness 为 0.9，调整彩色反射与高光大小。"
+    },
+    {
+     "t": 1697,
+     "text": "使用 Fresnel Effect 加 0.1 后连接 Master Stack 的 Alpha，形成边缘较实且中心不完全透明的效果。"
+    },
+    {
+     "t": 1722,
+     "text": "检查 Graph Settings：使用 Lit 材质、Standard 类型，Surface Type 设为 Transparent；展示最终气泡效果并结束课程。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}

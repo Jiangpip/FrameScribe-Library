@@ -1,0 +1,169 @@
+{
+ "schema": 1,
+ "id": "yt_o5-242LPHE0",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=o5-242LPHE0",
+ "title": "Bricks and Stucco Shader - Advanced Materials - Episode 17",
+ "date": "2023-03-02",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Advanced Materials",
+ "index": 17,
+ "duration": 2010,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本课分别在 Unreal Engine 和 Unity 中制作砖墙与灰泥（Stucco）动态混合材质。通过打包纹理通道、匹配贴图实际尺寸，并将砖块高度图加入混合遮罩，实现沿砖面起伏变化的灰泥剥落效果。使用双通道遮罩生成砂浆过渡边缘，再混合两层法线，让灰泥表面保留底层砖块的形状。最后演示纹理、顶点色与时间动画等遮罩输入方式，并讨论减少纹理采样和打破墙面重复感的方法。",
+ "chapters": [
+  {
+   "t": 0,
+   "title": "素材准备、纹理通道打包与 Unreal Engine 基础材质",
+   "points": [
+    {
+     "t": 0,
+     "text": "展示目标效果：砖墙底层、灰泥覆盖层，以及剥落边缘的中间过渡层。"
+    },
+    {
+     "t": 24,
+     "text": "在独立版 Quixel Bridge 中选择砖墙与灰泥素材，下载 Albedo、Cavity、Normal、Displacement、AO 和 Roughness。"
+    },
+    {
+     "t": 124,
+     "text": "在 Photoshop 中打包遮罩：R 存 AO、G 存 Height、B 存 Smoothness；供 Unreal 使用时将 Smoothness 反相为 Roughness，命名为 OHR。"
+    },
+    {
+     "t": 200,
+     "text": "检查 Unreal 纹理设置：颜色贴图启用 sRGB；示例法线通过 Flip Green Channel 调整绿色通道方向。"
+    },
+    {
+     "t": 268,
+     "text": "法线纹理的 Compression Settings 设为 Normalmap，OHR 遮罩关闭 sRGB；新建 Bricks with Stucco 材质并导入六张纹理。"
+    },
+    {
+     "t": 363,
+     "text": "连接砖墙 Base Color、Normal、AO 和 Roughness，预览基础效果；将预览视口 Field of View 调为 50。"
+    },
+    {
+     "t": 409,
+     "text": "切换为灰泥贴图检查尺度：Bridge 中砖墙覆盖 2×2 米，灰泥约覆盖 0.35 米，两者尺度约差六倍。"
+    },
+    {
+     "t": 454,
+     "text": "用 Texture Coordinate × 6 驱动灰泥颜色、法线和遮罩的 UV，使灰泥细节与砖墙的实际尺寸匹配。"
+    }
+   ]
+  },
+  {
+   "t": 506,
+   "title": "高度驱动的混合遮罩与灰泥法线塑形",
+   "points": [
+    {
+     "t": 506,
+     "text": "分别使用 Linear Interpolate（Lerp）混合砖墙与灰泥的颜色、法线及打包遮罩。"
+    },
+    {
+     "t": 548,
+     "text": "用 Texture Coordinate 经 Component Mask 提取 R 通道，生成横向黑白渐变，作为三个 Lerp 的 Alpha。"
+    },
+    {
+     "t": 618,
+     "text": "检查直接渐变混合造成的半透明观感，开始改造遮罩，使灰泥呈现明确的覆盖边界。"
+    },
+    {
+     "t": 642,
+     "text": "用 -0.5、倍数 2、Multiply 和 Lerp 处理输入遮罩，并引入砖墙 OHR 的 G 通道高度，使砖面与缝隙影响覆盖顺序。"
+    },
+    {
+     "t": 746,
+     "text": "加入 Saturate，将混合权重限制在 0–1，避免 Lerp 权重越界造成异常结果。"
+    },
+    {
+     "t": 783,
+     "text": "用 Lerp 在 Vector2(-15, -15) 与 Vector2(15, 10) 之间插值，再配合 Saturate 提高遮罩对比度，消除宽泛的渐变混合。"
+    },
+    {
+     "t": 908,
+     "text": "一次计算得到 R、G 两张边界略有错位的遮罩；选取 G 通道作为砖墙与灰泥的主要混合权重。"
+    },
+    {
+     "t": 955,
+     "text": "用 BlendAngleCorrectedNormals 合并砖墙与灰泥法线，再与纯灰泥法线做 Lerp；比较 0.9、0.5、0.8 的权重，让灰泥隐约显出底层砖形。"
+    }
+   ]
+  },
+  {
+   "t": 1087,
+   "title": "砂浆过渡边缘、动态遮罩与采样优化",
+   "points": [
+    {
+     "t": 1087,
+     "text": "利用两张错位遮罩制作灰泥与砖墙之间的窄过渡带，并选择介于两种材质之间的砂浆颜色。"
+    },
+    {
+     "t": 1133,
+     "text": "新增颜色 Lerp，将砖墙颜色接入 A、砂浆过渡色接入 B，准备由边缘遮罩控制。"
+    },
+    {
+     "t": 1155,
+     "text": "对双通道遮罩求差以提取边缘；随后修正 Saturate 的位置，先钳制双通道结果，再拆分通道并计算 R−G。"
+    },
+    {
+     "t": 1224,
+     "text": "将边缘遮罩接入颜色 Lerp 的 Alpha，再把带砂浆边缘的砖墙颜色与灰泥混合，形成完整三层外观。"
+    },
+    {
+     "t": 1271,
+     "text": "说明混合遮罩的可替换输入：手绘纹理、建模软件或 Unreal 中绘制的顶点色，以及时间驱动的数值。"
+    },
+    {
+     "t": 1302,
+     "text": "引入 Time 并调整倍数至 0.5，结合 UV 渐变演示砖墙与灰泥之间往返扫过的动态过渡。"
+    },
+    {
+     "t": 1371,
+     "text": "接入噪声遮罩纹理并调整 UV，演示不规则溶解；直接使用灰度纹理控制灰泥保留与剥落的位置。"
+    },
+    {
+     "t": 1457,
+     "text": "讨论纹理采样优化：当前两套材质共采样六张纹理，可进一步将每套压缩打包为两张，使总采样数降至四次；具体打包过程另有教程。"
+    }
+   ]
+  },
+  {
+   "t": 1513,
+   "title": "Unity 中复现材质并验证遮罩与动画效果",
+   "points": [
+    {
+     "t": 1513,
+     "text": "检查 Unity 纹理导入：Albedo 启用 sRGB，法线 Texture Type 设为 Normal map，打包遮罩关闭 sRGB。"
+    },
+    {
+     "t": 1556,
+     "text": "浏览 Unity Shader 的六张纹理与颜色混合结构：先混合砖墙和砂浆过渡色，再参与灰泥混合。"
+    },
+    {
+     "t": 1600,
+     "text": "用 Normal Blend 的 Reoriented 模式合并两层法线，再以 0.85 的 Lerp 权重保留少量砖墙起伏；灰泥三张纹理的 UV 均乘以 6。"
+    },
+    {
+     "t": 1669,
+     "text": "暂时用 UV 渐变替换动画输入；调整原为 2 的倍数，比较 1 与 8 对过渡位置的影响，并通过砖墙 G 通道高度修正覆盖边界。"
+    },
+    {
+     "t": 1748,
+     "text": "用 -15→15 与 -15→10 的双通道 Lerp 提高对比度，得到错位遮罩；G 通道统一控制颜色、法线和材质遮罩的混合。"
+    },
+    {
+     "t": 1801,
+     "text": "计算 R−G 并 Saturate 得到砂浆边缘遮罩，用于混合砂浆色与砖墙 Albedo，再叠加灰泥颜色。"
+    },
+    {
+     "t": 1872,
+     "text": "保存 Shader 并查看场景效果；替换为纹理或顶点色输入，并演示灰泥随时间逐渐覆盖和溶解。"
+    },
+    {
+     "t": 1948,
+     "text": "总结顶点绘制的用途：为不同墙体实例设置不同磨损位置，减少重复并区分磨损程度；随后结束课程并播放片尾音乐。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}

@@ -1,0 +1,169 @@
+{
+ "schema": 1,
+ "id": "yt_WQc0imxsGdI",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=WQc0imxsGdI",
+ "title": "Spawn Objects Along Splines - Procedural Content Generation (PCG) - Episode 8",
+ "date": "2026-06-04",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Procedural Content Generation (PCG)",
+ "index": 8,
+ "duration": 1500,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本节课演示在 Unreal Engine 中使用 PCG 沿 Spline 批量生成物体，分别制作交通锥和连续木栅栏。首先创建样条并通过 Actor Tag 获取数据，再按距离采样，用 Static Mesh Spawner 放置模型，并为交通锥添加随机旋转与位置偏移。栅栏案例进一步通过线性样条重新采样，让各段朝向下一个采样点，再单独处理末端立柱。最后展示修改样条控制点后，生成的物体如何自动随路径更新。",
+ "chapters": [
+  {
+   "t": 0,
+   "title": "课程目标与 Spline、PCG Graph 初始化",
+   "points": [
+    {
+     "t": 0,
+     "text": "介绍沿 Spline 生成物体的目标，回顾此前使用样条限定森林生成区域的课程。"
+    },
+    {
+     "t": 45,
+     "text": "预览交通锥与连续栅栏两个案例，可将同类方法用于路灯、铁轨、水泥隔离墩和电线杆。"
+    },
+    {
+     "t": 94,
+     "text": "通过 Add Object → Basic → Actor 创建 Actor，作为样条组件的载体。"
+    },
+    {
+     "t": 117,
+     "text": "切换 Selection Mode → PCG，选择 Draw Spline 创建开放样条；Draw Spline Surface 用于闭合区域。"
+    },
+    {
+     "t": 144,
+     "text": "在 Landscape 上点击拖动绘制路径，点击 Accept 完成，查看样条控制点的调试箭头。"
+    },
+    {
+     "t": 166,
+     "text": "在 Content Drawer 中新建 PCG Graph，选择 TPL Sampler Spline 模板并执行 Initialize from Template。"
+    },
+    {
+     "t": 210,
+     "text": "将 PCG Graph 拖入关卡，把边界的平面缩放从 25 × 25 调整为 40 × 40，确保覆盖样条。"
+    },
+    {
+     "t": 260,
+     "text": "给样条所在 Actor 添加 Tag：spline，供 PCG Graph 按标签定位；也可按用途命名为 fence 或 cones。"
+    }
+   ]
+  },
+  {
+   "t": 316,
+   "title": "按距离采样并生成带随机变化的交通锥",
+   "points": [
+    {
+     "t": 316,
+     "text": "认识模板中的 Get Spline Data、Spline Sampler 和 Debug：分别负责获取样条、生成采样点与显示调试模型。"
+    },
+    {
+     "t": 337,
+     "text": "将 Get Spline Data 的 Actor Filter 设为 All World Actors，按 Tag 选择 Actor，并输入 spline。"
+    },
+    {
+     "t": 379,
+     "text": "将 Spline Sampler 的 Dimension 设为 On Spline、Mode 设为 Distance；Distance Increment 从 100 改为 250，即每隔 250 cm 生成一个点。"
+    },
+    {
+     "t": 430,
+     "text": "用 Debug 的坐标轴三脚架模型检查采样点的位置与朝向。"
+    },
+    {
+     "t": 459,
+     "text": "创建 Static Mesh Spawner 并连接 Spline Sampler，在 Mesh Entries 的 Descriptor 中添加两种交通锥 Static Mesh，增加模型变化。"
+    },
+    {
+     "t": 561,
+     "text": "断开 Debug 连接隐藏坐标轴模型，按 G 键隐藏样条等编辑器辅助显示，检查生成效果。"
+    },
+    {
+     "t": 588,
+     "text": "在采样器与生成器之间插入 Transform Points，将 Z 轴随机旋转范围设为 -180° 至 180°，打破交通锥完全一致的朝向。"
+    },
+    {
+     "t": 646,
+     "text": "为 X、Y 位置设置 -40 至 40 cm 的随机偏移；保持 Z 偏移为零，避免额外引入竖直方向的位移。"
+    }
+   ]
+  },
+  {
+   "t": 726,
+   "title": "连续栅栏生成与转弯处的朝向修正",
+   "points": [
+    {
+     "t": 726,
+     "text": "区分独立物体与连续构件：交通锥无需互相连接，栅栏和隔离墩则需要考虑相邻构件的衔接。"
+    },
+    {
+     "t": 772,
+     "text": "断开交通锥生成分支，复制 Static Mesh Spawner，清除原有 Mesh Entries，改用模块化木栅栏模型。"
+    },
+    {
+     "t": 816,
+     "text": "检查栅栏之间的间隙，将 Spline Sampler 的 Distance Increment 改为匹配当前模型长度的 156 cm。"
+    },
+    {
+     "t": 861,
+     "text": "观察转弯处的连接问题：原样条采样点的朝向没有直接指向下一个点，导致栅栏端部错开；重新连接 Debug 检查方向。"
+    },
+    {
+     "t": 910,
+     "text": "明确朝向修正目标：让每个采样点朝向下一个点，形成类似 Look At 的效果，使栅栏在模型枢轴附近衔接。"
+    },
+    {
+     "t": 935,
+     "text": "从已有采样点创建 Create Spline 节点，将新样条设为 Linear，以相邻点之间的直线段确定方向。"
+    },
+    {
+     "t": 976,
+     "text": "添加第二个 Spline Sampler，将 Mode 设为 Subdivision、Subdivisions 设为 0，对线性样条重新采样。"
+    },
+    {
+     "t": 1024,
+     "text": "连接 Debug 确认红色方向箭头指向下一个点，再连接 Static Mesh Spawner，检查急转弯处明显改善的栅栏衔接效果。"
+    }
+   ]
+  },
+  {
+   "t": 1071,
+   "title": "筛选末端点、替换独立立柱与动态编辑",
+   "points": [
+    {
+     "t": 1071,
+     "text": "检查栅栏末端：最后一个完整模块的横梁向外悬空，需要将其替换为不带横梁的独立立柱。"
+    },
+    {
+     "t": 1094,
+     "text": "添加 Filter Elements by Index，取消 Select Indices by Input，改为直接填写需要筛选的索引。"
+    },
+    {
+     "t": 1145,
+     "text": "使用索引 -1 选取最后一个点，无需预先知道点的总数；连接 Debug 验证只显示末端采样点。"
+    },
+    {
+     "t": 1193,
+     "text": "通过 Difference 节点从完整点集中减去末端点，将剩余点集连接到生成完整栅栏模块的 Static Mesh Spawner。"
+    },
+    {
+     "t": 1244,
+     "text": "说明连接过程中自动插入的转换节点：把 Spatial Data 转为 Point Data，以匹配 Static Mesh Spawner 的输入类型。"
+    },
+    {
+     "t": 1274,
+     "text": "复制另一个 Static Mesh Spawner，单独连接筛选出的末端点，将模型替换为独立立柱，完成栅栏收尾。"
+    },
+    {
+     "t": 1345,
+     "text": "回顾完整分支逻辑：除末端外的点生成带横梁栅栏，末端点只生成立柱；同类方法可扩展到其他沿线排列的物体。"
+    },
+    {
+     "t": 1397,
+     "text": "移动样条控制点，观察 PCG 自动更新物体的位置与朝向，展示程序化路径编辑的效率；随后结束课程并预告后续 PCG 教程。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}

@@ -1,0 +1,161 @@
+{
+ "schema": 1,
+ "id": "yt_Euvy_R03rlg",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=Euvy_R03rlg",
+ "title": "Sharp Text Shader - Advanced Materials - Episode 18",
+ "date": "2023-03-09",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Advanced Materials",
+ "index": 18,
+ "duration": 1587,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本课介绍如何将文字从底材纹理中分离，并利用灰度渐变与类似 Signed Distance Field（SDF）的阈值重映射，让低分辨率文字仍保持较清晰的边缘。首先在 Photoshop 中制作带渐变描边的文字贴图，再在 Unreal Engine 中设置纹理、调整 UV，并搭建边缘锐化节点。随后在 Unity Shader Graph 中复现效果，使用 Lerp 控制文字颜色与不透明度。课程也讨论了独立调整纹理分辨率、复用底材、文字本地化及封装 SDF Sub Graph 的用途。",
+ "chapters": [
+  {
+   "t": 0,
+   "title": "效果对比与 Photoshop 文字渐变贴图制作",
+   "points": [
+    {
+     "t": 0,
+     "text": "对比烘焙进底材的文字与 Shader 单独叠加的文字：放大后观察像素锯齿和边缘平滑程度。"
+    },
+    {
+     "t": 65,
+     "text": "将底材从 2K 降至 512，再降低独立文字贴图分辨率，展示两种方案的清晰度差异。"
+    },
+    {
+     "t": 155,
+     "text": "在 Photoshop 中将文字图层从底材分离，制作尺寸为 1280×128 的独立图片；讲者将其称为二次幂尺寸，但 1280 实际并非二次幂。"
+    },
+    {
+     "t": 203,
+     "text": "启用文字图层的 Stroke 效果，在文字外围生成渐变，为 Shader 中重新提取清晰边缘做准备。"
+    },
+    {
+     "t": 261,
+     "text": "设置 Stroke：Position 为 Outside、Fill Type 为 Gradient、类型为 Shape Burst，Size 使用 7 像素。"
+    },
+    {
+     "t": 285,
+     "text": "根据留白调整描边宽度，避免渐变超出图像边界被裁切；后续通过黑白之间的阈值确定文字边缘。"
+    },
+    {
+     "t": 327,
+     "text": "合并图层并导出灰度 PNG，将带渐变的文字贴图用于 Unreal Engine 和 Unity。"
+    }
+   ]
+  },
+  {
+   "t": 351,
+   "title": "Unreal Engine：纹理导入、基础材质与文字 UV 定位",
+   "points": [
+    {
+     "t": 351,
+     "text": "从 Content Drawer 检查底材纹理：Maximum Texture Size 设为 512 可限制分辨率，设为 0 恢复原始尺寸；Albedo 使用 sRGB 与 Default 压缩。"
+    },
+    {
+     "t": 402,
+     "text": "导入独立文字贴图，将 Compression Settings 设为 Grayscale，并关闭 sRGB，以线性数据方式采样。"
+    },
+    {
+     "t": 467,
+     "text": "新建 Sharp Text 材质，拖入纹理并连接 Base Color、Normal、Ambient Occlusion 和 Roughness。"
+    },
+    {
+     "t": 517,
+     "text": "调用前期课程制作的 MF Transform UVs 材质函数，用于缩放、移动文字贴图；本课不重新搭建该函数。"
+    },
+    {
+     "t": 560,
+     "text": "暂时通过 Add 叠加 Albedo 与文字纹理，便于观察 UV 调整；按住 2 单击创建用于缩放的 Vector2 常量。"
+    },
+    {
+     "t": 612,
+     "text": "依据文字贴图 1280×128 的 10:1 宽高比设置 UV Scale，让 V 方向缩放值为 U 方向的 10 倍，恢复文字比例。"
+    },
+    {
+     "t": 656,
+     "text": "将文字 Texture Sample 的 Sampler Source 设为 Shared: Clamp，使用边缘像素延展，消除 UV 缩放产生的重复文字。"
+    },
+    {
+     "t": 719,
+     "text": "再创建 Vector2 连接 Offset，调整文字位置，使独立叠加文字与底材中烘焙的文字便于对照。"
+    }
+   ]
+  },
+  {
+   "t": 749,
+   "title": "Unreal Engine：SDF 式边缘重映射与降分辨率验证",
+   "points": [
+    {
+     "t": 749,
+     "text": "将带模糊渐变的文字贴图按类似 SDF 的方式处理，在渐变内部重新确定清晰边缘。"
+    },
+    {
+     "t": 792,
+     "text": "搭建 Subtract、Divide、Saturate 节点：输出为 saturate((文字采样值−Min)/(Max−Min))，将选定灰度区间重映射至 0–1。"
+    },
+    {
+     "t": 837,
+     "text": "将重映射结果接回 Add，并设置 Max=0.9、Min=0.75，得到边缘较清晰的文字遮罩。"
+    },
+    {
+     "t": 866,
+     "text": "调整 Min 与 Max 的间距控制过渡宽度：固定 Max 时，Min 越接近 Max，边缘越锐利；间距越大，边缘越柔和。"
+    },
+    {
+     "t": 936,
+     "text": "说明文字与底材分离的用途：移除底材中烘焙的文字后，木材纹理可作为其他对象的平铺材质复用。"
+    },
+    {
+     "t": 979,
+     "text": "分别降低 Albedo 和文字贴图的 Maximum Texture Size：底材可独立节省纹理内存，文字降分辨率后仍较清晰，但会出现轻微模糊和轮廓波动。"
+    },
+    {
+     "t": 1073,
+     "text": "应用于车身文字、招牌等细节；多语言本地化时只替换文字贴图，无需重做整套底材纹理。"
+    }
+   ]
+  },
+  {
+   "t": 1115,
+   "title": "Unity Shader Graph：复现锐化、颜色混合与节点封装",
+   "points": [
+    {
+     "t": 1115,
+     "text": "在 Unity 中对比底材与独立文字降至 512 的效果，再测试文字降至 256：轮廓开始变粗糙，但边缘仍比烘焙文字清晰。"
+    },
+    {
+     "t": 1192,
+     "text": "使用前期制作的 UV Transform 节点定位文字，Offset 使用 −4，并按 10:1 宽高比设置两个方向的 Scale，输出连接 Sample Texture 2D 的 UV。"
+    },
+    {
+     "t": 1269,
+     "text": "添加 Sampler State 节点，将 Wrap Mode 设为 Clamp；切换 Repeat 可观察文字反复平铺的差异。"
+    },
+    {
+     "t": 1291,
+     "text": "复现 SDF 式重映射：Min=0.75、Max=0.9，依次执行减 Min、除以 Max−Min、Saturate；调节阈值间距改变边缘软硬。"
+    },
+    {
+     "t": 1335,
+     "text": "将 Min、Max，以及 UV Transform 的 Offset、Rotation、Scale 暴露为材质参数，便于团队成员调整文字位置和锐度。"
+    },
+    {
+     "t": 1377,
+     "text": "将文字遮罩乘以 0.5 后接入 Lerp 的 T；木材底色接 A，文字油漆颜色接 B，实现文字与底材的颜色混合。"
+    },
+    {
+     "t": 1441,
+     "text": "将遮罩乘数作为文字不透明度：降低数值模拟油漆褪色，提高数值增强覆盖程度；建议把锐化节点封装为 SDF Sub Graph，暴露 Min、Max 和输入采样值。"
+    },
+    {
+     "t": 1509,
+     "text": "课程收尾：指出文字锐化只是 SDF 的一种应用，并引导查看视频描述中的延伸资料；回顾降低纹理分辨率时保持细节清晰的用途。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}

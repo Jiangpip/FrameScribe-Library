@@ -1,0 +1,243 @@
+{
+ "schema": 1,
+ "id": "yt_jL8-C2VvpxY",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=jL8-C2VvpxY",
+ "title": "Efficient Grass With PCG - Procedural Content Generation (PCG) - Episode 2",
+ "date": "2026-04-23",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Procedural Content Generation (PCG)",
+ "index": 2,
+ "duration": 2524,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本课使用 Unreal Engine 的 PCG 运行时 GPU 草地模板，搭建随玩家移动而生成和移除的草地系统。课程介绍图表节点、分区与运行时生成的启用顺序，以及网格尺寸、生成半径和实例剔除距离的配合。随后替换真实草丛模型，调整点数、阴影、风动画、密度和空间噪声以兼顾效果与性能。最后通过材质中的 PerInstanceFadeAmount 和 DitherTemporalAA 实现距离渐隐，并预告下一课使用 Landscape 材质遮罩控制植被分布。",
+ "chapters": [
+  {
+   "t": 0,
+   "title": "生成方式与 GPU 草地模板结构",
+   "points": [
+    {
+     "t": 0,
+     "text": "展示 PCG 草地系统，说明本课将制作高效的运行时草地。"
+    },
+    {
+     "t": 20,
+     "text": "对比预生成的静态点与运行时动态点：示例将大石块、树木用于静态分布，将草地用于玩家周围的网格分区生成。"
+    },
+    {
+     "t": 190,
+     "text": "新建 PCG Graph，选择 TPL Showcase Runtime Grass GPU 模板并 Initialize from Template，命名为 PCG Grass。"
+    },
+    {
+     "t": 261,
+     "text": "理解 Get Landscape Data 与 Change Grid Size：读取地形信息并设置生成网格尺寸。"
+    },
+    {
+     "t": 286,
+     "text": "理解 Point Generator 与 Static Mesh Spawner：前者使用 HLSL Compute Shader 生成点，后者启用 Execute on GPU 放置模型。"
+    },
+    {
+     "t": 345,
+     "text": "GPU 节点之后尽量保持 GPU 执行，避免 CPU 与 GPU 往返传输数据带来的性能成本。"
+    },
+    {
+     "t": 414,
+     "text": "Get Graph Parameter 将模板中的 Graph Parameters 传入 Point Generator，控制点生成行为。"
+    }
+   ]
+  },
+  {
+   "t": 463,
+   "title": "安全启用分区、运行时生成与编辑器预览",
+   "points": [
+    {
+     "t": 463,
+     "text": "将 PCG Graph 拖入关卡并移至原点；初始状态仍在有限体积内静态生成点。"
+    },
+    {
+     "t": 504,
+     "text": "先保留较小的生成体积：过早扩大范围，再启用分区可能一次生成过多点，导致内存不足或编辑器崩溃。"
+    },
+    {
+     "t": 644,
+     "text": "选中 PCG Grass，开启 Is Partitioned；点数从整个体积共享一份，变成每个网格分区各生成一份。"
+    },
+    {
+     "t": 715,
+     "text": "将 Generation Trigger 从 Generate on Load 改为 Generate at Runtime，进入 Play 后验证生成。"
+    },
+    {
+     "t": 760,
+     "text": "添加第三人称测试角色：Content Drawer → Add → Add Feature or Content Pack，添加 Third Person，再将 World Settings 的 Game Mode Override 设为 BP_ThirdPersonGameMode。"
+    },
+    {
+     "t": 817,
+     "text": "完成分区和运行时设置后，将生成体积 Scale 调为 140、140、60，覆盖地形。"
+    },
+    {
+     "t": 865,
+     "text": "在 PCGWorldActor0 开启 Treat Editor Viewport as Generation Source，让编辑器相机也能触发附近网格生成和移除。"
+    }
+   ]
+  },
+  {
+   "t": 969,
+   "title": "配合网格尺寸、生成半径与实例剔除距离",
+   "points": [
+    {
+     "t": 969,
+     "text": "区分三层控制：网格分区尺寸、分区生成距离，以及分区内单个模型实例的剔除距离。"
+    },
+    {
+     "t": 1021,
+     "text": "在 Change Grid Size 的 HiGen Grid Size 中将网格尺寸改为 800，观察分区变小。"
+    },
+    {
+     "t": 1071,
+     "text": "较小网格意味着需要管理更多分区，可能增加内存和管理成本；示例恢复为 1600。"
+    },
+    {
+     "t": 1117,
+     "text": "在 Graph Settings → Runtime Generation → Generation Radii 中设置各网格尺寸的生成半径；示例保留 1600 网格对应的 3200 半径。"
+    },
+    {
+     "t": 1189,
+     "text": "展开 Static Mesh Spawner → Mesh Entries → Descriptor，搜索 Cull，定位 Start Cull Distance 与 End Cull Distance。"
+    },
+    {
+     "t": 1259,
+     "text": "将占位模型的剔除距离设为小于分区生成半径的 2900，使远处边缘从整块网格消失变为围绕相机的实例剔除边界。"
+    }
+   ]
+  },
+  {
+   "t": 1333,
+   "title": "替换草丛模型并优化阴影、风动画与光照",
+   "points": [
+    {
+     "t": 1358,
+     "text": "先将 Point Generator 点数从 262144 降为 3500，避免替换真实草丛后实例数量过大。"
+    },
+    {
+     "t": 1381,
+     "text": "清空 Static Mesh Spawner 的占位 Mesh Entries，通过 Descriptor → Static Mesh 添加三种草丛模型。"
+    },
+    {
+     "t": 1494,
+     "text": "搜索 Shadow，关闭各草丛的 Cast Shadow、Cast Dynamic Shadow、Cast Static Shadow 和 Cast Contact Shadow 等选项。"
+    },
+    {
+     "t": 1521,
+     "text": "将 Shadow Cache Invalidation Behavior 设为 Static，避免草地风动画持续触发 Virtual Shadow Maps 缓存失效。"
+    },
+    {
+     "t": 1562,
+     "text": "演示仅为一种草丛开启动态阴影的性能折中思路，尝试保留部分阴影观感。"
+    },
+    {
+     "t": 1582,
+     "text": "搜索 World Position Offset，设置远距离停用风动画；三种草丛分别使用 1900、1700、2000 的停用距离，错开变化位置。"
+    },
+    {
+     "t": 1640,
+     "text": "搜索 Lighting，关闭 Affect Dynamic Indirect Lighting 与 Affect Distance Field Lighting，保存后查看效果。"
+    }
+   ]
+  },
+  {
+   "t": 1688,
+   "title": "调整草丛尺寸、密度与空间噪声分布",
+   "points": [
+    {
+     "t": 1688,
+     "text": "排查草丛过小：在 PCG Grass 的 Parameter Overrides 中将 Point Scale Min、Max 设为 0.5 和 1.5。"
+    },
+    {
+     "t": 1730,
+     "text": "将 Scale by Density 的最小、最大值设为 0.7 和 1.5；噪声较亮区域使用更大的草丛缩放。"
+    },
+    {
+     "t": 1799,
+     "text": "将 Spatial Noise Strength 降至 0.25，减弱成团分布，让草丛之间保留更多植被。"
+    },
+    {
+     "t": 1826,
+     "text": "整体密度参数作为点数乘数：1 保留请求的点数，降低数值可使草地更稀疏。"
+    },
+    {
+     "t": 1871,
+     "text": "介绍随机过滤与 Spatial Noise Scale；尝试将空间噪声尺度设为 800，观察草丛团块分布变化。"
+    },
+    {
+     "t": 1901,
+     "text": "将噪声强度降到 0 可减弱噪声造成的空隙，但覆盖度仍受每分区 3500 点的上限约束。"
+    },
+    {
+     "t": 1923,
+     "text": "说明密度驱动缩放和 Seed：黑白噪声控制草丛大小，随机种子用于重新打散分布。"
+    }
+   ]
+  },
+  {
+   "t": 1975,
+   "title": "设置实例渐隐区间与草地材质",
+   "points": [
+    {
+     "t": 1975,
+     "text": "观察远处草地整块弹出的现象，回到 Static Mesh Spawner 搜索 Cull，准备设置真实草丛的剔除距离。"
+    },
+    {
+     "t": 2025,
+     "text": "先让 Start Cull Distance 与 End Cull Distance 相同，第一种草丛设为 2700；三种模型使用不同距离，分散同时消失的边界。"
+    },
+    {
+     "t": 2076,
+     "text": "验证实例独立剔除：消除网格边缘的整块跳变，但远处单个草丛仍会突然消失。"
+    },
+    {
+     "t": 2118,
+     "text": "拉开起止剔除距离以形成渐隐区间：三种草丛分别设为 2100–2700、2600–3100、2100–2900。"
+    },
+    {
+     "t": 2200,
+     "text": "排查设置渐隐区间后仍然跳变的问题：草丛材质必须接入实例淡出数据，仅调整距离并不足够。"
+    },
+    {
+     "t": 2241,
+     "text": "在 Megascans 草地材质中定位 PerInstanceFadeAmount：从 Start Cull Distance 处的白色逐渐变为 End Cull Distance 处的黑色。"
+    },
+    {
+     "t": 2266,
+     "text": "将 PerInstanceFadeAmount 与不透明度相乘，接入 DitherTemporalAA，再输出到 Opacity Mask，实现距离抖动渐隐。"
+    }
+   ]
+  },
+  {
+   "t": 2322,
+   "title": "运行验证、调优回顾与地形遮罩预告",
+   "points": [
+    {
+     "t": 2322,
+     "text": "使用第三人称角色往返移动，验证远处草丛逐渐淡入，减轻突然出现的视觉跳变。"
+    },
+    {
+     "t": 2348,
+     "text": "根据游戏需求和目标硬件，联合调整网格尺寸、网格生成半径及各模型的起止剔除距离。"
+    },
+    {
+     "t": 2390,
+     "text": "问答：如何避免草长在泥地和悬崖上？可以依据 Landscape 材质与遮罩控制分布，但本课尚未实现。"
+    },
+    {
+     "t": 2441,
+     "text": "预告下一课将把 Landscape 材质中生成的数值传入 PCG Graph，用于决定不同资产的生成位置。"
+    },
+    {
+     "t": 2462,
+     "text": "课程总结与告别：强调 PCG 草地系统的灵活控制能力；末尾为结束音乐。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}

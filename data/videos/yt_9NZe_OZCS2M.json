@@ -1,0 +1,145 @@
+{
+ "schema": 1,
+ "id": "yt_9NZe_OZCS2M",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=9NZe_OZCS2M",
+ "title": "Water Transparency and Refraction - Advanced Materials - Episode 38",
+ "date": "2024-01-25",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Advanced Materials",
+ "index": 38,
+ "duration": 1721,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本课为已有 Gerstner Waves 和表面涟漪的水材质添加透明与折射效果，分别演示 Unreal Engine 和 Unity 的实现。通过 Fresnel 根据观察角度控制水面外观，实现俯视时透见水底、掠射角下更多呈现水面颜色与反射。Unreal Engine 使用 Pixel Normal Offset，Unity 则通过偏移 HD Scene Color 的采样坐标模拟折射。最后在 Unity 中分别偏移 RGB 通道，制作色散与模糊效果；水深计算及其对颜色、模糊的控制留待下一课。",
+ "chapters": [
+  {
+   "t": 0,
+   "title": "Unreal Engine：透明材质设置与 Fresnel 控制",
+   "points": [
+    {
+     "t": 0,
+     "text": "回顾已有表面涟漪效果：本课补充水面透明与折射，让水下物体可见并随波纹产生视觉扭曲。"
+    },
+    {
+     "t": 43,
+     "text": "选择材质根节点，将 Blend Mode 从 Opaque 改为 Translucent，并启用 Two Sided，为后续水下观察效果做准备。"
+    },
+    {
+     "t": 90,
+     "text": "关闭 Cast Ray Traced Shadows；Lighting Mode 设为 Surface Translucency Volume，Refraction Method 设为 Pixel Normal Offset。"
+    },
+    {
+     "t": 119,
+     "text": "启用 Screen Space Reflections，让周围岩石等物体出现在水面反射中；可关闭此选项降低效果成本。"
+    },
+    {
+     "t": 147,
+     "text": "按住 1 并单击创建 Constant，连接 Opacity：演示 1 为不透明、0 为透明、0.5 为均匀半透明。"
+    },
+    {
+     "t": 236,
+     "text": "引入 Fresnel：根据视线与表面的夹角生成遮罩；临时连接 Base Color，并切换 Unlit 观察俯视与掠射角的明暗变化。"
+    },
+    {
+     "t": 344,
+     "text": "查看 Fresnel 的 Base Reflect Fraction In 默认值 0.04；取已有 Gerstner Waves 与涟漪经 BlendAngleCorrectedNormals 合成的法线，乘以 0.05 后接入 Normal。"
+    },
+    {
+     "t": 444,
+     "text": "演示用 OneMinus 反转 Fresnel，再将遮罩接入 Opacity 并恢复 Base Color；对比固定 0.5 的效果，检查俯视透明、远处水面呈现反射的结果。"
+    }
+   ]
+  },
+  {
+   "t": 566,
+   "title": "Unreal Engine：Pixel Normal Offset 水面折射",
+   "points": [
+    {
+     "t": 566,
+     "text": "利用材质 Refraction 输入添加折射；Pixel Normal Offset 使用已有表面法线控制画面偏移方向。"
+    },
+    {
+     "t": 610,
+     "text": "创建 Constant 接入 Refraction；设为 1 时不产生折射，水面波纹虽然移动，水下岩石影像仍保持静止。"
+    },
+    {
+     "t": 679,
+     "text": "调整 Refraction 强度，观察水下物体随法线变化产生扭曲；字幕先报 0.5、后报 0.75，参数数值表述不一致，不能据此认定水的物理折射率。"
+    },
+    {
+     "t": 753,
+     "text": "指出当前材质尚未考虑水深，因此仍能看清底部；预告后续计算深度并按水深改变颜色。"
+    }
+   ]
+  },
+  {
+   "t": 783,
+   "title": "Unity：Fresnel 透明混合与屏幕空间折射",
+   "points": [
+    {
+     "t": 783,
+     "text": "检查现有 Shader Graph：Gerstner Waves、涟漪 UV 变换及 Fragment 阶段的表面法线计算，整理节点空间。"
+    },
+    {
+     "t": 835,
+     "text": "在 Graph Settings → Surface Options 中将 Surface Type 改为 Transparent；查看 Refraction Model 的 Planar 选项，本课改用自定义场景颜色采样。"
+    },
+    {
+     "t": 911,
+     "text": "测试 Alpha 为 0 和 0.5 的透明效果，再将 Fresnel Effect 接入 Alpha，观察俯视透明、掠射角不透明的变化。"
+    },
+    {
+     "t": 984,
+     "text": "改用 HD Scene Color 获取水面后方的场景颜色，勾选 Exposure 并接入 Base Color；纠正误选 HD Scene Depth 的操作。"
+    },
+    {
+     "t": 1033,
+     "text": "解释 HD Scene Color：UV 输入控制屏幕坐标采样，LOD 控制采样的 Mip 层级；将 LOD 设为 4，演示水下画面的模糊效果。"
+    },
+    {
+     "t": 1105,
+     "text": "创建水色 Color 与 Lerp 节点，以 Fresnel Effect 混合 HD Scene Color 和深蓝色水色，实现俯视显示水下画面、掠射角显示水色。"
+    },
+    {
+     "t": 1174,
+     "text": "将涟漪法线乘以 0.05，再通过 Transform 从 Tangent 转到 World，类型选择 Normal，连接 Fresnel Effect 的 Normal 输入。"
+    },
+    {
+     "t": 1264,
+     "text": "用 Screen Position 获取默认屏幕采样坐标，将 LOD 恢复为 0；通过 Add 叠加缩放后的涟漪法线偏移，再接入 HD Scene Color 的 UV，模拟折射并用乘数控制强度。"
+    }
+   ]
+  },
+  {
+   "t": 1407,
+   "title": "Unity：RGB 分通道色散、模糊与后续水深效果",
+   "points": [
+    {
+     "t": 1407,
+     "text": "说明自定义 HD Scene Color 采样的扩展空间：不同波长发生不同程度的偏折，可通过分通道采样模拟 Chromatic Aberration 色差效果。"
+    },
+    {
+     "t": 1475,
+     "text": "复制折射采样节点链，为红、绿、蓝三路分别设置 0.05、0.04、0.03 的法线偏移强度。"
+    },
+    {
+     "t": 1520,
+     "text": "为三路采样分别添加 Swizzle，使用 X、Y、Z 提取对应的 R、G、B 通道，避免直接把完整颜色接入 Combine。"
+    },
+    {
+     "t": 1564,
+     "text": "通过 Combine 重组 RGB，并替换 Lerp 中原有的单次 HD Scene Color 输出；观察水下物体边缘出现彩色条纹。"
+    },
+    {
+     "t": 1638,
+     "text": "将采样 LOD 调整为 2，叠加折射、RGB 分离与水下画面模糊效果。"
+    },
+    {
+     "t": 1659,
+     "text": "总结当前透明与折射结果；预告下一课引入水深，用深度控制水体颜色和模糊程度，随后结束课程。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}

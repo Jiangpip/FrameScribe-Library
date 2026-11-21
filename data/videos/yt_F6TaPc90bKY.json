@@ -1,0 +1,203 @@
+{
+ "schema": 1,
+ "id": "yt_F6TaPc90bKY",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=F6TaPc90bKY",
+ "title": "Subgraphs and Material Functions - Advanced Materials - Episode 21",
+ "date": "2023-04-06",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Advanced Materials",
+ "index": 21,
+ "duration": 2316,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本课介绍 Unity Shader Graph 的 Sub Graph 与 Unreal Engine 的 Material Function，说明如何将节点逻辑封装成可复用的独立资产。通过岩石材质的宏观细节、微观细节和积雪效果，演示模块化组织如何减少重复逻辑并方便统一维护。Unity 部分涵盖子图创建、输入输出、默认值、Branch On Input Connection、Dropdown 和节点菜单分类。Unreal 部分涵盖函数创建、Function Input 与 Function Output、默认值与缺失输入报错，以及端口排序。最后强调在材质效果确定后整理节点、添加标注，方便团队协作和日后维护。",
+ "chapters": [
+  {
+   "t": 0,
+   "title": "子图与材质函数的概念：用岩石材质理解模块化",
+   "points": [
+    {
+     "t": 0,
+     "text": "认识 Unity Sub Graph 与 Unreal Material Function：将图逻辑封装成独立资产，像代码函数一样在多个材质中复用。"
+    },
+    {
+     "t": 69,
+     "text": "分析岩石材质的四个组成部分：基础材质、Macro Detail、Micro Detail，以及覆盖岩石顶部的积雪。"
+    },
+    {
+     "t": 135,
+     "text": "识别重复逻辑：宏观与微观细节使用相同操作，仅纹理和 UV 缩放不同，示例缩放值分别为 0.25 与 12。"
+    },
+    {
+     "t": 189,
+     "text": "分析复杂连线带来的维护成本：插入 Triplanar 法线效果需要追踪连线，复制积雪逻辑则会导致多个材质逐一修改。"
+    },
+    {
+     "t": 292,
+     "text": "对比封装后的材质图：通过清晰的输入输出插入新效果，或删除 Macro Detail 模块并重新连接。"
+    },
+    {
+     "t": 364,
+     "text": "将积雪封装成共享 Material Function：在单个函数资产中修改效果，让引用它的材质同步更新。"
+    },
+    {
+     "t": 409,
+     "text": "总结模块化用途：提高图的可读性、复用重复操作，并方便组合、添加和移除材质效果。"
+    },
+    {
+     "t": 513,
+     "text": "区分局部材质差异与全局效果：岩石自身逻辑独立组织，积雪、磨损、污垢等效果集中维护。"
+    }
+   ]
+  },
+  {
+   "t": 558,
+   "title": "Unity Sub Graph 基础：创建、输入输出与默认值",
+   "points": [
+    {
+     "t": 558,
+     "text": "创建子图的两种方法：选中节点后执行 Convert To Sub-graph，或在 Project 中选择 Create → Shader Graph → Sub Graph。"
+    },
+    {
+     "t": 617,
+     "text": "认识新建子图的 Output 节点；通过 Blackboard 的加号创建 Color、Vector 3 等类型的输入。"
+    },
+    {
+     "t": 669,
+     "text": "将 My Color 属性拖入图中并连接 Output；Color 在图中作为 Vector 4 数据传递。"
+    },
+    {
+     "t": 691,
+     "text": "添加 Float 输入 My Float，使用 Multiply 将颜色与浮点值相乘，再连接到输出。"
+    },
+    {
+     "t": 721,
+     "text": "选中 Output，在 Graph Inspector 的 Inputs 列表中重命名、删除和添加输出，并创建 Float Out 端口。"
+    },
+    {
+     "t": 797,
+     "text": "保存后将 Sub Graph 资产拖入普通 Shader Graph，检查自定义输入输出的名称、类型和连接方式。"
+    },
+    {
+     "t": 861,
+     "text": "调整端口顺序：输入顺序由 Blackboard 排列决定，输出顺序由 Output 节点的 Inputs 列表决定。"
+    },
+    {
+     "t": 883,
+     "text": "在 Blackboard 选中属性并设置 Default Value；演示中已有子图节点未更新默认值，重新拖入后显示新的颜色与 Float 默认值。"
+    }
+   ]
+  },
+  {
+   "t": 978,
+   "title": "Unity Sub Graph 进阶：动态默认逻辑、Dropdown 与节点库",
+   "points": [
+    {
+     "t": 978,
+     "text": "添加 Vector 2 类型的 UVs 输入，说明固定数值默认值无法直接表达 UV 节点等图逻辑。"
+    },
+    {
+     "t": 1033,
+     "text": "创建 Branch On Input Connection，为 UVs 输入启用 Use Custom Binding，并设置显示标签 UV0。"
+    },
+    {
+     "t": 1063,
+     "text": "连接 Branch On Input Connection：外部端口已连接时使用传入 UV，未连接时使用内部 UV0 逻辑。"
+    },
+    {
+     "t": 1129,
+     "text": "临时输出 UV 检查默认行为，并将内部 UV 乘以 10，演示用节点运算定义未连接时的默认结果。"
+    },
+    {
+     "t": 1198,
+     "text": "在子图 Blackboard 中创建 Dropdown，编辑选项名称和默认选项；此功能用于 Sub Graph。"
+    },
+    {
+     "t": 1266,
+     "text": "将 Dropdown 的两个选项设为 UV 与 UV × 10，输出接到未连接分支，让调用者切换默认 UV 方案。"
+    },
+    {
+     "t": 1342,
+     "text": "扩展 Dropdown 的用途：同一子图可提供雨、雪等不同效果选项，供使用者配置。"
+    },
+    {
+     "t": 1362,
+     "text": "通过 Create Node 菜单查找子图；编辑子图顶部的分类路径，将其归入 UV 类别，并逐步建立 Rock Detail、Snow 等可复用节点库。"
+    }
+   ]
+  },
+  {
+   "t": 1525,
+   "title": "Unreal Material Function：创建接口与处理默认输入",
+   "points": [
+    {
+     "t": 1525,
+     "text": "在 Content Drawer 右键菜单的材质分类下创建 Material Function，并介绍使用 MF 前缀区分函数资产的命名习惯。"
+    },
+    {
+     "t": 1567,
+     "text": "通过搜索添加 Function Input 与 Function Output；新建函数自带输出节点，输入节点默认为 Vector 3。"
+    },
+    {
+     "t": 1609,
+     "text": "在 Details 中设置输入名称、Description 和 Input Type；Description 会作为调用节点端口的悬停提示。"
+    },
+    {
+     "t": 1672,
+     "text": "设置红色 Preview Value 后将函数拖入材质；未连接输入且未启用默认值时，出现 Missing Function Input 报错。"
+    },
+    {
+     "t": 1752,
+     "text": "启用 Use Preview Value as Default，允许未连接端口使用预览值；取消勾选时，必须连接外部输入才能消除报错。"
+    },
+    {
+     "t": 1827,
+     "text": "使用图逻辑定义默认输入：将蓝色乘以 0.1，再连接 Function Input 左侧的 Preview 端口。"
+    },
+    {
+     "t": 1893,
+     "text": "使用 Texture Coordinate 作为 UVs 输入的默认逻辑，使调用者未连接 UV 时仍可使用默认纹理坐标。"
+    },
+    {
+     "t": 1962,
+     "text": "设计实用默认值：尽量让函数在未连接各输入端口时也能产生可用结果，以积雪函数为例说明使用体验。"
+    }
+   ]
+  },
+  {
+   "t": 1985,
+   "title": "Unreal 多端口排序与材质图整理建议",
+   "points": [
+    {
+     "t": 1985,
+     "text": "创建多个 Function Input，分别命名 UVs、My Other Thing 和 My Third Thing，并检查调用节点上的端口排列。"
+    },
+    {
+     "t": 2050,
+     "text": "通过 Sort Priority 控制输入顺序：分别设置为 0、1、2，保存后查看材质中的端口排序。"
+    },
+    {
+     "t": 2077,
+     "text": "添加多个 Function Output，设置名称和描述；输出数据类型由接入的数据自动决定。"
+    },
+    {
+     "t": 2098,
+     "text": "为输出设置 Sort Priority，按 0、1、2 排列 Result、Result One 和 My Last Thing。"
+    },
+    {
+     "t": 2142,
+     "text": "回顾独立讲解接口配置的目的：明确输入输出、默认值，以及 Use Preview Value as Default 引发的常见问题。"
+    },
+    {
+     "t": 2191,
+     "text": "材质探索阶段允许节点布局杂乱；功能确定后应整理连线、添加标注，并将逻辑分组为 Sub Graph 或 Material Function。"
+    },
+    {
+     "t": 2254,
+     "text": "说明整理材质图的长期价值：降低团队成员理解成本，也方便自己数月后重新打开并继续维护。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}

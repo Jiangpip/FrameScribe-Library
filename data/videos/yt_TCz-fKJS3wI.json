@@ -1,0 +1,161 @@
+{
+ "schema": 1,
+ "id": "yt_TCz-fKJS3wI",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=TCz-fKJS3wI",
+ "title": "Sparkling Snow Shader - Advanced Materials - Episode 2",
+ "date": "2022-10-06",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Advanced Materials",
+ "index": 2,
+ "duration": 2282,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本课分别在 Unreal Engine 和 Unity HDRP 中制作带闪烁效果的雪材质。首先通过通道打包、分离大尺度法线与细节法线，将四张 4K 贴图精简为一张 1K 和两张 512 贴图。闪光由模型 UV 空间与屏幕空间中的噪点纹理相乘产生，再用光照方向遮罩限制在受光面。最后结合细节法线、雪的基础颜色和 Fresnel 边缘提亮，完成材质，并介绍后续封装为可复用积雪模块的思路。",
+ "chapters": [
+  {
+   "t": 5,
+   "title": "贴图精简、通道打包与闪光纹理制作",
+   "points": [
+    {
+     "t": 5,
+     "text": "分析 Quixel Megascans 的颜色、Normal、AO 和 Roughness 四张 4K 贴图，规划精简为一张 1024 和两张 512 贴图。"
+    },
+    {
+     "t": 82,
+     "text": "舍弃变化很小的颜色贴图：在 Photoshop 中取样，以 RGB 约 215、215、215 的常量代替该素材的雪色。"
+    },
+    {
+     "t": 133,
+     "text": "拆分法线细节：原图缩小到 1K 保留大尺度雪堆起伏，再从原始 4K 图中截取局部，制作可重复平铺的 512 细节法线。"
+    },
+    {
+     "t": 272,
+     "text": "打包纹理通道：R、G 保存法线 X、Y，B 保存 Ambient Occlusion，A 保存 Roughness 或 Smoothness。"
+    },
+    {
+     "t": 294,
+     "text": "适配 Unreal 与 Unity：Roughness 与 Smoothness 需要反相转换，两套法线纹理还需按引擎约定翻转绿色通道。"
+    },
+    {
+     "t": 358,
+     "text": "Photoshop 制作闪光纹理：新建 256×256 图像，填充 RGB 127 中灰，执行 Filter → Noise → Add Noise，设置 25%、Gaussian、Monochromatic。"
+    },
+    {
+     "t": 411,
+     "text": "通过 Image → Adjustments → Levels 将黑场滑块推至约 233，再调整中间调留下稀疏亮点；使用 Nearest Neighbor 放大到 512×512，保留方形像素。"
+    }
+   ]
+  },
+  {
+   "t": 459,
+   "title": "Unreal：贴图导入与随视角闪烁的雪花亮点",
+   "points": [
+    {
+     "t": 459,
+     "text": "配置纹理导入：细节法线使用 Normalmap 压缩；打包的 snow NOR 使用 Default／DXT5 并关闭 sRGB，保留线性数据及 AO、Roughness 通道；闪光图使用 Grayscale／R8。"
+    },
+    {
+     "t": 556,
+     "text": "新建 snow Material，添加闪光 Texture Sample；用 TextureCoordinate × 3 控制表面闪光的平铺次数。"
+    },
+    {
+     "t": 630,
+     "text": "用 Power，指数设为 3，压暗较弱的噪点，突出最亮的闪光像素。"
+    },
+    {
+     "t": 675,
+     "text": "创建第二份屏幕空间闪光采样：ScreenPosition 的 ViewportUV 乘以屏幕分辨率除以 512 的结果，使纹理按屏幕像素尺度投射。"
+    },
+    {
+     "t": 809,
+     "text": "将屏幕空间闪光与模型 UV 空间闪光相乘：两层亮点重合时才显示，随相机移动产生闪烁，相机静止时保持不动。"
+    },
+    {
+     "t": 856,
+     "text": "将闪光结果改接 Emissive Color，并观察背光面仍出现闪光的问题。"
+    },
+    {
+     "t": 908,
+     "text": "构建受光面遮罩：Atmosphere Sun Light Vector 与 VertexNormalWS 做 Dot Product，再经 Saturate 和 Power，指数设为 3，最后乘入闪光结果。"
+    },
+    {
+     "t": 989,
+     "text": "临时将 Roughness 设为 1，减少镜面反射干扰，检查闪光是否只出现在朝向光源的一侧。"
+    }
+   ]
+  },
+  {
+   "t": 1012,
+   "title": "Unreal：法线重建、细节混合与雪色调整",
+   "points": [
+    {
+     "t": 1012,
+     "text": "采样 snow NOR 打包贴图；通过乘以 2 再减去 1，将法线分量从 0–1 解码为 −1–1。"
+    },
+    {
+     "t": 1091,
+     "text": "使用 DeriveNormalZ，根据法线 X、Y 重建 Z 分量，将重建结果接入材质 Normal。"
+    },
+    {
+     "t": 1113,
+     "text": "引入 snow detail 法线纹理，保持 Normal 采样类型；将 TextureCoordinate 乘以 8，生成紧密平铺的细节法线。"
+    },
+    {
+     "t": 1161,
+     "text": "使用 BlendAngleCorrectedNormals 合并基础法线与细节法线，在较低贴图分辨率下同时呈现大尺度起伏和近距离颗粒细节。"
+    },
+    {
+     "t": 1240,
+     "text": "按住 3 并单击创建 Constant3Vector，设置雪的基础颜色；演示中使用约 0.88 的颜色值接入 Base Color。"
+    },
+    {
+     "t": 1290,
+     "text": "雪色变亮后闪光不明显：将闪光结果乘以约 5000 增强 Emissive，并说明需要根据场景亮度调整该数值。"
+    },
+    {
+     "t": 1340,
+     "text": "添加 Fresnel，Exponent 设为 6，再与雪色相加，使掠射角区域更亮，并突出表面法线细节。"
+    }
+   ]
+  },
+  {
+   "t": 1471,
+   "title": "Unity HDRP：复现闪光、细节法线与完整雪材质",
+   "points": [
+    {
+     "t": 1471,
+     "text": "通过 Create → Shader Graph → HDRP → Lit Shader Graph 创建 snow；添加 Sample Texture 2D 采样 R8 闪光纹理，使用 R 通道，并以 UV × 3 控制表面平铺。"
+    },
+    {
+     "t": 1568,
+     "text": "复制闪光采样节点；用 Screen 节点的 Width、Height 经 Combine 合并，再除以 512 并乘 Screen Position，构建屏幕空间采样 UV。"
+    },
+    {
+     "t": 1697,
+     "text": "将表面闪光与屏幕空间闪光的 R 通道相乘，利用两组亮点随视角变化的重合关系产生闪烁。"
+    },
+    {
+     "t": 1744,
+     "text": "采样 snow NOS：B 接 Ambient Occlusion，A 接 Smoothness；补充提醒 Unreal 演示漏接了对应通道，Unreal 的 A 应接 Roughness。法线数据乘以 2、减去 1 后，用 Normal Reconstruct Z 重建法线。"
+    },
+    {
+     "t": 1848,
+     "text": "加入 snow detail，将 Sample Texture 2D 的 Type 设为 Normal，UV 乘以 8；通过 Normal Blend 合并基础与细节法线，并选择 Reoriented 模式使用 RNM 混合。"
+    },
+    {
+     "t": 1978,
+     "text": "添加 Color 节点，按素材取样设置 RGB 215 的雪色；将混合法线通过 Transform 从 Tangent 转为 World，类型选 Normal，接入 Fresnel Effect，Power 设为 6，再与雪色相加。"
+    },
+    {
+     "t": 2084,
+     "text": "限制并增强闪光：Main Light Direction 取 Negate 后与 Normal Vector 做 Dot Product，经 Saturate、Power 3 生成受光遮罩；乘入闪光，再乘约 5000，接入 Emission，亮度需随场景调整。"
+    },
+    {
+     "t": 2203,
+     "text": "材质应用与后续计划：可用于 Terrain 或物体，后续将封装为 Unreal Material Function 或 Unity Sub Graph，为岩石等物体顶部添加积雪。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}

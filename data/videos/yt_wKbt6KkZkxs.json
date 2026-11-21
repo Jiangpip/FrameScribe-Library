@@ -1,0 +1,161 @@
+{
+ "schema": 1,
+ "id": "yt_wKbt6KkZkxs",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=wKbt6KkZkxs",
+ "title": "Glass Shader - Advanced Materials - Episode 16",
+ "date": "2023-02-23",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Advanced Materials",
+ "index": 16,
+ "duration": 1542,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本课分别在 Unity HDRP 和 Unreal Engine 中制作玻璃材质，演示透明、折射、反射及磨砂效果。Unity 部分使用 Shader Graph 调整透射颜色、表面法线和折射模型，并比较平面玻璃与实心球体的表现。Unreal 部分使用半透明材质，通过 Fresnel 与 Lerp 调节不同观察角度下的折射，再用 Spiral Blur Scene Texture 实现背景模糊。课程最后比较模糊质量与性能成本，并说明本次 Unreal 材质在厚玻璃透镜效果上的局限。",
+ "chapters": [
+  {
+   "t": 0,
+   "title": "Unity HDRP：创建透明玻璃与基础折射",
+   "points": [
+    {
+     "t": 0,
+     "text": "制作目标：模拟玻璃的透明、折射与反射，先操作 Unity，再切换 Unreal Engine。"
+    },
+    {
+     "t": 32,
+     "text": "新建 HDRP Lit Shader Graph，命名为 Glass，并将对应材质赋给场景中的平面。"
+    },
+    {
+     "t": 84,
+     "text": "Surface Type 设为 Transparent；出现前后遮挡排序问题时，可尝试启用 Transparent Depth Prepass。"
+    },
+    {
+     "t": 113,
+     "text": "Refraction Model 设为 Planar，用于本次平面玻璃；Master Stack 的 Base Color 保持白色。"
+    },
+    {
+     "t": 167,
+     "text": "Alpha 设为 0 并保存，观察透明玻璃在默认 Smoothness 下呈现的磨砂效果。"
+    },
+    {
+     "t": 209,
+     "text": "调整 Smoothness：默认 0.5 时背景较模糊，提高数值后透过玻璃看到的场景更清晰。"
+    },
+    {
+     "t": 253,
+     "text": "Index of Refraction 从 1 改为本例采用的 1.5；旋转平面，观察背景偏移与折射畸变。"
+    }
+   ]
+  },
+  {
+   "t": 324,
+   "title": "Unity：反射比例、玻璃染色与厚玻璃模型",
+   "points": [
+    {
+     "t": 324,
+     "text": "演示用 Metallic 调整反射与透射的视觉比例：设为 1 时呈现完全反射，随后降至约 0.65。"
+    },
+    {
+     "t": 435,
+     "text": "调整 Transmittance Color：降低亮度制作深色玻璃，再改为轻微绿色，为透过玻璃的背景染色。"
+    },
+    {
+     "t": 478,
+     "text": "添加 Sample Texture 2D 并将类型设为 Normal，采样混凝土法线贴图；经 Normal Strength 将强度降至 0.1 后接入法线输入。"
+    },
+    {
+     "t": 537,
+     "text": "观察微弱凹凸法线如何打散玻璃表面的反射与折射，形成不完全平整的玻璃质感。"
+    },
+    {
+     "t": 558,
+     "text": "将玻璃材质赋给球体并断开法线贴图；观察 Planar 模型下球体偏薄、近似空心的折射表现。"
+    },
+    {
+     "t": 609,
+     "text": "将 Refraction Model 从 Planar 改为 Sphere，演示实心厚玻璃的透镜效果及背景倒像。"
+    },
+    {
+     "t": 684,
+     "text": "比较 Sphere 与 Planar 的适用形状；切回 Planar 并将 Smoothness 降至约 0.3，展示平面磨砂玻璃。"
+    }
+   ]
+  },
+  {
+   "t": 732,
+   "title": "Unreal Engine：半透明材质与 Fresnel 折射控制",
+   "points": [
+    {
+     "t": 753,
+     "text": "新建 Glass Material，打开材质编辑器并将材质拖到场景平面上。"
+    },
+    {
+     "t": 799,
+     "text": "Blend Mode 设为 Translucent；课程对比 Additive、Modulate 的低成本方案及功能取舍。"
+    },
+    {
+     "t": 826,
+     "text": "Lighting Mode 设为 Surface Translucency Volume，准备配置半透明表面的光照。"
+    },
+    {
+     "t": 846,
+     "text": "按住 1 单击创建标量常量并连接 Opacity；从 0 调至约 0.35，让玻璃保持可见。"
+    },
+    {
+     "t": 891,
+     "text": "添加常量连接 Specular；本例尝试设为 10，以强化边缘反射的视觉效果。"
+    },
+    {
+     "t": 911,
+     "text": "将 1.5 接入 Refraction，观察直接使用该值时出现的明显背景偏移与畸变。"
+    },
+    {
+     "t": 961,
+     "text": "添加 Fresnel 和 Linear Interpolate（Lerp）：Fresnel 接 Alpha，A 为 1、B 为 1.5，输出接 Refraction，实现随观察角度变化的折射。"
+    },
+    {
+     "t": 1006,
+     "text": "Fresnel 的 Exponent 先设为 10，再降为 5，Base Reflect Fraction 设为 0；随后将 Roughness 设为 0，再尝试 0.05，比较反射清晰度。"
+    }
+   ]
+  },
+  {
+   "t": 1128,
+   "title": "Unreal：Spiral Blur 磨砂玻璃、采样成本与效果局限",
+   "points": [
+    {
+     "t": 1128,
+     "text": "将 Roughness 提高到约 0.8，说明本例中它会模糊反射，但不能直接模糊玻璃后方的场景。"
+    },
+    {
+     "t": 1174,
+     "text": "添加 Spiral Blur Scene Texture，通过多次采样屏幕场景并求平均，实现透过玻璃看到的背景模糊。"
+    },
+    {
+     "t": 1218,
+     "text": "Distance 设为 0.1 控制模糊幅度；查看默认 Distance Steps 为 16、Radial Steps 为 8 的质量设置。"
+    },
+    {
+     "t": 1239,
+     "text": "将 Spiral Blur 的 Result 接到 Emissive Color，Scene Color Clamp To Zero 接到 Opacity，保存后观察磨砂淋浴门式效果。"
+    },
+    {
+     "t": 1280,
+     "text": "检查块状感、重影和网格伪影；将 Distance Steps 提高至 64、Radial Steps 提高至 32，演示质量提升，并提醒该设置成本很高。"
+    },
+    {
+     "t": 1351,
+     "text": "观察玻璃接近屏幕边缘时的异常；讲师称该现象出现在编辑器视图，构建后独立运行时会消失。"
+    },
+    {
+     "t": 1415,
+     "text": "Distance 依次降至 0.02 和 0.005，获得更轻微的磨砂效果；将 Roughness 恢复为 0，保留清晰反射。"
+    },
+    {
+     "t": 1460,
+     "text": "将同一材质应用到球体：本例未实现 Unity Sphere 模型的背景倒像，讲师表示不确定厚玻璃透镜效果的实现方法；随后总结两种引擎的演示并结束课程。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}

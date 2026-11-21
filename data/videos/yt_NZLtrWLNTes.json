@@ -1,0 +1,153 @@
+{
+ "schema": 1,
+ "id": "yt_NZLtrWLNTes",
+ "site": "youtube",
+ "url": "https://www.youtube.com/watch?v=NZLtrWLNTes",
+ "title": "Introduction to Procedural Content Generation (PCG) - Episode 1",
+ "date": "2026-04-16",
+ "channel": "Ben Cloward",
+ "course": "Ben Cloward - Procedural Content Generation (PCG)",
+ "index": 1,
+ "duration": 1248,
+ "source": "YouTube 自动字幕 · 英语",
+ "summary": "本课介绍 Unreal Engine 中 PCG 的基本思路：通过规则生成点，再在点上生成物体。对比手动摆放与 Foliage 笔刷，说明程序化环境在修改规则、调整布局和跨关卡复用方面的优势。演示启用 PCG 插件、创建空白 PCG Graph，以及查看点属性和调试显示。最后使用 Create Points Grid、Transform Points 和 Static Mesh Spawner，将 100 株蕨类植物按随机位置、旋转和缩放生成在场景中。",
+ "chapters": [
+  {
+   "t": 0,
+   "title": "PCG 基础与程序化环境的价值",
+   "points": [
+    {
+     "t": 0,
+     "text": "介绍 PCG 环境制作系列；视频称 PCG 从 Unreal Engine 5.2 的实验功能发展到 5.7 的生产就绪状态。"
+    },
+    {
+     "t": 70,
+     "text": "对比传统环境制作：逐个摆放树木与岩石，用 Foliage 工具刷出小石块和蕨类植物。"
+    },
+    {
+     "t": 123,
+     "text": "分析环境布局规则：水边长草、河岸长蕨类、树根周围放土丘，使树木与地形衔接。"
+    },
+    {
+     "t": 145,
+     "text": "手工制作的局限：交换植物分布、移动河流或在其他关卡重建类似环境，都需要大量重复劳动。"
+    },
+    {
+     "t": 218,
+     "text": "PCG 的核心思路：把物体摆放规则交给引擎，由系统自动完成放置。"
+    },
+    {
+     "t": 263,
+     "text": "规则驱动的动态更新：移动河流时同步调整植被与岩石，修改节点改变分布，并将 PCG 对象复用到其他关卡。"
+    },
+    {
+     "t": 313,
+     "text": "说明学习与搭建成本：前期需要投入精力定义系统，完成后能快速迭代，把手工摆放时间转向创作。"
+    }
+   ]
+  },
+  {
+   "t": 381,
+   "title": "启用插件、创建 PCG Graph 与检查点数据",
+   "points": [
+    {
+     "t": 381,
+     "text": "进入入门实操：先启用 PCG 插件，再搭建最基础的点生成流程。"
+    },
+    {
+     "t": 407,
+     "text": "Edit → Plugins：搜索 PCG，启用 Procedural Content Generation Framework（PCG）基础插件，本课暂不使用扩展插件。"
+    },
+    {
+     "t": 450,
+     "text": "理解 PCG 工作流程：按规则和参数在世界中生成一组点，再在这些点上生成物体。"
+    },
+    {
+     "t": 473,
+     "text": "在 Content Drawer 中右键选择 PCG → PCG Graph；模板浏览器中选择 Create Empty Graph。"
+    },
+    {
+     "t": 524,
+     "text": "将新建的 PCG Graph 拖入关卡，把位置设为 (0, 0, 0)，然后打开图编辑器。"
+    },
+    {
+     "t": 580,
+     "text": "添加 Create Points Grid 节点；输出端口的点状图标表示输出为 Point Data。"
+    },
+    {
+     "t": 601,
+     "text": "按 A 查看 Attributes：默认生成 100 个点，索引为 0–99；属性包括位置、Bounds、Color、Density、Steepness 和 Seed。"
+    },
+    {
+     "t": 669,
+     "text": "按 D 启用 Debug，在场景中显示点；将 Debug 缩放模式从 Extents 改为 Absolute，缩放设为 0.3，也可替换调试用的默认立方体网格。"
+    }
+   ]
+  },
+  {
+   "t": 773,
+   "title": "生成蕨类植物并随机化位置、旋转与缩放",
+   "points": [
+    {
+     "t": 773,
+     "text": "从点输出端口拖出连线，搜索并添加 Static Mesh Spawner，用点数据驱动静态网格生成。"
+    },
+    {
+     "t": 798,
+     "text": "在 Mesh Selector → Mesh Entries 中点击加号，展开 Descriptor，在 Static Mesh 中搜索并选择 SM_fern。"
+    },
+    {
+     "t": 842,
+     "text": "保存后观察结果：蕨类植物按规则网格排列，需要调整点的变换来获得更自然的分布。"
+    },
+    {
+     "t": 868,
+     "text": "在生成点与生成网格之间加入 Transform Points，通过 Offset Min 和 Offset Max 设置随机偏移范围。"
+    },
+    {
+     "t": 891,
+     "text": "为便于观察，先调整 Z 方向偏移：尝试 50，再提高到约 90，使蕨类悬浮并与场景原有植被分开。"
+    },
+    {
+     "t": 961,
+     "text": "将 X、Y 方向的偏移范围分别设为 -300 至 300，打散原本整齐的网格排列。"
+    },
+    {
+     "t": 986,
+     "text": "设置随机旋转：Z 轴范围为 -180° 至 180°，X、Y 轴各为 -10° 至 10°，产生随机朝向与轻微倾斜。"
+    },
+    {
+     "t": 1028,
+     "text": "将随机缩放范围设为 0.7–1.4，利用 Uniform Scale 与轴向锁定统一各轴比例，得到大小、朝向和位置各异的蕨类。"
+    }
+   ]
+  },
+  {
+   "t": 1056,
+   "title": "节点流程回顾、扩展方向与课程收尾",
+   "points": [
+    {
+     "t": 1056,
+     "text": "回顾三节点流程：Create Points Grid 生成点，Transform Points 随机化变换，Static Mesh Spawner 在点上生成网格。"
+    },
+    {
+     "t": 1083,
+     "text": "演示成果：快速生成 100 株蕨类，并通过点数据统一控制随机位置、旋转和缩放。"
+    },
+    {
+     "t": 1104,
+     "text": "说明扩展方向：修改规则即可即时更新结果，同样的思路可以扩展到整片森林的程序化布局。"
+    },
+    {
+     "t": 1149,
+     "text": "介绍后续系列并邀请关注；作者说明自己也在同步学习 PCG，希望观众补充遗漏的技巧。"
+    },
+    {
+     "t": 1197,
+     "text": "邀请观众反馈性能优化方法、操作错误和希望实现的 PCG 功能；预告下一集并结束课程。"
+    }
+   ]
+  }
+ ],
+ "generator": "FrameScribe"
+}
