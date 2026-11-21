@@ -46,4 +46,4 @@
 - 视频的版权归原作者。这里只收公开免费视频的**大纲**（章节和知识点概括），不收字幕全文、视频截图和付费课程内容。原作者如果不希望自己的视频被收录，开一个 issue，我们会删掉。
 - 大纲文字和网站内容：[CC BY-NC-SA 4.0](LICENSE)，可以转载和改编，要署名、不能商用、改编后同样方式共享。
 - `tools/` 里的脚本：[PolyForm Noncommercial 1.0.0](tools/LICENSE)，可以用、改、自己搭一份，但不能用于商业目的。
-- 生成大纲用的 [FrameScribe](https://github.com/Jiangpip/FrameScribe) 本身是 GPL-3.0，谁都可以拿它整理自己的笔记。
+- 生成大纲用的 [FrameScribe](https://github.com/Jiangpip/FrameScribe) 同样不许商用（PolyForm Noncommercial 1.0.0），个人学习免费用。
